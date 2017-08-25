@@ -1,4 +1,4 @@
-package edu.g26;
+package edu.g26.sorter;
 
 /**
  * @author Ankitha

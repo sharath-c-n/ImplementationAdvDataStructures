@@ -1,4 +1,4 @@
-package edu.g26;
+package edu.g26.sorter;
 
 /**
  * @author Sharath
@@ -93,7 +93,7 @@ public class GenericSorter {
      * @param arr : input array
      * @param <T> : Generic class which implements comparable interface
      */
-    static <T extends Comparable<? super T>> void nSquareSort(T[] arr) {
+    public static <T extends Comparable<? super T>> void nSquareSort(T[] arr) {
         int n = arr.length;
         for (int i=1; i<n; ++i)
         {
