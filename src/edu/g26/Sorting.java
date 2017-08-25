@@ -4,44 +4,40 @@ package edu.g26;
 public class Sorting {
 
     static <T extends Comparable<? super T>> void merge(T[] arr,int left,int mid,int right, T[] tmp){
-        int n1 = mid - left + 1;
-        int n2 = right - mid;
-
-
-        int i = 0, j = 0;
+        int i = left, j = mid+1;
 
         int k = 0;
-        while (i < n1 && j < n2)
+        while (i <= mid && j <= right)
         {
-            if (arr[left+i].compareTo(arr[right+j]) <=0 )
+            if (arr[i].compareTo(arr[j]) <= 0)
             {
-                tmp[k] = arr[left+i];
+                tmp[k] = arr[i];
                 i++;
             }
             else
             {
-                tmp[k] = arr[right+j];
+                tmp[k] = arr[j];
                 j++;
             }
             k++;
         }
-
-        while (i < n1)
+        //copy the remaining elements
+        while (i <= mid)
         {
-            tmp[k] = arr[left+i];
+            tmp[k] = arr[i];
             i++;
             k++;
         }
 
-        while (j < n2)
+        while (j <= right)
         {
-            tmp[k] = arr[right+j];
+            tmp[k] = arr[j];
             j++;
             k++;
         }
 
         j=0;
-        for(i=left;i<=right;i++){
+        for(i=left;i<k;i++){
             arr[i] = tmp[j++];
         }
     }
@@ -60,43 +56,35 @@ public class Sorting {
 
 
     static  void merge(int[] arr,int left,int mid,int right, int[] tmp){
-        // Find sizes of two subarrays to be merged
-        int n1 = mid - left + 1;
-        int n2 = right - mid;
+        // Initial indexes of first and second subarrays in the main array
+        int i = left, j = mid+1;
 
-
-        // Initial indexes of first and second subarrays
-        int i = left, j = mid + 1;
-
-        // Initial index of merged subarry array
         int k = 0;
-        while (i < n1 && j < n2)
+        while (i <= mid && j <= right)
         {
-            if (arr[i] <=arr[ j])
+            if (arr[i] <= arr[j])
             {
                 tmp[k] = arr[i];
                 i++;
             }
             else
             {
-                tmp[k] =arr[j];
+                tmp[k] = arr[j];
                 j++;
             }
             k++;
         }
-
-        /* Copy remaining elements of L[] if any */
-        while (i < n1)
+        //copy the remaining elements
+        while (i <= mid)
         {
             tmp[k] = arr[i];
             i++;
             k++;
         }
 
-        /* Copy remaining elements of R[] if any */
-        while (j < n2)
+        while (j <= right)
         {
-            tmp[k] =arr[j];
+            tmp[k] = arr[j];
             j++;
             k++;
         }
