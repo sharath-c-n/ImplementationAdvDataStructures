@@ -7,6 +7,8 @@ package edu.g26.util;
 public class Timer {
     private long startTime;
     private long endTime;
+    private long memAvailable;
+    private long memUsed;
 
     public void start() {
         startTime = System.nanoTime();
@@ -14,6 +16,8 @@ public class Timer {
 
     public void stop() {
         endTime = System.nanoTime();
+        memAvailable = Runtime.getRuntime().totalMemory();
+        memUsed = memAvailable - Runtime.getRuntime().freeMemory();
     }
 
     public long getTime() {
@@ -26,7 +30,22 @@ public class Timer {
         return (endTime - startTime) / 1000000;
     }
 
+
     public void clear() {
         startTime = endTime = 0;
+    }
+
+    public long getMemAvailable() {
+        return memAvailable;
+    }
+
+    public long getMemUsed() {
+        return memUsed;
+    }
+
+    public String toString(){
+        return "Time: " + getTime() + " msec.\n" +
+                "Memory: " + (memUsed/1048576) +
+                " MB / " + (memAvailable/1048576) + " MB.";
     }
 }

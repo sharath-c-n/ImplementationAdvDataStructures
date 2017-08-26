@@ -5,7 +5,6 @@ package edu.g26.sorter;
  * This class containes all the generic sorting fnctions namely
  * 1) MergeSort
  * 2) Insertion Sort
- * code src : http://www.geeksforgeeks.org/
  */
 
 public class GenericSorter {
