@@ -1,7 +1,7 @@
 package edu.g26.util;
 
 /**
- * This call is used to calculate the time interval between start and stop call
+ * This class is used to calculate the time interval between start and stop call
  * @author Sharath
  */
 public class Timer {

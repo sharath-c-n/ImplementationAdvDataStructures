@@ -8,61 +8,72 @@ package edu.g26.sorter;
 
 public class IntSorter {
 
-    private static  void merge(int[] arr,int left,int mid,int right, int[] tmp){
-        // Initial indexes of first and second subarrays in the main array
-        int i = left, j = mid+1;
+    /**
+     * This is the public function which will be called to sort the array
+     * @param arr : this is a mutable integer array which needs to be sorted
+     * @param tmp : An array of size equal to arr, this is used while merging the sorted portions
+     */
+    public static void mergeSort(int[] arr, int[] tmp) {
+        mergeSort(arr, tmp, 0, arr.length - 1);
+    }
 
-        int k = 0;
-        while (i <= mid && j <= right)
-        {
-            if (arr[i] <= arr[j])
-            {
+    /**
+     * This function will merge two parts of the input array and sorts them while merging it.
+     * @param arr input array
+     * @param left the current window starting index
+     * @param right the current window ending index
+     * @param tmp temporary array
+     */
+    private static void mergeSort(int[] arr, int[] tmp, int left, int right) {
+        if (left < right) {
+            /*Avoiding over flow*/
+            int mid = left + (right - left) / 2;
+
+            mergeSort(arr, tmp, left, mid);
+            mergeSort(arr, tmp, mid + 1, right);
+            merge(arr, left, mid, right, tmp);
+        }
+    }
+
+    /**
+     * This function will merge two parts of the input array and sorts them while merging it.
+     * @param arr input array
+     * @param left the current window starting index
+     * @param right the current window ending index
+     * @param tmp temporary array
+     */
+    private static void merge(int[] arr, int left, int mid, int right, int[] tmp) {
+        int i = left,
+            j = mid + 1,
+            k = 0;
+
+        while (i <= mid && j <= right) {
+            if (arr[i] <= arr[j]) {
                 tmp[k] = arr[i];
                 i++;
-            }
-            else
-            {
+            } else {
                 tmp[k] = arr[j];
                 j++;
             }
             k++;
         }
         //copy the remaining elements
-        while (i <= mid)
-        {
+        while (i <= mid) {
             tmp[k] = arr[i];
             i++;
             k++;
         }
 
-        while (j <= right)
-        {
+        while (j <= right) {
             tmp[k] = arr[j];
             j++;
             k++;
         }
 
-        j=0;
-        for(i=left;i<k;i++){
+        j = 0;
+        for (i = left; i < k; i++) {
             arr[i] = tmp[j++];
         }
     }
 
-    private static void mergeSorter(int[] arr, int[] tmp, int left, int right) {
-        if (left < right)
-        {
-            /*Avoiding over flow*/
-            int mid = left+ (right-left)/2;
-
-            mergeSorter(arr, tmp,left, mid);
-            mergeSorter(arr , tmp,mid+1, right);
-            merge(arr, left, mid, right,tmp);
-        }
-    }
-
-
-
-    public static void mergeSort(int[] arr, int[] tmp) {
-        mergeSorter(arr, tmp,0,arr.length-1);
-    }
 }
