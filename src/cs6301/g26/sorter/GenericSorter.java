@@ -1,4 +1,4 @@
-package edu.g26.sorter;
+package cs6301.g26.sorter;
 
 /**
  * @author Sharath

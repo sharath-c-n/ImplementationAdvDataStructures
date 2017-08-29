@@ -1,9 +1,9 @@
-package edu.g26;
+package cs6301.g26;
 
-import edu.g26.sorter.GenericSorter;
-import edu.g26.sorter.IntSorter;
-import edu.g26.util.Shuffle;
-import edu.g26.util.Timer;
+import cs6301.g26.sorter.GenericSorter;
+import cs6301.g26.sorter.IntSorter;
+import cs6301.g26.util.Shuffle;
+import cs6301.g26.util.Timer;
 
 
 /**

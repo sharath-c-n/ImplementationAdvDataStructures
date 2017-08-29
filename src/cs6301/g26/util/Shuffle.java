@@ -1,4 +1,4 @@
-package edu.g26.util;
+package cs6301.g26.util;
 
 import java.util.Random;
 
