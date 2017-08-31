@@ -5,14 +5,13 @@ import cs6301.g26.sorter.IntSorter;
 import cs6301.g26.util.Shuffle;
 import cs6301.g26.util.Timer;
 
-
 /**
- * @author Sharath, Ankitha
+ * @author Sharath, Ankitha, Sandeep
  * Main driver class
  */
 public class Main {
 
-    private static final int ARR_SIZE = 10000000;
+    private static final int ARR_SIZE = 1000000;
 
     public static void main(String args[]) {
         int intArray[] = new int[ARR_SIZE];
@@ -22,7 +21,7 @@ public class Main {
         Integer genericArray2[] = new Integer[ARR_SIZE];
         Integer tmp2[] = new Integer[ARR_SIZE];
         for (int i = 0; i < ARR_SIZE; i++) {
-            intArray[i] = ARR_SIZE-i;
+            intArray[i] = i;
         }
         //Shuffle the integer array
         Shuffle.shuffle(intArray);
@@ -40,24 +39,22 @@ public class Main {
         timer.start();
         IntSorter.mergeSort(intArray, tmp);
         timer.stop();
-        System.out.println("Total execution time to sort 10000K objects for integer merge sort " +
+        System.out.println("Total execution time to sort " + ARR_SIZE + " objects for integer merge sort " +
                 "in Java in millis: " + timer.getTime());
 
-        timer.clear();
 
         /*Sort integers using generic merge sort*/
         timer.start();
         GenericSorter.mergeSort(genericArray1, tmp2);
         timer.stop();
-        System.out.println("Total execution time to sort 10000K objects for Generic merge sort " +
+        System.out.println("Total execution time to sort " + ARR_SIZE + " objects for Generic merge sort " +
                 "in Java in millis: " + timer.getTime());
 
         /*Sort integers using generic n-squared sort*/
-        timer.clear();
         timer.start();
         GenericSorter.nSquareSort(genericArray2);
         timer.stop();
-        System.out.println("Total execution time to sort 10000K objects for Generic nSquared sort " +
+        System.out.println("Total execution time to sort " + ARR_SIZE + " objects for Generic nSquared sort " +
                 "in Java in millis: " + timer.getTime());
 
     }
