@@ -82,7 +82,7 @@ public class GenericSorter {
         }
 
         j=0;
-        for(i=left;i<k;i++){
+        for(i=left;j<k;i++){
             arr[i] = tmp[j++];
         }
     }

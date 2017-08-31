@@ -12,6 +12,7 @@ public class Timer {
     private long memUsed;
 
     public void start() {
+        clear();
         startTime = System.nanoTime();
     }
 
