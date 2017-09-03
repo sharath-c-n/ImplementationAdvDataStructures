@@ -4,25 +4,118 @@
  *  Ver 1.1: 2017/08/28.  Updated some methods to public.  Added getName() to Vertex
  *
  */
+
 package cs6301.g26.graph;
 import cs6301.g26.util.ArrayIterator;
+
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
 
-
-
-public class Graph implements Iterable<Vertex> {
+public class Graph implements Iterable<Graph.Vertex> {
     Vertex[] v; // vertices of graph
     int n; // number of verices in the graph
     boolean directed;  // true if graph is directed, false otherwise
 
+
     /**
      * Nested class to represent a vertex of a graph
      */
+
+    public static class Vertex implements Iterable<Edge> {
+        int name; // name of the vertex
+        List<Edge> adj, revAdj; // adjacency list; use LinkedList or ArrayList
+
+        /**
+         * Constructor for the vertex
+         *
+         * @param n
+         *            : int - name of the vertex
+         */
+        Vertex(int n) {
+            name = n;
+            adj = new LinkedList<Edge>();
+            revAdj = new LinkedList<Edge>();   /* only for directed graphs */
+        }
+
+        /**
+         * Method to get name of a vertex.
+         *
+         */
+        public int getName() {
+            return name;
+        }
+
+        public Iterator<Edge> iterator() { return adj.iterator(); }
+
+        /**
+         * Method to get vertex number.  +1 is needed because [0] is vertex 1.
+         */
+        public String toString() {
+            return Integer.toString(name+1);
+        }
+    }
+
     /**
-     * Constructor for graph
+     * Nested class that represents an edge of a Graph
+     */
+
+    public static class Edge {
+        Vertex from; // head vertex
+        Vertex to; // tail vertex
+        int weight;// weight of edge
+
+        /**
+         * Constructor for Edge
+         *
+         * @param u
+         *            : Vertex - Vertex from which edge starts
+         * @param v
+         *            : Vertex - Vertex on which edge lands
+         * @param w
+         *            : int - Weight of edge
+         */
+        Edge(Vertex u, Vertex v, int w) {
+            from = u;
+            to = v;
+            weight = w;
+        }
+
+        /**
+         * Method to find the other end end of an edge, given a vertex reference
+         * This method is used for undirected graphs
+         *
+         * @param u
+         *            : Vertex
+         * @return
+        : Vertex - other end of edge
+         */
+        public Vertex otherEnd(Vertex u) {
+            assert from == u || to == u;
+            // if the vertex u is the head of the arc, then return the tail else return the head
+            if (from == u) {
+                return to;
+            } else {
+                return from;
+            }
+        }
+
+        /**
+         * Return the string "(x,y)", where edge goes from x to y
+         */
+        public String toString() {
+            return "(" + from + "," + to + ")";
+        }
+
+        public String stringWithSpaces() {
+            return from + " " + to + " " + weight;
+        }
+    }
+
+
+    /**
+     * Constructor for Graph
      *
      * @param n
      *            : int - number of vertices
@@ -103,21 +196,4 @@ public class Graph implements Iterable<Vertex> {
         }
         return g;
     }
-
-    public void printGraph() {
-        for (Vertex edges : this) {
-            for (Edge edge : edges) {
-                System.out.println(edge);
-            }
-        }
-       /* Iterator<Vertex> itr = this.iterator();
-        while(itr.hasNext()){
-            Iterator<Edge> edgesItr = itr.next().iterator();
-            while(edgesItr.hasNext()){
-                Edge edge = edgesItr.next();
-                System.out.println(edge);
-            }
-        }*/
-    }
-
 }
