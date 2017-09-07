@@ -1,4 +1,4 @@
-package SP2;
+package cs6301.g26;
 
 
 import java.util.*;
