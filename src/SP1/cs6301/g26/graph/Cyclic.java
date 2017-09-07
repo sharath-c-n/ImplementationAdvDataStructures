@@ -14,7 +14,7 @@ public class Cyclic {
      * @param parent : the parent of the current vertex which is being explored
      * @return : returns true if the graph is cyclic.
      */
-    private static boolean isCyclicUtil(Graph.Vertex vertex, boolean visited[],int parent){
+    private static boolean isCyclicUtil(Graph.Vertex vertex, boolean visited[], int parent){
         visited[vertex.getName()] = true;
         for(Graph.Edge edge : vertex){
             if(!visited[edge.otherEnd(vertex).getName()]){

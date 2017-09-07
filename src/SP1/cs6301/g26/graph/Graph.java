@@ -6,6 +6,7 @@
  */
 
 package cs6301.g26.graph;
+
 import cs6301.g26.util.ArrayIterator;
 
 import java.util.Iterator;

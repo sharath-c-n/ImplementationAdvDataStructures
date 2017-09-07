@@ -5,7 +5,7 @@ Solution 1:
     there are two files.
         1)GenericSorter : Contains logic of Generic merge sort and generic n-squared sort
         2)IntSorter : Contains merge sort implementation for array of type integer.
-        
+
     Running the program : compile the java files and run the SortAlgorithmComparator, this will ask you
     to enter the size of the array on which you want to compare the sort algorithms. Enter the size and the program
     will output the runtime of each algorithms in milliseconds.

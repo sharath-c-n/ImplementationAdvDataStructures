@@ -5,8 +5,8 @@
  */
 
 package cs6301.g26.util;
+
 import java.util.Iterator;
-import java.lang.UnsupportedOperationException;
 
 public class ArrayIterator<T> implements Iterator<T> {
     T[] arr;

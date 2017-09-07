@@ -1,13 +1,13 @@
 package cs6301.g26;
 
+import cs6301.g26.graph.BFS;
+import cs6301.g26.graph.Cyclic;
+import cs6301.g26.graph.Graph;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.Scanner;
-
-import cs6301.g26.graph.BFS;
-import cs6301.g26.graph.Cyclic;
-import cs6301.g26.graph.Graph;
 
 /**
  * Created by Ankitha on 8/29/2017.
