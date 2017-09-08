@@ -1,5 +1,7 @@
 package cs6301.g26;
 
+import java.util.ArrayDeque;
+import java.util.Queue;
 import java.util.Stack;
 
 /**
@@ -14,9 +16,8 @@ public class ShuntingYard {
      * @param inputString : infix expression
      * @return : postfix expression
      */
-    public static String parse(String inputString) {
-        StringBuilder output = new StringBuilder();
-
+    public static Queue<Character> parse(String inputString) {
+        Queue<Character> output = new ArrayDeque<Character>();
         if (inputString != null && inputString.length() > 0) {
             //Stores the operators
             Stack<Character> operators = new Stack<Character>();
@@ -31,7 +32,7 @@ public class ShuntingYard {
                         while (!operators.isEmpty() && Operators.isOperator(stackTop) &&
                                 Operators.compare(Operators.getByValue(currentChar),Operators.getByValue(stackTop)) <= 0
                                 && Operators.getByValue(stackTop).isLeftAssociated()) {
-                                output.append(operators.pop());
+                                output.add(operators.pop());
                                 stackTop = operators.peek();
                         }
                     }
@@ -41,23 +42,26 @@ public class ShuntingYard {
                 } else if (currentChar == ')') {
                     char stackTop = operators.pop();
                     while (stackTop != '(') {
-                        output.append(stackTop);
+                        output.add(stackTop);
                         stackTop = operators.pop();
                     }
                 } else {
-                    output.append(currentChar);
+                    output.add(currentChar);
                 }
             }
             //Append all the remaining operators to the output string
             while (!operators.isEmpty()) {
-                output.append(operators.pop());
+                output.add(operators.pop());
             }
         }
-        return output.toString();
+        return output;
     }
 
 
     public static void main(String[] args) {
-        System.out.println(ShuntingYard.parse("3+4*2/(1-5)^2^3".replaceAll("\\s","")));
+        Queue<Character> output = ShuntingYard.parse("3+4*2/(1-5)^2^3".replaceAll("\\s",""));
+        for(Character c : output){
+            System.out.print(c);
+        }
     }
 }
