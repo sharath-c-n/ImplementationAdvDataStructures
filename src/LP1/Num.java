@@ -9,10 +9,10 @@ import java.util.LinkedList;
 
 public class Num implements Comparable<Num> {
 
-    static int defaultBase = 10;  // This can be changed to what you want it to be.
-    int base = defaultBase;  // Change as needed
-    LinkedList<Long> numbers;
-    boolean positive = true;
+    public static int defaultBase = 10;  // This can be changed to what you want it to be.
+    private int base = defaultBase;  // Change as needed
+    private LinkedList<Long> numbers;
+    private boolean positive = true;
 
     /* Start of Level 1 */
     Num(String s) {
@@ -50,12 +50,12 @@ public class Num implements Comparable<Num> {
         Num response = new Num();
         if (a.base() != b.base())
             throw new NumberFormatException("Different bases");
-        if(!a.isPositive() && b.isPositive()){
-            return subtract(b,a);
+        if (!a.isPositive() && b.isPositive()) {
+            return subtract(b, a);
         }
 
-        if(!b.isPositive() && a.isPositive()){
-            return subtract(a,b);
+        if (!b.isPositive() && a.isPositive()) {
+            return subtract(a, b);
         }
 
         int base = a.base();
@@ -76,46 +76,41 @@ public class Num implements Comparable<Num> {
     }
 
     static Num subtract(Num a, Num b) {
-        long carry = 0;
+        long borrow = 0;
         Num response = new Num();
         if (a.base() != b.base())
             throw new NumberFormatException("Different bases");
         int base = a.base();
+
         Iterator<Long> x = a.numbers.iterator();
         Iterator<Long> y = b.numbers.iterator();
+
         while (x.hasNext() || y.hasNext()) {
-            Long operand1 = a.getNext(x)+carry;
+            Long operand1 = a.getNext(x) -  borrow;
             Long operand2 = b.getNext(y);
-            carry = 0;
-            while(operand1 < operand2){
+            //rest borrow since it has been applied
+            borrow = 0;
+            while (operand1 < operand2) {
                 operand1 += base;
-                carry--;
+                borrow++;
             }
             Long diff = operand1 - operand2;
             response.addNum(diff);
         }
-        if (carry != 0) {
+        if (borrow != 0) {
             StringBuilder compliment = new StringBuilder();
-            compliment.append(Math.abs(carry));
-            for(int i = 0; i < response.getSize(); i++) {
+            compliment.append(borrow);
+            for (int i = 0; i < response.getSize(); i++) {
                 compliment.append(0);
             }
-            response = subtract(new Num(compliment.toString()),response);
+            response = subtract(new Num(compliment.toString()), response);
             response.setPositive(false);
         }
         response.trim();
         return response;
     }
 
-    private void trim(){
-        Iterator<Long> itr = numbers.descendingIterator();
-        while(itr.hasNext()){
-            if(itr.next() != 0){
-                break;
-            }
-            itr.remove();
-        }
-    }
+
 
     // Implement Karatsuba algorithm for excellence credit
     static Num product(Num a, Num b) {
@@ -151,7 +146,32 @@ public class Num implements Comparable<Num> {
     // Utility functions
     // compare "this" to "other": return +1 if this is greater, 0 if equal, -1 otherwise
     public int compareTo(Num other) {
-        return 0;
+        int value;
+        if(!isPositive() && other.isPositive()){
+            return -1;
+        }
+
+        if(isPositive() && !other.isPositive()){
+            return  1;
+        }
+
+        if (getSize() == other.getSize()) {
+            //Start comparing from the last
+            Iterator<Long> curr = numbers.descendingIterator();
+            Iterator<Long> o = other.numbers.descendingIterator();
+            long currValue = 0, otherValue = 0;
+            //Since both the numbers have same size only one can be checked
+            while (curr.hasNext()) {
+                currValue = curr.next();
+                otherValue = o.next();
+                if (currValue != otherValue)
+                    break;
+            }
+            value = currValue - otherValue == 0 ? 0 : currValue - otherValue < 0 ? -1 : 1;
+            return isPositive() || value == 0 ? value : -value;
+        }
+        value = getSize() < other.getSize() ? -1 : 1;
+        return isPositive() ? value : -value;
     }
 
     // Output using the format "base: elements of list ..."
@@ -176,7 +196,7 @@ public class Num implements Comparable<Num> {
         for (Long numb : numbers) {
             output.append(numb);
         }
-        if(!isPositive()){
+        if (!isPositive()) {
             output.append("-");
         }
         return output.reverse().toString();
@@ -190,7 +210,17 @@ public class Num implements Comparable<Num> {
         return positive;
     }
 
-    public void setPositive(boolean positive) {
+    private void setPositive(boolean positive) {
         this.positive = positive;
+    }
+
+    private void trim() {
+        Iterator<Long> itr = numbers.descendingIterator();
+        while (itr.hasNext()) {
+            if (itr.next() != 0) {
+                break;
+            }
+            itr.remove();
+        }
     }
 }
