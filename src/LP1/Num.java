@@ -50,14 +50,9 @@ public class Num implements Comparable<Num> {
         Num response = new Num();
         if (a.base() != b.base())
             throw new NumberFormatException("Different bases");
-        if (!a.isPositive() && b.isPositive()) {
-            return subtract(b, a);
+        if ((!a.isPositive() && b.isPositive())||(!b.isPositive() && a.isPositive())) {
+            return subtract(a,b);
         }
-
-        if (!b.isPositive() && a.isPositive()) {
-            return subtract(a, b);
-        }
-
         int base = a.base();
         Iterator<Long> x = a.numbers.iterator();
         Iterator<Long> y = b.numbers.iterator();
@@ -66,9 +61,8 @@ public class Num implements Comparable<Num> {
             response.addNum(sum % base);
             carry = sum / base;
         }
-        while (carry != 0) {
+        if (carry != 0) {
             response.addNum(carry % base);
-            carry = carry / base;
         }
         //Comes here only if both of the operands have same sign
         response.setPositive(a.isPositive());
@@ -90,7 +84,7 @@ public class Num implements Comparable<Num> {
             Long operand2 = b.getNext(y);
             //rest borrow since it has been applied
             borrow = 0;
-            while (operand1 < operand2) {
+            if(operand1 < operand2) {
                 operand1 += base;
                 borrow++;
             }
@@ -110,10 +104,27 @@ public class Num implements Comparable<Num> {
         return response;
     }
 
+    public Num multiply(long multiplier){
+        Num product = new Num();
+        for(Long term : numbers){
+            Long prod = multiplier*term;
+            product.addNum(prod%base);
 
+        }
+        return null;
+    }
 
     // Implement Karatsuba algorithm for excellence credit
     static Num product(Num a, Num b) {
+        int size = Math.max(a.getSize(),b.getSize());
+        if(size < 2){
+            return new Num(Long.valueOf(a.toString()) * Long.valueOf(b.toString()));
+        }
+        Num m = new Num(a.base);
+        Num x = Num.divide(a,m);
+        Num y = subtract(a,product(b,m));
+        Num d = divide(b,m);
+      //  Num f = subtract(b,product(d,a.base));
         return null;
     }
 
@@ -125,6 +136,7 @@ public class Num implements Comparable<Num> {
 
     /* Start of Level 2 */
     static Num divide(Num a, Num b) {
+
         return null;
     }
 
