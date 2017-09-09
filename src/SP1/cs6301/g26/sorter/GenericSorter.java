@@ -35,7 +35,7 @@ public class GenericSorter {
             mergeSorter(arr, tmp,left, mid);
             mergeSorter(arr , tmp,mid+1, right);
 
-            merge(arr, left, right,tmp);
+            merge(arr, left, mid, right,tmp);
         }
     }
 
@@ -47,11 +47,10 @@ public class GenericSorter {
      * @param tmp temporary array
      * @param <T> The generic class
      */
-    private static <T extends Comparable<? super T>> void merge(T[] arr,int left,int right, T[] tmp){
-        int mid = left+ (right-left)/2;
-        int i = left, j = mid+1;
-
-        int k = 0;
+    private static <T extends Comparable<? super T>> void merge(T[] arr,int left,int mid,int right, T[] tmp){
+        int i = left,
+            j = mid+1,
+            k = 0;
         while (i <= mid && j <= right)
         {
             if (arr[i].compareTo(arr[j]) <= 0)
@@ -82,7 +81,7 @@ public class GenericSorter {
         }
 
         j=0;
-        for(i=left;i<k;i++){
+        for(i=left;j<k;i++){
             arr[i] = tmp[j++];
         }
     }
