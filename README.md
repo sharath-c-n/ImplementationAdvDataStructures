@@ -1,6 +1,7 @@
 # Implementation of Advanced Data Structures
 ## Short project 1
 
+
      1)Comparing mergeSort with nsquared sort and identifying penalties of using generics in JAVA:
         The main file in SortAlgorithmComparator.java(under cs6301.g26 package)
         and all the logic related to the sorting algorithms are placed in cs6301.g26.sorter package
