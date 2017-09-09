@@ -84,23 +84,6 @@ public class SinglyLinkedList<T> implements Iterable<T> {
         size++;
     }
 
-    public void printList() {
-	/* Code without using implicit iterator in for each loop:
-
-        Entry<T> x = head.next;
-        while(x != null) {
-            System.out.print(x.element + " ");
-            x = x.next;
-        }
-	*/
-
-        System.out.print(this.size + ": ");
-        for(T item: this) {
-            System.out.print(item + " ");
-        }
-
-        System.out.println();
-    }
 
     // Rearrange the elements of the list by linking the elements at even index
     // followed by the elements at odd index. Implemented by rearranging pointers
@@ -178,14 +161,14 @@ public class SinglyLinkedList<T> implements Iterable<T> {
     public void itrReverse(){
         Entry prev = null;
         Entry next= null;
-        Entry cur = header.next;
+        Entry cur = head.next;
         while(cur!=null){
             next = cur.next;
             cur.next = prev;
             prev = cur;
             cur = next;
         }
-        header.next =  prev;
+        head.next =  prev;
     }
 
     /**
@@ -193,7 +176,7 @@ public class SinglyLinkedList<T> implements Iterable<T> {
      * the existing linked list.
      */
     public void recReverse(){
-        recReverse(header.next);
+        recReverse(head.next);
     }
 
     /**
@@ -212,7 +195,7 @@ public class SinglyLinkedList<T> implements Iterable<T> {
     /* List has only one node */
         if (nextEntry == null)
         {
-            header.next = currentEntry;
+            head.next = currentEntry;
             return;
         }
 
@@ -227,7 +210,7 @@ public class SinglyLinkedList<T> implements Iterable<T> {
     public void printList() {
 	/* Code without using implicit iterator in for each loop:
 
-        Entry<T> x = header.next;
+        Entry<T> x = head.next;
         while(x != null) {
             System.out.print(x.element + " ");
             x = x.next;
