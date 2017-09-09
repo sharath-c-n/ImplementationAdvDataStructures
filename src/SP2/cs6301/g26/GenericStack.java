@@ -14,7 +14,7 @@ public class GenericStack<T> {
 
     public boolean push(T x) throws IllegalStateException {
         if (!isFull()) {
-            arr[top++] = x;
+            arr[++top] = x;
         } else {
             throw new IllegalStateException("Stack full");
         }
@@ -42,16 +42,16 @@ public class GenericStack<T> {
         st.push(17);
         st.push(19);
         st.push(20);
-        st.pop();
-        st.pop();
+        System.out.println(st.pop());
+        System.out.println(st.pop());
         st.push(35);
-        st.pop();
-        st.pop();
-        st.pop();
-        st.pop();
-        st.pop();
+        System.out.println(st.pop());
+        System.out.println(st.pop());
+        System.out.println(st.pop());
+        System.out.println(st.pop());
+        System.out.println(st.pop());
         st.push(11);
-        st.pop();
-        st.pop();
+        System.out.println(st.pop());
+        System.out.println(st.pop());
     }
 }
