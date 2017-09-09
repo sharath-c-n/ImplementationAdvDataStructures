@@ -171,4 +171,73 @@ public class SinglyLinkedList<T> implements Iterable<T> {
         tails.get(tails.size() - 1).next = null;
 
     }
+    /**
+     * This function is called using the instance of the class and this will reverse
+     * the existing linked list iteratively.
+     */
+    public void itrReverse(){
+        Entry prev = null;
+        Entry next= null;
+        Entry cur = header.next;
+        while(cur!=null){
+            next = cur.next;
+            cur.next = prev;
+            prev = cur;
+            cur = next;
+        }
+        header.next =  prev;
+    }
+
+    /**
+     * This function is called using the instance of the class and this will reverse
+     * the existing linked list.
+     */
+    public void recReverse(){
+        recReverse(header.next);
+    }
+
+    /**
+     * This method will be called recursively till the end of the list.
+     * @param currentEntry : current element in the iteration.
+     */
+    private void recReverse(Entry currentEntry){
+    /* empty list */
+        if ( currentEntry == null)
+            return;
+
+    /* get the next element*/
+
+        Entry nextEntry  = currentEntry.next;
+
+    /* List has only one node */
+        if (nextEntry == null)
+        {
+            header.next = currentEntry;
+            return;
+        }
+
+    /* reverse the rest list and put the first element at the end */
+        recReverse(nextEntry);
+        nextEntry.next  = currentEntry;
+
+    /* to make the next of first element in the list null */
+        currentEntry.next  = null;
+    }
+
+    public void printList() {
+	/* Code without using implicit iterator in for each loop:
+
+        Entry<T> x = header.next;
+        while(x != null) {
+            System.out.print(x.element + " ");
+            x = x.next;
+        }
+	*/
+        System.out.print(this.size + ": ");
+        for(T item: this) {
+            System.out.print(item + " ");
+        }
+
+        System.out.println();
+    }
 }
