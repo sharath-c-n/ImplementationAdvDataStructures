@@ -30,7 +30,6 @@ public class GenericStack<T> {
         if (!isFull()) {
             top++;
             arr[top] = x;
-           // System.out.println("Successfully pushed the element into stack ");
         } else {
             throw new IllegalStateException("Stack full");
         }
