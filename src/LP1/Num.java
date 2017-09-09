@@ -7,6 +7,7 @@
 import java.util.Iterator;
 import java.util.LinkedList;
 
+
 public class Num implements Comparable<Num> {
 
     public static int defaultBase = 10;  // This can be changed to what you want it to be.
@@ -162,8 +163,21 @@ public class Num implements Comparable<Num> {
 
     /* Start of Level 2 */
     static Num divide(Num a, Num b) {
+    // Version 1 of this problem
+        Num res = new Num(0L);
+        Num quotient = new Num(1L);
+        while (a.compareTo(b) >= 0) {
+            a = subtract(a, b);
+            res = add(res, quotient);
+        }
+       //Version 2 of the Problem
+        if(a.compareTo(b)>=0) {
+            Num low = new Num(1L);
+            Num high = a;
 
-        return null;
+        }
+
+        return res;
     }
 
     static Num mod(Num a, Num b) {

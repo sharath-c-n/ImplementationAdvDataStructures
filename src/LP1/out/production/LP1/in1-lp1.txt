@@ -1,0 +1,15 @@
+a = 999 ;
+b = 8 ;
+c = a b ^ ;
+d = a b + ;
+;
+
+These lines are not processed.
+Output:
+999
+8
+992027944069944027992001
+1007
+10: 7 0 0 1
+
+Last line of output is different if you are using a different base.
