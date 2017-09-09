@@ -7,8 +7,9 @@
  */
 
 package cs6301.g26;
+
+import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Scanner;
 import java.util.NoSuchElementException;
 
 public class SinglyLinkedList<T> implements Iterable<T> {
@@ -136,60 +137,38 @@ public class SinglyLinkedList<T> implements Iterable<T> {
         tail1.next = null;
     }
 
-    public static void main(String[] args) throws NoSuchElementException {
-        int n = 10;
-        if(args.length > 0) {
-            n = Integer.parseInt(args[0]);
+    public void multiUnzip(int k) {
+        if (size < 3 || (size <k)) {  // Too few elements.  No change.
+            return;
         }
+        int counter = 0;
+        // state stores indicates the state of finite state machine
+        // state =i indicates the current element is added after tails[i] where i=0,1,...,k-1
 
-        SinglyLinkedList<Integer> lst = new SinglyLinkedList<>();
-        for(int i=1; i<=n; i++) {
-            lst.add(new Integer(i));
+        int state = 0;
+        ArrayList<Entry<T>> tails = new ArrayList<>();
+        ArrayList<Entry<T>> heads = new ArrayList<>();
+        //Initialization of tails and heads
+        tails.add(head.next);
+        while (counter < k - 1) {
+            heads.add(tails.get(counter).next);
+            tails.add(heads.get(counter));
+            counter++;
         }
-        lst.printList();
+        Entry<T> c = tails.get(tails.size() - 1).next;
+        while (c != null) {
+            tails.get(state).next = c;
+            tails.set(state, c);
+            c = c.next;
+            state = (state + 1) % (k); //state is in the range of [0, k-1]
+        }
+        counter = 0;
+        //Assign the tails of chains of elements to the head of the next chain of elements
+        while (counter < k-1) {
+            tails.get(counter).next = heads.get(counter);
+            counter = counter + 1;
+        }
+        tails.get(tails.size() - 1).next = null;
 
-        Iterator<Integer> it = lst.iterator();
-        Scanner in = new Scanner(System.in);
-        whileloop:
-        while(in.hasNext()) {
-            int com = in.nextInt();
-            switch(com) {
-                case 1:  // Move to next element and print it
-                    if (it.hasNext()) {
-                        System.out.println(it.next());
-                    } else {
-                        break whileloop;
-                    }
-                    break;
-                case 2:  // Remove element
-                    it.remove();
-                    lst.printList();
-                    break;
-                default:  // Exit loop
-                    break whileloop;
-            }
-        }
-        lst.printList();
-        lst.unzip();
-        lst.printList();
     }
 }
-
-/* Sample input:
-   1 2 1 2 1 1 1 2 1 1 2 0
-   Sample output:
-10: 1 2 3 4 5 6 7 8 9 10
-1
-9: 2 3 4 5 6 7 8 9 10
-2
-8: 3 4 5 6 7 8 9 10
-3
-4
-5
-7: 3 4 6 7 8 9 10
-6
-7
-6: 3 4 6 8 9 10
-6: 3 4 6 8 9 10
-6: 3 6 9 4 8 10
-*/
