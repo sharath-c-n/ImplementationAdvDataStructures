@@ -45,63 +45,89 @@ public class Num implements Comparable<Num> {
         return numbers.size();
     }
 
-    static Num add(Num a, Num b) {
+    static Num unsignedAdd(Num a, Num b){
         long carry = 0;
         Num response = new Num();
-        if (a.base() != b.base())
-            throw new NumberFormatException("Different bases");
-        if ((!a.isPositive() && b.isPositive())||(!b.isPositive() && a.isPositive())) {
-            return subtract(a,b);
-        }
         int base = a.base();
         Iterator<Long> x = a.numbers.iterator();
         Iterator<Long> y = b.numbers.iterator();
         while (x.hasNext() || y.hasNext()) {
-            Long sum = a.getNext(x) + b.getNext(y) + carry;
+            Long sum = getNext(x) + getNext(y) + carry;
             response.addNum(sum % base);
             carry = sum / base;
         }
         if (carry != 0) {
             response.addNum(carry % base);
         }
+        return response;
+    }
+
+    static Num add(Num a, Num b) {
+        if ((!a.isPositive() && b.isPositive())||(!b.isPositive() && a.isPositive())) {
+            return subtract(a,b);
+        }
+        Num response = unsignedAdd(a,b);
         //Comes here only if both of the operands have same sign
         response.setPositive(a.isPositive());
         return response;
     }
 
-    static Num subtract(Num a, Num b) {
+    static Num unsignedSub(Num a, Num b){
         long borrow = 0;
         Num response = new Num();
-        if (a.base() != b.base())
-            throw new NumberFormatException("Different bases");
-        int base = a.base();
-
-        Iterator<Long> x = a.numbers.iterator();
-        Iterator<Long> y = b.numbers.iterator();
-
+        Iterator<Long> x,y;
+        x = a.numbers.iterator();
+        y = b.numbers.iterator();
         while (x.hasNext() || y.hasNext()) {
-            Long operand1 = a.getNext(x) -  borrow;
-            Long operand2 = b.getNext(y);
+            Long operand1 = getNext(x) -  borrow;
+            Long operand2 = getNext(y);
             //rest borrow since it has been applied
             borrow = 0;
             if(operand1 < operand2) {
-                operand1 += base;
+                operand1 += a.base;
                 borrow++;
             }
             Long diff = operand1 - operand2;
             response.addNum(diff);
         }
-        if (borrow != 0) {
-            StringBuilder compliment = new StringBuilder();
-            compliment.append(borrow);
-            for (int i = 0; i < response.getSize(); i++) {
-                compliment.append(0);
-            }
-            response = subtract(new Num(compliment.toString()), response);
-            response.setPositive(false);
-        }
         response.trim();
         return response;
+    }
+
+    static Num subtract(Num a, Num b) {
+        Num response;
+        if (!b.isPositive() && a.isPositive()) {
+            return unsignedAdd(a,b);
+        }
+
+        if(!a.isPositive() && b.isPositive()){
+            response = unsignedAdd(a,b);
+            //Comes here only if both of the operands have same sign
+            response.setPositive(false);
+            return response;
+        }
+
+        if(a.compareTo(b) == 0)
+        {
+            response = new Num();
+            response.addNum(0L);
+            return response;
+        }
+        if(a.compareTo(b) > 0){
+            //Check if both a and b are negative, no need to check if b is negative since if the execution
+            //comes here both should be of same sign
+            return a.isPositive()?unsignedSub(a, b):unsignedSub(b,a);
+        }
+        else{
+            //Check if both a and b are negative
+           response =  a.isPositive()? unsignedSub(b,a) : unsignedSub(a,b);
+            //If a is negative and b is also negative but greater than a, then don't set as negative number
+            if(a.isPositive() && b.isPositive())
+            {
+                response.setPositive(false);
+            }
+            return response;
+        }
     }
 
     public Num multiply(long multiplier){
@@ -198,7 +224,7 @@ public class Num implements Comparable<Num> {
         System.out.println(output);
     }
 
-    public Long getNext(Iterator<Long> itr) {
+    public static Long getNext(Iterator<Long> itr) {
         return itr.hasNext() ? itr.next() : Long.valueOf(0);
     }
 
