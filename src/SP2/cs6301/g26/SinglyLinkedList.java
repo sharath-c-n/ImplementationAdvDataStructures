@@ -1,3 +1,4 @@
+
 /** @author rbk
  *  Singly linked list: for instructional purposes only
  *  Ver 1.0: 2017/08/08
@@ -11,6 +12,7 @@ package cs6301.g26;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.Scanner;
 
 public class SinglyLinkedList<T> implements Iterable<T> {
 
@@ -137,18 +139,20 @@ public class SinglyLinkedList<T> implements Iterable<T> {
         tail1.next = null;
     }
 
+/*
+ * This Function Rearranges the Elements of a Singly Linked list by chaining together the elements that are k apart.
+ * @ param k : chaining distance
+ */
+
     public void multiUnzip(int k) {
-        if (size < 3 || (size <k)) {  // Too few elements.  No change.
+        if (size < 3 || (size < k)) {  // Too few elements.  No change. or  when the size is less than chaining distance list remains same
             return;
         }
         int counter = 0;
-        // state stores indicates the state of finite state machine
-        // state =i indicates the current element is added after tails[i] where i=0,1,...,k-1
-
         int state = 0;
         ArrayList<Entry<T>> tails = new ArrayList<>();
         ArrayList<Entry<T>> heads = new ArrayList<>();
-        //Initialization of tails and heads
+
         tails.add(head.next);
         while (counter < k - 1) {
             heads.add(tails.get(counter).next);
@@ -156,88 +160,82 @@ public class SinglyLinkedList<T> implements Iterable<T> {
             counter++;
         }
         Entry<T> c = tails.get(tails.size() - 1).next;
+        // state stores the state of finite state machine
+        // state =i indicates the current element is added after tails[i] where i=0,1,...,k-1
+        // c is current element to be processed.
+
         while (c != null) {
             tails.get(state).next = c;
             tails.set(state, c);
             c = c.next;
-            state = (state + 1) % (k); //state is in the range of [0, k-1]
+            state = (state + 1) % (k); //As always state is in the range of [0, k-1]
         }
         counter = 0;
-        //Assign the tails of chains of elements to the head of the next chain of elements
-        while (counter < k-1) {
+
+        //Assign the tails of chains of elements to the head of the next chain of the elements
+        while (counter < k - 1) {
             tails.get(counter).next = heads.get(counter);
             counter = counter + 1;
         }
         tails.get(tails.size() - 1).next = null;
 
     }
-    /**
-     * This function is called using the instance of the class and this will reverse
-     * the existing linked list iteratively.
-     */
-    public void itrReverse(){
-        Entry prev = null;
-        Entry next= null;
-        Entry cur = header.next;
-        while(cur!=null){
-            next = cur.next;
-            cur.next = prev;
-            prev = cur;
-            cur = next;
-        }
-        header.next =  prev;
-    }
 
-    /**
-     * This function is called using the instance of the class and this will reverse
-     * the existing linked list.
-     */
-    public void recReverse(){
-        recReverse(header.next);
-    }
-
-    /**
-     * This method will be called recursively till the end of the list.
-     * @param currentEntry : current element in the iteration.
-     */
-    private void recReverse(Entry currentEntry){
-    /* empty list */
-        if ( currentEntry == null)
-            return;
-
-    /* get the next element*/
-
-        Entry nextEntry  = currentEntry.next;
-
-    /* List has only one node */
-        if (nextEntry == null)
-        {
-            header.next = currentEntry;
-            return;
+    public static void main(String[] args) throws NoSuchElementException {
+        int n = 10;
+        if(args.length > 0) {
+            n = Integer.parseInt(args[0]);
         }
 
-    /* reverse the rest list and put the first element at the end */
-        recReverse(nextEntry);
-        nextEntry.next  = currentEntry;
-
-    /* to make the next of first element in the list null */
-        currentEntry.next  = null;
-    }
-
-    public void printList() {
-	/* Code without using implicit iterator in for each loop:
-
-        Entry<T> x = header.next;
-        while(x != null) {
-            System.out.print(x.element + " ");
-            x = x.next;
+        SinglyLinkedList<Integer> lst = new SinglyLinkedList<>();
+        for(int i=1; i<=n; i++) {
+            lst.add(new Integer(i));
         }
-	*/
-        System.out.print(this.size + ": ");
-        for(T item: this) {
-            System.out.print(item + " ");
-        }
+        //lst.printList();
 
-        System.out.println();
+        Iterator<Integer> it = lst.iterator();
+       /* Scanner in = new Scanner(System.in);
+        whileloop:
+        while(in.hasNext()) {
+            int com = in.nextInt();
+            switch(com) {
+                case 1:  // Move to next element and print it
+                    if (it.hasNext()) {
+                        System.out.println(it.next());
+                    } else {
+                        break whileloop;
+                    }
+                    break;
+                case 2:  // Remove element
+                    it.remove();
+                    lst.printList();
+                    break;
+                default:  // Exit loop
+                    break whileloop;
+            }
+        }*/
+        lst.printList();
+        //lst.unzip();
+        lst.multiUnzip(3);
+        lst.printList();
     }
 }
+
+/* Sample input:
+   1 2 1 2 1 1 1 2 1 1 2 0
+   Sample output:
+10: 1 2 3 4 5 6 7 8 9 10
+1
+9: 2 3 4 5 6 7 8 9 10
+2
+8: 3 4 5 6 7 8 9 10
+3
+4
+5
+7: 3 4 6 7 8 9 10
+6
+7
+6: 3 4 6 8 9 10
+6: 3 4 6 8 9 10
+6: 3 6 9 4 8 10
+*/
