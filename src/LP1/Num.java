@@ -6,12 +6,13 @@
 
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 
 public class Num implements Comparable<Num> {
 
     public static int defaultBase = 10;  // This can be changed to what you want it to be.
-    private int base = defaultBase;  // Change as needed
-    private LinkedList<Long> numbers;
+    private long base = defaultBase;  // Change as needed
+    private List<Long> numbers;
     private boolean positive = true;
 
     /* Start of Level 1 */
@@ -27,6 +28,9 @@ public class Num implements Comparable<Num> {
 
     Num(long x) {
         numbers = new LinkedList<>();
+        if(x == 0){
+            numbers.add(0L);
+        }
         while (x != 0) {
             numbers.add(x % base);
             x /= base;
@@ -45,10 +49,10 @@ public class Num implements Comparable<Num> {
         return numbers.size();
     }
 
-    static Num unsignedAdd(Num a, Num b){
+    static Num unsignedAdd(Num a, Num b) {
         long carry = 0;
         Num response = new Num();
-        int base = a.base();
+        long base = a.base();
         Iterator<Long> x = a.numbers.iterator();
         Iterator<Long> y = b.numbers.iterator();
         while (x.hasNext() || y.hasNext()) {
@@ -63,27 +67,27 @@ public class Num implements Comparable<Num> {
     }
 
     static Num add(Num a, Num b) {
-        if ((!a.isPositive() && b.isPositive())||(!b.isPositive() && a.isPositive())) {
-            return subtract(a,b);
+        if ((!a.isPositive() && b.isPositive()) || (!b.isPositive() && a.isPositive())) {
+            return subtract(a, b);
         }
-        Num response = unsignedAdd(a,b);
+        Num response = unsignedAdd(a, b);
         //Comes here only if both of the operands have same sign
         response.setPositive(a.isPositive());
         return response;
     }
 
-    static Num unsignedSub(Num a, Num b){
+    static Num unsignedSub(Num a, Num b) {
         long borrow = 0;
         Num response = new Num();
-        Iterator<Long> x,y;
+        Iterator<Long> x, y;
         x = a.numbers.iterator();
         y = b.numbers.iterator();
         while (x.hasNext() || y.hasNext()) {
-            Long operand1 = getNext(x) -  borrow;
+            Long operand1 = getNext(x) - borrow;
             Long operand2 = getNext(y);
             //rest borrow since it has been applied
             borrow = 0;
-            if(operand1 < operand2) {
+            if (operand1 < operand2) {
                 operand1 += a.base;
                 borrow++;
             }
@@ -97,66 +101,122 @@ public class Num implements Comparable<Num> {
     static Num subtract(Num a, Num b) {
         Num response;
         if (!b.isPositive() && a.isPositive()) {
-            return unsignedAdd(a,b);
+            return unsignedAdd(a, b);
         }
 
-        if(!a.isPositive() && b.isPositive()){
-            response = unsignedAdd(a,b);
+        if (!a.isPositive() && b.isPositive()) {
+            response = unsignedAdd(a, b);
             //Comes here only if both of the operands have same sign
             response.setPositive(false);
             return response;
         }
 
-        if(a.compareTo(b) == 0)
-        {
+        if (a.compareTo(b) == 0) {
             response = new Num();
             response.addNum(0L);
             return response;
         }
-        if(a.compareTo(b) > 0){
+        if (a.compareTo(b) > 0) {
             //Check if both a and b are negative, no need to check if b is negative since if the execution
             //comes here both should be of same sign
-            return a.isPositive()?unsignedSub(a, b):unsignedSub(b,a);
-        }
-        else{
+            return a.isPositive() ? unsignedSub(a, b) : unsignedSub(b, a);
+        } else {
             //Check if both a and b are negative
-           response =  a.isPositive()? unsignedSub(b,a) : unsignedSub(a,b);
+            response = a.isPositive() ? unsignedSub(b, a) : unsignedSub(a, b);
             //If a is negative and b is also negative but greater than a, then don't set as negative number
-            if(a.isPositive() && b.isPositive())
-            {
+            if (a.isPositive() && b.isPositive()) {
                 response.setPositive(false);
             }
             return response;
         }
     }
 
-    public Num multiply(long multiplier){
-        Num product = new Num();
-        for(Long term : numbers){
-            Long prod = multiplier*term;
-            product.addNum(prod%base);
-
+    public void shiftLeft(Long shift) {
+        for (int i = 0; i < shift; i++) {
+            ((LinkedList<Long>) numbers).addFirst(0L);
         }
-        return null;
+    }
+
+    public Num multiply(Num b) {
+        Iterator<Long> multiplier = b.numbers.iterator();
+        Num product = new Num();
+        long carry, itrNo = 0;
+
+        while (multiplier.hasNext()) {
+            Num tempProd = new Num();
+            carry = 0;
+            Long value = multiplier.next();
+            tempProd.shiftLeft(itrNo++);
+            for (Long term : numbers) {
+                Long temp = term * value + carry;
+                tempProd.addNum(temp % base);
+                carry = temp / base;
+            }
+            if (carry != 0) {
+                tempProd.addNum(carry);
+            }
+            product = add(product, tempProd);
+        }
+        if(!isPositive() ^ !b.isPositive()){
+            product.setPositive(false);
+        }
+        return product;
+    }
+
+    public Num subNum(long start, long end) {
+        Num number = new Num();
+        if (getSize() < start) {
+            return number;
+        }
+        int index = 0;
+        for (Long term : numbers) {
+            if (index >= start && index < end) {
+                number.addNum(term);
+            }
+            index++;
+        }
+        return number;
     }
 
     // Implement Karatsuba algorithm for excellence credit
     static Num product(Num a, Num b) {
-        int size = Math.max(a.getSize(),b.getSize());
-        if(size < 2){
-            return new Num(Long.valueOf(a.toString()) * Long.valueOf(b.toString()));
+        if (a.getSize() == 1 || b.getSize() == 1) {
+            return a.multiply(b);
         }
-        Num m = new Num(a.base);
-        Num x = Num.divide(a,m);
-        Num y = subtract(a,product(b,m));
-        Num d = divide(b,m);
-      //  Num f = subtract(b,product(d,a.base));
-        return null;
+        int m = Math.max(a.getSize(), b.getSize()) / 2;
+        Num high1 = a.subNum(m, a.getSize());
+        Num low1 = a.subNum(0, m);
+        Num high2 = b.subNum(m, b.getSize());
+        Num low2 = b.subNum(0, m);
+        Num z0 = product(low1, low2);
+        Num z1 = product(add(low1, high1), add(low2, high2));
+        Num z2 = product(high1, high2);
+        Num y0 = power(new Num(a.base), m);
+        Num y1 = power(y0, 2);
+        Num t1 = z2.multiply(y1);
+        Num t2 = y0.multiply(subtract(subtract(z1, z2), z0));
+        Num t3 = add(t1, t2);
+        t3.trim();
+        return add(t3, z0);
+    }
+
+    protected Num clone() {
+        Num cloned = new Num();
+        cloned.setPositive(isPositive());
+        cloned.numbers = (LinkedList<Long>) ((LinkedList<Long>) numbers).clone();
+        return cloned;
     }
 
     // Use divide and conquer
     static Num power(Num a, long n) {
-        return null;
+        Num temp;
+        if( n == 0)
+            return new Num(1);
+        temp = power(a, n/2);
+        if (n%2 == 0)
+            return temp.multiply(temp);
+        else
+            return a.multiply(temp).multiply(temp);
     }
     /* End of Level 1 */
 
@@ -185,18 +245,18 @@ public class Num implements Comparable<Num> {
     // compare "this" to "other": return +1 if this is greater, 0 if equal, -1 otherwise
     public int compareTo(Num other) {
         int value;
-        if(!isPositive() && other.isPositive()){
+        if (!isPositive() && other.isPositive()) {
             return -1;
         }
 
-        if(isPositive() && !other.isPositive()){
-            return  1;
+        if (isPositive() && !other.isPositive()) {
+            return 1;
         }
 
         if (getSize() == other.getSize()) {
             //Start comparing from the last
-            Iterator<Long> curr = numbers.descendingIterator();
-            Iterator<Long> o = other.numbers.descendingIterator();
+            Iterator<Long> curr = ((LinkedList<Long>) numbers).descendingIterator();
+            Iterator<Long> o = ((LinkedList<Long>) other.numbers).descendingIterator();
             long currValue = 0, otherValue = 0;
             //Since both the numbers have same size only one can be checked
             while (curr.hasNext()) {
@@ -240,7 +300,7 @@ public class Num implements Comparable<Num> {
         return output.reverse().toString();
     }
 
-    public int base() {
+    public long base() {
         return base;
     }
 
@@ -248,12 +308,12 @@ public class Num implements Comparable<Num> {
         return positive;
     }
 
-    private void setPositive(boolean positive) {
+    public void setPositive(boolean positive) {
         this.positive = positive;
     }
 
     private void trim() {
-        Iterator<Long> itr = numbers.descendingIterator();
+        Iterator<Long> itr = ((LinkedList<Long>) numbers).descendingIterator();
         while (itr.hasNext()) {
             if (itr.next() != 0) {
                 break;
