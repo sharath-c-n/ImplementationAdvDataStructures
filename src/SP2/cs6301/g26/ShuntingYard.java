@@ -5,7 +5,7 @@ import java.util.Queue;
 import java.util.Stack;
 
 /**
- * Thi class provides a static method to parse an Infix expression and return the corresponding
+ * This class provides a static method to parse an Infix expression and return the corresponding
  * postfix expression. This uses ShuntingYard algorithm.
  * Source : https://en.wikipedia.org/wiki/Shunting-yard_algorithm
  * @author Sharath

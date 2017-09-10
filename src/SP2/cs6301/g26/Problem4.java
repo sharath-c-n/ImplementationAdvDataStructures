@@ -7,6 +7,7 @@ import java.util.Scanner;
 
 /**
  * Created by Ankitha on 9/1/2017.
+ * This is the driver class for recursive and iterative reversal of the singly linked list.
  */
 public class Problem4 {
     public static void main(String[] args) throws NoSuchElementException {
@@ -17,7 +18,7 @@ public class Problem4 {
 
         SinglyLinkedList<Integer> lst = new SinglyLinkedList<>();
         for(int i=1; i<=n; i++) {
-            lst.add(new Integer(i));
+            lst.add(i);
         }
         lst.printList();
         Iterator<Integer> it = lst.iterator();
@@ -39,6 +40,10 @@ public class Problem4 {
                     break;
                 case 3: //Reverse List
                     lst.recReverse();
+                    lst.printList();
+                    break;
+                case 4: //Iterative reverse
+                    lst.itrReverse();
                     lst.printList();
                     break;
                 default:  // Exit loop

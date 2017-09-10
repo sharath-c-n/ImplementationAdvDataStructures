@@ -1,5 +1,8 @@
 package cs6301.g26;
-
+/**
+ * This class provides a static method to sort the singly linked list using merge sort
+ * @author Sharath
+ */
 
 public class SortableList<T extends Comparable<? super T>> extends SinglyLinkedList<T> {
 
@@ -71,7 +74,6 @@ public class SortableList<T extends Comparable<? super T>> extends SinglyLinkedL
 
     /**
      * This method will get the middle element in the given list
-     *
      * @param entry : entry from which the list starts.
      * @return middle entry in the list
      */

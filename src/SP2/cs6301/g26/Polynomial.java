@@ -189,4 +189,15 @@ public class Polynomial {
         return output;
     }
 
+    public static void main(String[] args ){
+        Polynomial a= new Polynomial();
+        Polynomial b = new Polynomial();
+        a.addTerm(1,2);
+        a.addTerm(-2,1);
+        b.addTerm(1,2);
+        b.addTerm(3,1);
+        System.out.println(a);
+        System.out.println(b);
+        System.out.println(a.evaluate(3));
+    }
 }

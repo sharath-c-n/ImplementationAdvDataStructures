@@ -1,12 +1,9 @@
 package cs6301.g26;
 
-import java.lang.reflect.Array;
-import java.util.Arrays;
-
 /**
  * This class provides a custom Qeue implementation with
  * isFull,isEmpty,offer,peek,poll,resize operations on the queue
- * @author Ankitha
+ * @author Ankitha,Sharath
  */
 
 public class CustomQueue<E>{
