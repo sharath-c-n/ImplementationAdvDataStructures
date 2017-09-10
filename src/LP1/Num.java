@@ -132,9 +132,9 @@ public class Num implements Comparable<Num> {
     }
 
     public static Num divide(Num a, long b) {
-        if(b==0)
+        if (b == 0)
             throw new IllegalArgumentException("Divisor is zero");
-        if(a.getSize() < String.valueOf(b).length()){
+        if (a.getSize() < String.valueOf(b).length()) {
             return new Num(0);
         }
         Iterator<Long> itr = ((LinkedList<Long>) a.numbers).descendingIterator();
@@ -190,7 +190,9 @@ public class Num implements Comparable<Num> {
                 }
             }
         }
-        quotient.trim();
+        if (!quotient.isZero()) {
+            quotient.trim();
+        }
         return quotient;
     }
 
@@ -285,14 +287,15 @@ public class Num implements Comparable<Num> {
     /* End of Level 1 */
 
     static Num divide(Num a, Num b) {
-        return reminderOrQuotient(a,b,true);
+        return reminderOrQuotient(a, b, true);
     }
+
     /* Start of Level 2 */
-    static  Num reminderOrQuotient(Num a, Num b,boolean isQuotient) {
-        if(b.isZero()){
+    static Num reminderOrQuotient(Num a, Num b, boolean isQuotient) {
+        if (b.isZero()) {
             throw new IllegalArgumentException("Argument divisor is zero");
         }
-        if(a.getSize() < b.getSize()){
+        if (a.getSize() < b.getSize()) {
             return new Num(0);
         }
         Iterator<Long> itr = ((LinkedList<Long>) a.numbers).descendingIterator();
@@ -324,6 +327,7 @@ public class Num implements Comparable<Num> {
                 if (compareTo == 0) {
                     quotient.shiftLeft((long) multiplier.getSize());
                     add(quotient, multiplier);
+                    dividend = new Num(0);
                 } else {
                     multiplier = getMultiplicant(multiplier, divide(multiplier, 2), b, dividend);
                     divisor = product(b, multiplier);
@@ -333,8 +337,10 @@ public class Num implements Comparable<Num> {
                 }
             }
         }
-        quotient.trim();
-        return isQuotient?quotient:dividend;
+        if (!quotient.isZero()) {
+            quotient.trim();
+        }
+        return isQuotient ? quotient : dividend;
     }
 
     private static Num getMultiplicant(Num high, Num low, Num divisor, Num dividend) {
@@ -356,7 +362,7 @@ public class Num implements Comparable<Num> {
     }
 
     static Num mod(Num a, Num b) {
-        return reminderOrQuotient(a,b,false);
+        return reminderOrQuotient(a, b, false);
     }
 
     // Use divide and conquer
@@ -364,11 +370,11 @@ public class Num implements Comparable<Num> {
         Num temp;
         if (n.isZero())
             return new Num(1);
-        temp = power(a, divide(n , 2));
-        if (mod(n,new Num(2)).isZero())
-            return temp.multiply(temp);
+        temp = power(a, divide(n, 2));
+        if (mod(n, new Num(2)).isZero())
+            return product(temp, temp);
         else
-            return a.multiply(temp).multiply(temp);
+            return product(product(a, temp), temp);
     }
 
     static Num squareRoot(Num a) {
