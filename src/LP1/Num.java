@@ -286,14 +286,15 @@ public class Num implements Comparable<Num> {
     }
     /* End of Level 1 */
 
-    static Num abs(Num a){
+    static Num abs(Num a) {
         Num unSigned = a.clone();
         unSigned.setPositive(true);
         return unSigned;
     }
+
     static Num divide(Num a, Num b) {
         Num quotient = reminderOrQuotient(abs(a), abs(b), true);
-        if(a.isPositive() ^ b.isPositive()){
+        if (a.isPositive() ^ b.isPositive()) {
             quotient.setPositive(false);
         }
         return quotient;
@@ -387,7 +388,28 @@ public class Num implements Comparable<Num> {
     }
 
     static Num squareRoot(Num a) {
-        return null;
+        // Base Cases
+        Num one = new Num(1);
+        if (a.isZero() || a.compareTo(one) == 0) {
+            return a;
+        }
+
+        Num left = one.clone();
+        Num right = a;
+        Num sqrt = new Num(0);
+        while (left.compareTo(right) <= 0) {
+            Num mid = divide(add(left, right), 2);
+            if (product(mid, mid).compareTo(a) == 0) {
+                return mid;
+            }
+            if (product(mid, mid).compareTo(a) < 0) {
+                left = add(mid, one);
+                sqrt = mid;
+            } else {
+                right = subtract(mid, one);
+            }
+        }
+        return sqrt;
     }
     /* End of Level 2 */
 
