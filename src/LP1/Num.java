@@ -286,8 +286,17 @@ public class Num implements Comparable<Num> {
     }
     /* End of Level 1 */
 
+    static Num abs(Num a){
+        Num unSigned = a.clone();
+        unSigned.setPositive(true);
+        return unSigned;
+    }
     static Num divide(Num a, Num b) {
-        return reminderOrQuotient(a, b, true);
+        Num quotient = reminderOrQuotient(abs(a), abs(b), true);
+        if(a.isPositive() ^ b.isPositive()){
+            quotient.setPositive(false);
+        }
+        return quotient;
     }
 
     /* Start of Level 2 */
@@ -362,7 +371,7 @@ public class Num implements Comparable<Num> {
     }
 
     static Num mod(Num a, Num b) {
-        return reminderOrQuotient(a, b, false);
+        return reminderOrQuotient(abs(a), abs(b), false);
     }
 
     // Use divide and conquer
