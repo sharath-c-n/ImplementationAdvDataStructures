@@ -41,9 +41,26 @@ public class Num implements Comparable<Num> {
         numbers = new LinkedList<>();
     }
 
+    /**
+     * Adds a number to the back of the current numbers list.
+     * Make sure that the x is withing the base, that is x%base should had been done already
+     *
+     * @param x : the number to be added
+     */
     public void addNum(Long x) {
         numbers.add(x);
     }
+
+    /**
+     * Adds a number to the front of the current numbers list(units place).
+     * Make sure that the x is withing the base, that is x%base should had been done already
+     *
+     * @param x : the number to be added
+     */
+    public void addFront(Long x) {
+        ((LinkedList<Long>) numbers).addFirst(x);
+    }
+
 
     int getSize() {
         return numbers.size();
@@ -92,6 +109,7 @@ public class Num implements Comparable<Num> {
                 borrow++;
             }
             Long diff = operand1 - operand2;
+            //Will always be less than base hence no need to do mod
             response.addNum(diff);
         }
         response.trim();
@@ -132,65 +150,58 @@ public class Num implements Comparable<Num> {
     }
 
     public static Num divide(Num a, long b) {
-        if (b == 0)
-            throw new IllegalArgumentException("Divisor is zero");
-        if (a.getSize() < String.valueOf(b).length()) {
+        int compareTo;
+        if (b == 0) {
+            throw new IllegalArgumentException("Argument divisor is zero");
+        }
+        compareTo = a.compareTo(new Num(b));
+        if (compareTo < 0) {
             return new Num(0);
+        }
+        if (compareTo == 0) {
+            return new Num(1);
         }
         Iterator<Long> itr = ((LinkedList<Long>) a.numbers).descendingIterator();
         Num quotient = new Num();
-        Num dividend = new Num(0);
+        Num dividend = new Num();
         Num numB = new Num(b);
-        int compareTo;
-        long next;
         while (itr.hasNext()) {
-            next = itr.next();
-            dividend.shiftLeft((long) String.valueOf(next).length());
-            dividend = add(dividend, new Num(next));
-            dividend.trim();
+            dividend.addFront(itr.next());
             compareTo = dividend.compareTo(numB);
             if (compareTo < 0 || dividend.isZero()) {
                 quotient.shiftLeft(1L);
-            } else if (compareTo == 0) {
-                quotient.shiftLeft(1L);
-                quotient = add(quotient, new Num(1));
+            }
+            else if (compareTo == 0)
+            {
+                quotient.addFront(1L);
                 dividend = new Num(0);
-            } else {
-                long multiplier = 1;
-                long divisor;
-                while (compareTo > 0) {
-                    multiplier *= 2;
-                    divisor = b * multiplier;
-                    compareTo = dividend.compareTo(new Num(divisor));
-                }
-                if (compareTo == 0) {
-                    quotient.shiftLeft((long) String.valueOf(multiplier).length());
-                    quotient = add(quotient, new Num(multiplier));
-                    dividend = new Num(0L);
-                } else {
-                    long high = multiplier;
-                    long low = multiplier / 2;
-                    long mid = 1;
-                    while (high > low) {
-                        mid = low + (high - low) / 2;
-                        compareTo = dividend.compareTo(new Num(b * mid));
-                        if (compareTo == 0 || (compareTo > 0 && dividend.compareTo(new Num(b * (mid + 1))) < 0)) {
-                            break;
-                        }
-                        if (compareTo > 0) {
-                            low = mid;
-                        } else {
-                            high = mid;
-                        }
+            }
+            else
+            {
+                long high = a.base;
+                long low = 1;
+                long mid = 1;
+                while (high > low) {
+                    mid = low + (high - low) / 2;
+                    compareTo = dividend.compareTo(new Num(b * mid));
+                    if (compareTo == 0 || (compareTo > 0 && dividend.compareTo(new Num(b * (mid + 1))) < 0))
+                    {
+                        break;
                     }
-                    divisor = b * mid;
-                    dividend = subtract(dividend, new Num(divisor));
-                    quotient.shiftLeft((long) String.valueOf(mid).length());
-                    quotient = add(quotient, new Num(mid));
+                    if (compareTo > 0) {
+                        low = mid;
+                    } else {
+                        high = mid;
+                    }
                 }
+                Long divisor = b * mid;
+                dividend = subtract(dividend, new Num(divisor));
+                quotient.shiftLeft((long) String.valueOf(mid).length());
+                quotient = add(quotient, new Num(mid));
             }
         }
-        if (!quotient.isZero()) {
+        if (!quotient.isZero())
+        {
             quotient.trim();
         }
         return quotient;
@@ -204,7 +215,7 @@ public class Num implements Comparable<Num> {
     }
 
     public Num multiply(Num b) {
-        Iterator<Long> multiplier = b.numbers.iterator();
+        Iterator<Long> multiplier = b.iterator();
         Num product = new Num();
         long carry, itrNo = 0;
 
@@ -300,57 +311,88 @@ public class Num implements Comparable<Num> {
         return quotient;
     }
 
+
     /* Start of Level 2 */
     static Num reminderOrQuotient(Num a, Num b, boolean isQuotient) {
+        int compareTo;
         if (b.isZero()) {
             throw new IllegalArgumentException("Argument divisor is zero");
         }
-        if (a.getSize() < b.getSize()) {
-            return new Num(0);
+        compareTo = a.compareTo(b);
+        if (compareTo < 0) {
+            return isQuotient ? new Num(0) : a.clone();
+        }
+        if (compareTo == 0) {
+            return isQuotient ? new Num(1) : new Num(0);
         }
         Iterator<Long> itr = ((LinkedList<Long>) a.numbers).descendingIterator();
         Num quotient = new Num();
         Num dividend = new Num(0);
-        Num two = new Num(2);
-        int compareTo;
-        long next;
         while (itr.hasNext()) {
-            next = itr.next();
-            dividend.shiftLeft((long) String.valueOf(next).length());
-            dividend = add(dividend, new Num(next));
+            dividend.addFront(itr.next());
             dividend.trim();
             compareTo = dividend.compareTo(b);
-            if (compareTo < 0 || dividend.isZero()) {
+            if (compareTo < 0 || dividend.isZero())
+            {
                 quotient.shiftLeft(1L);
-            } else if (compareTo == 0) {
-                quotient.shiftLeft(1L);
-                quotient = add(quotient, new Num(1));
+            }
+            else if (compareTo == 0)
+            {
+                quotient.addFront(1L);
                 dividend = new Num(0);
-            } else {
-                Num multiplier = new Num(1);
-                Num divisor;
-                while (compareTo > 0) {
-                    multiplier = product(multiplier, two);
-                    divisor = product(b, multiplier);
-                    compareTo = dividend.compareTo(divisor);
-                }
-                if (compareTo == 0) {
-                    quotient.shiftLeft((long) multiplier.getSize());
-                    add(quotient, multiplier);
-                    dividend = new Num(0);
-                } else {
-                    multiplier = getMultiplicant(multiplier, divide(multiplier, 2), b, dividend);
-                    divisor = product(b, multiplier);
-                    dividend = subtract(dividend, divisor);
-                    quotient.shiftLeft((long) multiplier.getSize());
-                    quotient = add(quotient, multiplier);
-                }
+            }
+            else
+            {
+                Num multiplier = getMultiplicant(new Num(a.base), new Num(1), b, dividend);
+                Num divisor = product(b, multiplier);
+                dividend = subtract(dividend, divisor);
+                quotient.shiftLeft((long) multiplier.getSize());
+                quotient = add(quotient, multiplier);
             }
         }
         if (!quotient.isZero()) {
             quotient.trim();
         }
         return isQuotient ? quotient : dividend;
+    }
+
+    static Num divideR(Num a, Num b) {
+        if (b.isZero())
+            throw new IllegalArgumentException("Divisor is zero");
+        if (a.getSize() < String.valueOf(b).length()) {
+            return new Num(0);
+        }
+        Iterator<Long> itr = ((LinkedList<Long>) a.numbers).descendingIterator();
+        Num quotient = new Num();
+        Num dividend = new Num();
+        while (itr.hasNext()) {
+            while (itr.hasNext()) {
+                int lengt = dividend.numbers.size();
+                long gr = itr.next();
+                if (lengt != 0 || gr != 0)
+                    ((LinkedList<Long>) dividend.numbers).addFirst(gr);
+                if (dividend.compareTo(b) >= 0)
+                    break;
+                ((LinkedList<Long>) quotient.numbers).addFirst(0L);
+            }
+            if (dividend.numbers.size() >= b.numbers.size()) {
+                dividend.trim();
+                for (long i = a.base; i >= 1; i--) {
+                    Num c = product(b, new Num(i));
+                    if (c.compareTo(dividend) <= 0) {
+                        ((LinkedList<Long>) quotient.numbers).addFirst(i);
+                        if (c.compareTo(dividend) == 0)
+                            dividend = new Num();
+                        else
+                            dividend = subtract(dividend, c);
+                        break;
+                    }
+                }
+            }
+            dividend.trim();
+        }
+        quotient.trim();
+        return (quotient);
     }
 
     private static Num getMultiplicant(Num high, Num low, Num divisor, Num dividend) {
@@ -385,6 +427,10 @@ public class Num implements Comparable<Num> {
             return product(temp, temp);
         else
             return product(product(a, temp), temp);
+    }
+
+    public Iterator<Long> iterator() {
+        return numbers.iterator();
     }
 
     static Num squareRoot(Num a) {
