@@ -103,7 +103,6 @@ public class SortableList<T extends Comparable<? super T>> extends SinglyLinkedL
         for (int i = 0; i < size; i++) {
             intArray[i] = size - i;
         }
-        //Shuffle the integer array
         for (int i = 0; i < size; i++) {
             sortableList.add(intArray[i]);
         }
