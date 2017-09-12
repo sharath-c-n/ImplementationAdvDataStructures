@@ -114,7 +114,7 @@ public class L4Driver {
                     addLabelEntry(labelEntries,variable,expression,label,lastLabel);
                     isLabel = false;
                 }
-                variableMap.put(variable,PostfixEvaluatorV2.evaluator(variableMap,expression));
+                variableMap.put(variable,PostfixEvaluatorV2.evaluate(variableMap,expression));
                 System.out.println(variableMap.get(variable));
                 expression.clear();
                 state=0;
@@ -164,7 +164,7 @@ public class L4Driver {
             while (branchTo!= -1){
                 LabelEntry entry = labelTable.get(branchTo);
                 if(entry.getVariable()!=null){
-                    variableMap.put(entry.getVariable(),PostfixEvaluatorV2.evaluator(variableMap,entry.getExpression()));
+                    variableMap.put(entry.getVariable(),PostfixEvaluatorV2.evaluate(variableMap,entry.getExpression()));
                     branchTo = entry.nextLine;
                 }
                 else {

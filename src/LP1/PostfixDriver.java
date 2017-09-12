@@ -59,7 +59,7 @@ public class PostfixDriver {
                 postfixExp.append(s);
             }
             else if(state ==2 && (Token.EOL == t)){
-                Num result = PostfixEvaluator.evaluator(valueMap,postfixExp.toString());
+                Num result = PostfixEvaluator.evaluate(valueMap,postfixExp.toString());
                 valueMap.put(var,result);
                 state = 0;
                 System.out.println(valueMap.get(var));
