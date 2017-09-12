@@ -11,21 +11,22 @@ import java.util.List;
 public class Num implements Comparable<Num> {
 
     public static int defaultBase = 10;  // This can be changed to what you want it to be.
-    private long base = 1000;  // Change as needed
+    private final static int minSupportedBase = 2;
+    private final static int maxSupportedBase = 10000;
+    private long base = 100;  // Change as needed
     private List<Long> numbers;
     private boolean positive = true;
 
     /* Start of Level 1 */
     Num(String s) {
-        Num x = new Num(Long.parseLong(String.valueOf(s.charAt(0))));
-        Num base = new Num(Num.defaultBase);
-        if (s.length() > 0)
-        {
-            for(int i =1;i<s.length();i++){
-                x = add(product(x,base),new Num(Long.parseLong(String.valueOf(s.charAt(i)))));
+        if (s.length() > 0) {
+            Num x = new Num(Long.parseLong(String.valueOf(s.charAt(0))));
+            Num base = new Num(Num.defaultBase);
+            for (int i = 1; i < s.length(); i++) {
+                x = add(product(x, base), new Num(Long.parseLong(String.valueOf(s.charAt(i)))));
             }
+            numbers = x.numbers;
         }
-        numbers = x.numbers;
     }
 
     Num(long x) {
@@ -294,6 +295,7 @@ public class Num implements Comparable<Num> {
         if (isPositive() ^ b.isPositive()) {
             product.setPositive(false);
         }
+        product.trim();
         return product;
     }
 
@@ -326,7 +328,7 @@ public class Num implements Comparable<Num> {
         Num z0 = product(low1, low2);
         Num z1 = product(add(low1, high1), add(low2, high2));
         Num z2 = product(high1, high2);
-        Num y0 = smallPower(new Num(a.base,a.base), m);
+        Num y0 = smallPower(new Num(a.base, a.base), m);
         Num y1 = y0.multiply(y0);
         Num t1 = z2.multiply(y1);
         Num t2 = y0.multiply(unsignedSub(subtract(z1, z2), z0));
@@ -345,32 +347,33 @@ public class Num implements Comparable<Num> {
     }
 
     /*This function is used only in product function to find small powers */
-    private static Num smallPower(Num a,long n)
-    {
+    private static Num smallPower(Num a, long n) {
         Num temp;
         if (n == 0)
-            return new Num(1,a.base);
+            return new Num(1, a.base);
         temp = power(a, n / 2);
         if (n % 2 == 0)
             return temp.multiply(temp);
         else
             return a.multiply(temp).multiply(temp);
     }
+
     // Use divide and conquer
     static Num power(Num a, long n) {
         Num temp;
         if (n == 0)
-            return new Num(1,a.base);
+            return new Num(1, a.base);
         temp = power(a, n / 2);
         if (n % 2 == 0)
-            return product(temp,temp);
+            return product(temp, temp);
         else
-            return product(product(a,temp),temp);
+            return product(product(a, temp), temp);
     }
     /* End of Level 1 */
 
     /**
      * Returns a new number which is positive and a copy of the given number
+     *
      * @param a : Num type
      * @return : positive clone of a
      */
@@ -426,7 +429,7 @@ public class Num implements Comparable<Num> {
         if (!quotient.isZero()) {
             quotient.trim();
         }
-        if(a.isPositive() ^ b.isPositive())
+        if (a.isPositive() ^ b.isPositive())
             quotient.setPositive(false);
         return isQuotient ? quotient : dividend;
     }
@@ -598,24 +601,18 @@ public class Num implements Comparable<Num> {
     // Return number to a string in base 10
     public String toString() {
         StringBuilder output = new StringBuilder();
-        /*for (Long numb : numbers) {
-            output.append(numb);
-        }*/
-        if (base == 10) {
+        if (base == Num.defaultBase) {
             for (Long numb : numbers) {
                 output.append(numb);
             }
         } else {
-            Num power = new Num(1,10);
-            Num  numBase = new Num(base, 10),base10 = new Num(0, 10);
-
-            for (Long numb : numbers) {
-                Num currentNum = new Num(numb,10);
-                Num number = product(currentNum, power);
-                base10 = unsignedAdd(base10, number);
-                power = product(power,numBase);
+            Num x = new Num(0, Num.defaultBase);
+            Num numBase = new Num(base, Num.defaultBase);
+            Iterator<Long> iterator = ((LinkedList<Long>) numbers).descendingIterator();
+            while (iterator.hasNext()) {
+                x = add(product(x, numBase), new Num(iterator.next(), Num.defaultBase));
             }
-            for (Long numb : base10.numbers) {
+            for (Long numb : x.numbers) {
                 output.append(numb);
             }
         }
@@ -630,7 +627,7 @@ public class Num implements Comparable<Num> {
     }
 
     public void setBase(long base) {
-        if (base > 1 && base < 10000)
+        if (base >= minSupportedBase && base <= maxSupportedBase)
             this.base = base;
     }
 
