@@ -36,7 +36,7 @@ public class PostfixDriver {
      */
 
     public static void main(String[] args) throws Exception {
-        Scanner in = new Scanner(new File("./src/LP1/in1-lp1.txt"));
+        Scanner in = new Scanner(new File("./src/LP1/lp1-l3-in1.txt"));
         int state = 0;
         StringBuilder postfixExp = new StringBuilder();
         Map<Character,Num> valueMap = new HashMap<>();

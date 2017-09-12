@@ -11,22 +11,36 @@ import java.util.List;
 public class Num implements Comparable<Num> {
 
     public static int defaultBase = 10;  // This can be changed to what you want it to be.
-    private long base = defaultBase;  // Change as needed
+    private long base = 1000;  // Change as needed
     private List<Long> numbers;
     private boolean positive = true;
 
     /* Start of Level 1 */
     Num(String s) {
-        if (s.length() == 0)
-            throw new NumberFormatException("Zero length Number");
-        numbers = new LinkedList<>();
-        int count = s.length() - 1;
-        while (count >= 0) {
-            numbers.add(Long.parseLong(String.valueOf(s.charAt(count--))));
+        Num x = new Num(Long.parseLong(String.valueOf(s.charAt(0))));
+        Num base = new Num(Num.defaultBase);
+        if (s.length() > 0)
+        {
+            for(int i =1;i<s.length();i++){
+                x = add(product(x,base),new Num(Long.parseLong(String.valueOf(s.charAt(i)))));
+            }
         }
+        numbers = x.numbers;
     }
 
     Num(long x) {
+        numbers = new LinkedList<>();
+        if (x == 0) {
+            numbers.add(0L);
+        }
+        while (x != 0) {
+            numbers.add(x % base);
+            x /= base;
+        }
+    }
+
+    Num(long x, long radix) {
+        base = radix;
         numbers = new LinkedList<>();
         if (x == 0) {
             numbers.add(0L);
@@ -62,13 +76,26 @@ public class Num implements Comparable<Num> {
     }
 
 
+    /**
+     * Returns the number of nodes in the current numbers list.
+     *
+     * @return total numbers of nodes in the list
+     */
     int getSize() {
         return numbers.size();
     }
 
+    /**
+     * Adds 2 number without checking for the sign.
+     *
+     * @param a : Of type Num
+     * @param b : of Type Num
+     * @return : a new number which the sum of a and b
+     */
     static Num unsignedAdd(Num a, Num b) {
         long carry = 0;
         Num response = new Num();
+        response.setBase(a.base);
         long base = a.base();
         Iterator<Long> x = a.numbers.iterator();
         Iterator<Long> y = b.numbers.iterator();
@@ -83,6 +110,13 @@ public class Num implements Comparable<Num> {
         return response;
     }
 
+    /**
+     * Signed addition of the two parameters
+     *
+     * @param a : Of type Num
+     * @param b : of Type Num
+     * @return : a new number which the sum of a and b
+     */
     static Num add(Num a, Num b) {
         if ((!a.isPositive() && b.isPositive()) || (!b.isPositive() && a.isPositive())) {
             return subtract(a, b);
@@ -93,9 +127,17 @@ public class Num implements Comparable<Num> {
         return response;
     }
 
+    /**
+     * Subtracts 2 number without checking for the sign.
+     *
+     * @param a : Of type Num
+     * @param b : of Type Num
+     * @return : a new number which the difference of a and b
+     */
     static Num unsignedSub(Num a, Num b) {
         long borrow = 0;
         Num response = new Num();
+        response.setBase(a.base);
         Iterator<Long> x, y;
         x = a.numbers.iterator();
         y = b.numbers.iterator();
@@ -149,6 +191,13 @@ public class Num implements Comparable<Num> {
         }
     }
 
+    /**
+     * Divides a number with long value
+     *
+     * @param a : the number to be divided
+     * @param b : the divisor
+     * @return : the quotient of type Num
+     */
     public static Num divide(Num a, long b) {
         int compareTo;
         if (b == 0) {
@@ -170,22 +219,17 @@ public class Num implements Comparable<Num> {
             compareTo = dividend.compareTo(numB);
             if (compareTo < 0 || dividend.isZero()) {
                 quotient.shiftLeft(1L);
-            }
-            else if (compareTo == 0)
-            {
+            } else if (compareTo == 0) {
                 quotient.addFront(1L);
                 dividend = new Num(0);
-            }
-            else
-            {
+            } else {
                 long high = a.base;
                 long low = 1;
                 long mid = 1;
                 while (high > low) {
                     mid = low + (high - low) / 2;
                     compareTo = dividend.compareTo(new Num(b * mid));
-                    if (compareTo == 0 || (compareTo > 0 && dividend.compareTo(new Num(b * (mid + 1))) < 0))
-                    {
+                    if (compareTo == 0 || (compareTo > 0 && dividend.compareTo(new Num(b * (mid + 1))) < 0)) {
                         break;
                     }
                     if (compareTo > 0) {
@@ -200,27 +244,40 @@ public class Num implements Comparable<Num> {
                 quotient = add(quotient, new Num(mid));
             }
         }
-        if (!quotient.isZero())
-        {
+        if (!quotient.isZero()) {
             quotient.trim();
         }
         return quotient;
     }
 
 
+    /**
+     * Shifts the nodes in the numbers lift by the specified number of positions
+     *
+     * @param shift : number of positions to shift
+     */
     public void shiftLeft(Long shift) {
         for (int i = 0; i < shift; i++) {
             ((LinkedList<Long>) numbers).addFirst(0L);
         }
     }
 
+    /**
+     * Multiplies the given number with the callee, uses normal n2 algorithm.
+     * Should be used when multiplying small numbers or size 1 or 2.
+     *
+     * @param b : the number to be multiplied
+     * @return : the product of this and the b.
+     */
     public Num multiply(Num b) {
         Iterator<Long> multiplier = b.iterator();
         Num product = new Num();
+        product.setBase(base);
         long carry, itrNo = 0;
 
         while (multiplier.hasNext()) {
             Num tempProd = new Num();
+            tempProd.setBase(b.base);
             carry = 0;
             Long value = multiplier.next();
             tempProd.shiftLeft(itrNo++);
@@ -232,9 +289,9 @@ public class Num implements Comparable<Num> {
             if (carry != 0) {
                 tempProd.addNum(carry);
             }
-            product = add(product, tempProd);
+            product = unsignedAdd(product, tempProd);
         }
-        if (!isPositive() ^ !b.isPositive()) {
+        if (isPositive() ^ b.isPositive()) {
             product.setPositive(false);
         }
         return product;
@@ -242,6 +299,7 @@ public class Num implements Comparable<Num> {
 
     public Num subNum(long start, long end) {
         Num number = new Num();
+        number.setBase(base);
         if (getSize() < start) {
             return number;
         }
@@ -257,7 +315,7 @@ public class Num implements Comparable<Num> {
 
     // Implement Karatsuba algorithm for excellence credit
     static Num product(Num a, Num b) {
-        if (a.getSize() == 1 || b.getSize() == 1) {
+        if (a.getSize() < 5 || b.getSize() < 5) {
             return a.multiply(b);
         }
         int m = Math.max(a.getSize(), b.getSize()) / 2;
@@ -268,35 +326,54 @@ public class Num implements Comparable<Num> {
         Num z0 = product(low1, low2);
         Num z1 = product(add(low1, high1), add(low2, high2));
         Num z2 = product(high1, high2);
-        Num y0 = power(new Num(a.base), m);
-        Num y1 = power(y0, 2);
+        Num y0 = smallPower(new Num(a.base,a.base), m);
+        Num y1 = y0.multiply(y0);
         Num t1 = z2.multiply(y1);
-        Num t2 = y0.multiply(subtract(subtract(z1, z2), z0));
-        Num t3 = add(t1, t2);
+        Num t2 = y0.multiply(unsignedSub(subtract(z1, z2), z0));
+        Num t3 = unsignedAdd(t1, t2);
         t3.trim();
-        return add(t3, z0);
+        z0.trim();
+        return unsignedAdd(t3, z0);
     }
 
     protected Num clone() {
         Num cloned = new Num();
         cloned.setPositive(isPositive());
+        cloned.base = base;
         cloned.numbers = (LinkedList<Long>) ((LinkedList<Long>) numbers).clone();
         return cloned;
     }
 
-    // Use divide and conquer
-    static Num power(Num a, long n) {
+    /*This function is used only in product function to find small powers */
+    private static Num smallPower(Num a,long n)
+    {
         Num temp;
         if (n == 0)
-            return new Num(1);
+            return new Num(1,a.base);
         temp = power(a, n / 2);
         if (n % 2 == 0)
             return temp.multiply(temp);
         else
             return a.multiply(temp).multiply(temp);
     }
+    // Use divide and conquer
+    static Num power(Num a, long n) {
+        Num temp;
+        if (n == 0)
+            return new Num(1,a.base);
+        temp = power(a, n / 2);
+        if (n % 2 == 0)
+            return product(temp,temp);
+        else
+            return product(product(a,temp),temp);
+    }
     /* End of Level 1 */
 
+    /**
+     * Returns a new number which is positive and a copy of the given number
+     * @param a : Num type
+     * @return : positive clone of a
+     */
     static Num abs(Num a) {
         Num unSigned = a.clone();
         unSigned.setPositive(true);
@@ -304,10 +381,11 @@ public class Num implements Comparable<Num> {
     }
 
     static Num divide(Num a, Num b) {
-        Num quotient = reminderOrQuotient(abs(a), abs(b), true);
-        if (a.isPositive() ^ b.isPositive()) {
-            quotient.setPositive(false);
-        }
+        boolean sign = a.isPositive() ^ b.isPositive();
+        a = a.isPositive() ? a : abs(a);
+        b = b.isPositive() ? b : abs(b);
+        Num quotient = reminderOrQuotient(a, b, true);
+        quotient.setPositive(!sign);
         return quotient;
     }
 
@@ -332,27 +410,24 @@ public class Num implements Comparable<Num> {
             dividend.addFront(itr.next());
             dividend.trim();
             compareTo = dividend.compareTo(b);
-            if (compareTo < 0 || dividend.isZero())
-            {
+            if (compareTo < 0 || dividend.isZero()) {
                 quotient.shiftLeft(1L);
-            }
-            else if (compareTo == 0)
-            {
+            } else if (compareTo == 0) {
                 quotient.addFront(1L);
                 dividend = new Num(0);
-            }
-            else
-            {
+            } else {
                 Num multiplier = getMultiplicant(new Num(a.base), new Num(1), b, dividend);
                 Num divisor = product(b, multiplier);
-                dividend = subtract(dividend, divisor);
+                dividend = unsignedSub(dividend, divisor);
                 quotient.shiftLeft((long) multiplier.getSize());
-                quotient = add(quotient, multiplier);
+                quotient = unsignedAdd(quotient, multiplier);
             }
         }
         if (!quotient.isZero()) {
             quotient.trim();
         }
+        if(a.isPositive() ^ b.isPositive())
+            quotient.setPositive(false);
         return isQuotient ? quotient : dividend;
     }
 
@@ -395,6 +470,15 @@ public class Num implements Comparable<Num> {
         return (quotient);
     }
 
+    /**
+     * Does a binary search and returns the multiplier which is just less than the dividend.
+     *
+     * @param high     : usually equal to base
+     * @param low      : usually equal to 1
+     * @param divisor  ;  the number which is the divisor
+     * @param dividend : the number to be divided
+     * @return : Num
+     */
     private static Num getMultiplicant(Num high, Num low, Num divisor, Num dividend) {
         Num mid = new Num(1);
         int compareTo;
@@ -421,9 +505,9 @@ public class Num implements Comparable<Num> {
     static Num power(Num a, Num n) {
         Num temp;
         if (n.isZero())
-            return new Num(1);
+            return new Num(1, a.base);
         temp = power(a, divide(n, 2));
-        if (mod(n, new Num(2)).isZero())
+        if (mod(n, new Num(2, a.base)).isZero())
             return product(temp, temp);
         else
             return product(product(a, temp), temp);
@@ -514,8 +598,26 @@ public class Num implements Comparable<Num> {
     // Return number to a string in base 10
     public String toString() {
         StringBuilder output = new StringBuilder();
-        for (Long numb : numbers) {
+        /*for (Long numb : numbers) {
             output.append(numb);
+        }*/
+        if (base == 10) {
+            for (Long numb : numbers) {
+                output.append(numb);
+            }
+        } else {
+            Num power = new Num(1,10);
+            Num  numBase = new Num(base, 10),base10 = new Num(0, 10);
+
+            for (Long numb : numbers) {
+                Num currentNum = new Num(numb,10);
+                Num number = product(currentNum, power);
+                base10 = unsignedAdd(base10, number);
+                power = product(power,numBase);
+            }
+            for (Long numb : base10.numbers) {
+                output.append(numb);
+            }
         }
         if (!isPositive()) {
             output.append("-");
@@ -525,6 +627,11 @@ public class Num implements Comparable<Num> {
 
     public long base() {
         return base;
+    }
+
+    public void setBase(long base) {
+        if (base > 1 && base < 10000)
+            this.base = base;
     }
 
     public boolean isPositive() {
