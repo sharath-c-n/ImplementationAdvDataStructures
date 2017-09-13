@@ -9,13 +9,14 @@ import java.util.Random;
 public class LP1L1 {
     public static void main(String[] args) {
         //4554496762895730
-       /**Num x = new Num("467674764394927878778900876543211");
-       Num y = new Num(109);
-       //Num z = Num.power(x, y);
-        x.printList();
-        //System.out.println(Num.subtract(x,y));
-        System.out.println(x);*/
-        StringBuilder numerator = new StringBuilder();
+       Num x = new Num("46767476439492787877890089895438975384");
+       Num y = new Num("46767476439492787877890089895438975384");
+       Num z = Num.product(x, y);
+       // x.printList();
+        System.out.println(Num.divide(z,x));
+        System.out.println(Num.divideR(z,x));
+        System.out.println(x);
+       /* StringBuilder numerator = new StringBuilder();
         StringBuilder  denominator = new StringBuilder();
 
         Random random = new Random();
@@ -27,11 +28,12 @@ public class LP1L1 {
             denominator.append(random.nextInt(9));
 
 
-        Num a = new Num(denominator.toString());
+        Num a = new Num(numerator.toString());
+       // Num b = new Num(denominator.toString());
         String op = a.toString();
-        System.out.println(a);
+        System.out.println(op);
         System.out.println(denominator.toString());
-        System.out.println(op.equals(denominator.toString()));
+        System.out.println(op.equals(denominator.toString()));*/
         /*Num c = new Num(denominator.toString());
         System.out.println(Num.divideR(a, c).compareTo(
                 new Num(new BigInteger(numerator.toString()).divide(
