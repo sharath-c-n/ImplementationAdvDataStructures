@@ -14,7 +14,7 @@ public class Num implements Comparable<Num> {
     public static int defaultBase = 10;  // This can be changed to what you want it to be.
     private final static int minSupportedBase = 2;
     private final static int maxSupportedBase = 10000;
-    private long base = 1000;  // Change as needed
+    private long base = 32;  // Change as needed
     private List<Long> numbers;
     private boolean positive = true;
 
@@ -274,7 +274,7 @@ public class Num implements Comparable<Num> {
      *
      * @param shift : number of positions to shift
      */
-    public void shiftLeft(Long shift) {
+    public void shiftLeft(long shift) {
         for (int i = 0; i < shift; i++) {
             ((LinkedList<Long>) numbers).addFirst(0L);
         }
@@ -316,7 +316,7 @@ public class Num implements Comparable<Num> {
         return product;
     }
 
-    public Num subNum(long start, long end) {
+    private Num subNum(long start, long end) {
         Num number = new Num();
         number.setBase(base);
         if (getSize() < start) {
@@ -345,10 +345,12 @@ public class Num implements Comparable<Num> {
         Num z0 = product(low1, low2);
         Num z1 = product(add(low1, high1), add(low2, high2));
         Num z2 = product(high1, high2);
-        Num y0 = smallPower(new Num(a.base, a.base), m);
-        Num y1 = y0.multiply(y0);
+        Num y0 = new Num(a.base, a.base);
+        y0.shiftLeft(m-1);
+        Num y1 = y0.clone();
+        y1.shiftLeft(m);
         Num t1 = z2.multiply(y1);
-        Num t2 = y0.multiply(unsignedSub(subtract(z1, z2), z0));
+        Num t2 = product(unsignedSub(subtract(z1, z2), z0),y0);
         Num t3 = unsignedAdd(t1, t2);
         t3.trim();
         z0.trim();
@@ -361,18 +363,6 @@ public class Num implements Comparable<Num> {
         cloned.base = base;
         cloned.numbers = (LinkedList<Long>) ((LinkedList<Long>) numbers).clone();
         return cloned;
-    }
-
-    /*This function is used only in product function to find small powers */
-    private static Num smallPower(Num a, long n) {
-        Num temp;
-        if (n == 0)
-            return new Num(1, a.base);
-        temp = power(a, n / 2);
-        if (n % 2 == 0)
-            return temp.multiply(temp);
-        else
-            return a.multiply(temp).multiply(temp);
     }
 
     // Use divide and conquer
@@ -436,7 +426,7 @@ public class Num implements Comparable<Num> {
                 quotient.addFront(1L);
                 dividend = new Num(0);
             } else {
-                Num [] multiplier = getMultiplicand(new Num(a.base), new Num(1), b, dividend);
+                Num [] multiplier = getMultiplicand(a.base, 1, b, dividend);
                 Num divisor = multiplier[1];
                 dividend = unsignedSub(dividend, divisor);
                 quotient.shiftLeft((long) multiplier[0].getSize());
@@ -454,7 +444,7 @@ public class Num implements Comparable<Num> {
     static Num divideR(Num a, Num b) {
         if (b.isZero())
             throw new IllegalArgumentException("Divisor is zero");
-        if (a.getSize() < String.valueOf(b).length()) {
+        if (a.getSize() < b.getSize()) {
             return new Num(0);
         }
         Iterator<Long> itr = ((LinkedList<Long>) a.numbers).descendingIterator();
@@ -513,15 +503,17 @@ public class Num implements Comparable<Num> {
      * @return : Num [] : function will return  multiplicand in the first index and product of multiplicant
      * and divisor in the second index.
      */
-    private static Num[] getMultiplicand(Num high, Num low, Num divisor, Num dividend) {
-        Num mid = new Num(1);
+    private static Num[] getMultiplicand(long high, long low, Num divisor, Num dividend) {
+        long mid ;
         Num product = new Num(1);
+        Num multiplicand = null;
         int compareTo;
-        while (high.compareTo(low) > 0) {
-            mid = divide(add(low, high), 2);
-            product = product(divisor, mid);
+        while (high>=low) {
+            mid = (high+low)/2;
+            multiplicand = new Num(mid);
+            product = product(divisor, multiplicand);
             compareTo = dividend.compareTo(product);
-            if (compareTo == 0 || (compareTo > 0 && dividend.compareTo(add(divisor, product)) < 0)) {
+            if (compareTo == 0 || (compareTo > 0 && dividend.compareTo(unsignedAdd(divisor, product)) < 0)) {
                 break;
             }
             if (compareTo > 0) {
@@ -530,7 +522,7 @@ public class Num implements Comparable<Num> {
                 high = mid;
             }
         }
-        return new Num[]{mid,product};
+        return new Num[]{multiplicand,product};
     }
 
     static Num mod(Num a, Num b) {
