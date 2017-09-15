@@ -18,12 +18,12 @@
 23 i = i + 1 ;
 24 a = a - 1 ;
 25 a ? 12 ;
-26 p ;
+p ;
 27 m = m - 1 ;
 28 m ? 9 ;
 ;
 
-Output (not verified yet):
+Output:
 233
 239
 241
