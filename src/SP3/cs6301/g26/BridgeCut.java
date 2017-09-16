@@ -2,11 +2,9 @@
 /**
  * @author Sandeep on 9/14/2017
  */
-package cs6301.g26.graph;
+package cs6301.g26;
 
-import common.g00.Graph;
-
-import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -86,39 +84,8 @@ public class BridgeCut {
         }
     }
 
-    public static void main(String[] args) {
-        Scanner console = new Scanner(System.in);
-        Scanner input = new Scanner(System.in);
-        InputLoop:
-        while (true) {
-            System.out.println("Select one of the below option \n" +
-                    "1) Enter the path of the file which contains the graph details\n" +
-                    "2) Enter the graph details manually");
-            System.out.print("Choice : ");
-            int choice = 1;
-            switch (choice) {
-                case 1:
-                    // System.out.print("Enter the file path : ");
-                    //Flush the newline character that was not consumed by nextInt
-
-                    File file = new File("C:\\Users\\Sandeep\\IdeaProjects\\ImplementationAdvDataStructures\\src\\SP3\\src\\cs6301\\g26\\input.txt");
-                    try {
-                        input = new Scanner(file);
-                    } catch (Exception ex) {
-                        System.out.println("File not found");
-                    }
-
-                    console.close();
-                    break InputLoop;
-                case 2:
-                    System.out.println("Enter the graph details below : ");
-                    input = console;
-                    break InputLoop;
-                default:
-                    System.out.println("Invalid input try again");
-                    break;
-            }
-        }
+    public static void main(String[] args) throws FileNotFoundException {
+        Scanner input = Util.readInput();
         Graph g = Graph.readGraph(input, false);
         BridgeCut bb = new BridgeCut(g);
         List<Graph.Edge> ed = bb.findBridgeCut(g);
@@ -128,7 +95,7 @@ public class BridgeCut {
         System.out.println();
         System.out.println("The Cut Vertices are");
         for (Graph.Vertex v : g) {
-            if (bb.cut_vertices[v.getName()])
+            if (BridgeCut.cut_vertices[v.getName()])
                 System.out.print(v + "  ");
         }
     }

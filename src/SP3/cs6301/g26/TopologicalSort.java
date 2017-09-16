@@ -1,8 +1,5 @@
-package cs6301.g26.graph;
+package cs6301.g26;
 
-import common.g00.Graph;
-
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
 
@@ -19,7 +16,7 @@ public class TopologicalSort {
     been explored so far
      * @return : The list containing the topological ordering if the vertices.
      */
-    public static List topologicalSort1(Graph graph, int vertexCount) {
+    public static List<Graph.Vertex> topologicalSort1(Graph graph, int vertexCount) {
         //visited array : keeps track of visited vertices
         boolean visited[] = new boolean[vertexCount];
         //output is stored the order of highest discovery time
@@ -54,13 +51,14 @@ public class TopologicalSort {
 
 
     /**
-     * This function will run the topological sort on all vertices of the input graph by reducing the incoming edge count.
+     * This function will run the topological sort on all vertices of the input
+     * graph by reducing the incoming edge count.
      * @param graph      : graph whose topological order has to be found
      * @param vertexCount : number of vertex in the input graph
     been explored so far
      * @return : The list containing the topological ordering if the vertices.
      */
-    public static ArrayList topologicalSort2(Graph graph, int vertexCount)
+    public static ArrayList<Integer> topologicalSort2(Graph graph, int vertexCount)
     {
         //parallel array which keeps count of incident edges of each vertex
         int [] incomingEdges = new int[vertexCount];
@@ -93,38 +91,11 @@ public class TopologicalSort {
                 vertexQueue.add(curVertex);
             }
         }
-        return new ArrayList(list);
+        return new ArrayList<Integer>(list);
     }
 
     public static void main(String[] args) throws FileNotFoundException {
-        Scanner console = new Scanner(System.in);
-        Scanner input;
-        InputLoop:
-        while (true) {
-            System.out.println("Select one of the below option \n" +
-                    "1) Enter the path of the file which contains the graph details\n" +
-                    "2) Enter the graph details manually");
-            System.out.print("Choice : ");
-            switch(console.nextInt()){
-                case 1:
-                    System.out.print("Enter the file path : ");
-                    //Flush the newline character that was not consumed by nextInt
-                    console.nextLine();
-                    //Read the file path
-                    String fileName = console.nextLine();
-                    File file = new File(fileName);
-                    input = new Scanner(file);
-                    console.close();
-                    break InputLoop;
-                case 2:
-                    System.out.println("Enter the graph details below : ");
-                    input = console;
-                    break InputLoop;
-                default:
-                    System.out.println("Invalid input try again");
-                    break;
-            }
-        }
+        Scanner input = Util.readInput();
         Graph g = Graph.readGraph(input, true);
           /*Check if the graph has cycles*/
         if (!Cyclic.isCyclic(g)) {
@@ -133,7 +104,7 @@ public class TopologicalSort {
             for (Graph.Vertex vertex : path) {
                 System.out.print(vertex.getName() + " ");
             }
-            System.out.println("connected components"+SCC.SSCCount(g,g.size()));
+            System.out.println("\nconnected components "+SCC.SSCCount(g,g.size()));
         } else {
             System.out.println("Not a valid undirected graph");
         }

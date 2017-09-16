@@ -1,6 +1,4 @@
-package cs6301.g26.graph;
-
-import common.g00.Graph;
+package cs6301.g26;
 
 /**
  * Created by Ankitha on 8/29/2017.
@@ -79,6 +77,15 @@ public class Cyclic {
             }
         }
         return false;
+    }
+
+    /**
+     * Checks if the graph is directed and acyclic.
+     * @param graph input graph
+     * @return : true if graph is a DAG
+     */
+    public static boolean isDAG(Graph graph){
+       return graph.isDirected() && !isCyclic(graph);
     }
 }
 
