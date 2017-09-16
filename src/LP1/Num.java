@@ -11,10 +11,10 @@ import java.util.List;
 
 public class Num implements Comparable<Num> {
 
-    public static int defaultBase = 10;  // This can be changed to what you want it to be.
-    private final static int minSupportedBase = 2;
-    private final static int maxSupportedBase = 10000;
-    private long base = 32;  // Change as needed
+    public static final int defaultBase = 10;
+    private static final int minSupportedBase = 2;
+    private static final int maxSupportedBase = 10000;
+    private long base = defaultBase;
     private List<Long> numbers;
     private boolean positive = true;
 
@@ -40,17 +40,18 @@ public class Num implements Comparable<Num> {
             x /= base;
         }
     }
+
     Num(String s, long radix) {
-        if(radix < minSupportedBase || radix > maxSupportedBase){
+        if (radix < minSupportedBase || radix > maxSupportedBase) {
             throw new InvalidParameterException("Provided radix is not supported, supported radix is between " +
-            minSupportedBase + " and "+ maxSupportedBase);
+                    minSupportedBase + " and " + maxSupportedBase);
         }
         base = radix;
         if (s.length() > 0) {
-            Num x = new Num(Long.parseLong(String.valueOf(s.charAt(0))));
-            Num base = new Num(Num.defaultBase,radix);
+            Num x = new Num(Long.parseLong(String.valueOf(s.charAt(0))),radix);
+            Num base = new Num(Num.defaultBase, radix);
             for (int i = 1; i < s.length(); i++) {
-                x = add(product(x, base), new Num(Long.parseLong(String.valueOf(s.charAt(i))),radix));
+                x = add(product(x, base), new Num(Long.parseLong(String.valueOf(s.charAt(i))), radix));
             }
             numbers = x.numbers;
         }
@@ -189,8 +190,7 @@ public class Num implements Comparable<Num> {
         }
 
         if (a.compareTo(b) == 0) {
-            response = new Num();
-            response.addNum(0L);
+            response = new Num(0,a.base);
             return response;
         }
         if (a.compareTo(b) > 0) {
@@ -243,12 +243,12 @@ public class Num implements Comparable<Num> {
                 long high = a.base;
                 long low = 1;
                 long mid = 1;
-                Long divisor=0L;
+                Long divisor = 0L;
                 while (high > low) {
                     mid = low + (high - low) / 2;
                     divisor = b * mid;
                     compareTo = dividend.compareTo(new Num(divisor));
-                    if (compareTo == 0 || (compareTo > 0 && dividend.compareTo(new Num(divisor+b)) < 0)) {
+                    if (compareTo == 0 || (compareTo > 0 && dividend.compareTo(new Num(divisor + b)) < 0)) {
                         break;
                     }
                     if (compareTo > 0) {
@@ -346,11 +346,11 @@ public class Num implements Comparable<Num> {
         Num z1 = product(add(low1, high1), add(low2, high2));
         Num z2 = product(high1, high2);
         Num y0 = new Num(a.base, a.base);
-        y0.shiftLeft(m-1);
+        y0.shiftLeft(m - 1);
         Num y1 = y0.clone();
         y1.shiftLeft(m);
         Num t1 = z2.multiply(y1);
-        Num t2 = product(unsignedSub(subtract(z1, z2), z0),y0);
+        Num t2 = product(unsignedSub(subtract(z1, z2), z0), y0);
         Num t3 = unsignedAdd(t1, t2);
         t3.trim();
         z0.trim();
@@ -426,7 +426,7 @@ public class Num implements Comparable<Num> {
                 quotient.addFront(1L);
                 dividend = new Num(0);
             } else {
-                Num [] multiplier = getMultiplicand(a.base, 1, b, dividend);
+                Num[] multiplier = getMultiplicand(a.base, 1, b, dividend);
                 Num divisor = multiplier[1];
                 dividend = unsignedSub(dividend, divisor);
                 quotient.shiftLeft((long) multiplier[0].getSize());
@@ -441,58 +441,6 @@ public class Num implements Comparable<Num> {
         return isQuotient ? quotient : dividend;
     }
 
-    static Num divideR(Num a, Num b) {
-        if (b.isZero())
-            throw new IllegalArgumentException("Divisor is zero");
-        if (a.getSize() < b.getSize()) {
-            return new Num(0);
-        }
-        Iterator<Long> itr = ((LinkedList<Long>) a.numbers).descendingIterator();
-        Num quotient = new Num();
-        Num dividend = new Num();
-        while (itr.hasNext()) {
-            while (itr.hasNext()) {
-                int lengt = dividend.numbers.size();
-                long gr = itr.next();
-                if (lengt != 0 || gr != 0)
-                    ((LinkedList<Long>) dividend.numbers).addFirst(gr);
-                int lengt1=dividend.numbers.size();
-                if(lengt1>=b.numbers.size()) {
-                    if (dividend.compareTo(b) >= 0)
-                        break;
-                }
-                ((LinkedList<Long>) quotient.numbers).addFirst(0L);
-            }
-            dividend.trim();
-            if (dividend.numbers.size() >= b.numbers.size()) {
-                long low= 1, high= a.base-1;
-                long res=0;
-                while(low<=high)
-                {
-                    long mid= (low+high)/2;
-                    Num temp = new Num(mid);
-                    Num c =product(b,temp);
-                    if(c.compareTo(dividend)<=0)
-                    {
-                        res=mid;
-                        low=mid+1;
-                    }
-                    else
-                        high=mid-1;
-                }
-                Num as= product(b, new Num(res));
-                ((LinkedList<Long>) quotient.numbers).addFirst(res);
-                if(as.compareTo(dividend)==0)
-                    dividend = new Num();
-                else if( as.compareTo(dividend)<0)
-                    dividend= subtract(dividend,as);
-            }
-            dividend.trim();
-        }
-        quotient.trim();
-        return (quotient);
-    }
-
     /**
      * Does a binary search and returns the multiplier which is just less than the dividend.
      *
@@ -504,12 +452,12 @@ public class Num implements Comparable<Num> {
      * and divisor in the second index.
      */
     private static Num[] getMultiplicand(long high, long low, Num divisor, Num dividend) {
-        long mid ;
+        long mid;
         Num product = new Num(1);
         Num multiplicand = null;
         int compareTo;
-        while (high>=low) {
-            mid = (high+low)/2;
+        while (high >= low) {
+            mid = (high + low) / 2;
             multiplicand = new Num(mid);
             product = product(divisor, multiplicand);
             compareTo = dividend.compareTo(product);
@@ -522,7 +470,7 @@ public class Num implements Comparable<Num> {
                 high = mid;
             }
         }
-        return new Num[]{multiplicand,product};
+        return new Num[]{multiplicand, product};
     }
 
     static Num mod(Num a, Num b) {
@@ -665,9 +613,13 @@ public class Num implements Comparable<Num> {
     }
 
     private void trim() {
+        if(numbers.size() <= 1){
+            return;
+        }
         Iterator<Long> itr = ((LinkedList<Long>) numbers).descendingIterator();
         while (itr.hasNext()) {
-            if (itr.next() != 0) {
+            //make sure that the next node is not 0 and also that this is not the last node
+            if (itr.next() != 0 || !itr.hasNext()) {
                 break;
             }
             itr.remove();

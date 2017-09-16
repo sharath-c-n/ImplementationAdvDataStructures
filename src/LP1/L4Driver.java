@@ -5,6 +5,7 @@ public class L4Driver {
     private Map<Integer, Integer> labelMap;
     private Map<String, Num> variableMap;
     private List<LabelEntry> labelEntries;
+    private int base = Num.defaultBase;
 
     public enum Token {VAR, NUM, OP, EQ, EOL, QUES, COL}
 
@@ -27,6 +28,25 @@ public class L4Driver {
         labelEntries = new ArrayList<>();
     }
 
+    public L4Driver(int base) {
+        labelMap = new HashMap<>();
+        variableMap = new HashMap<>();
+        labelEntries = new ArrayList<>();
+        this.base = base;
+    }
+
+    /**
+     * This function uses state machine to evaluate the input string
+     * State 0 : Is the starting point of SM and expects a variable or a semicolon
+     * State 1 : Expects an equals symbol
+     * State 2 : The next token could be either a Number or a variable, if a varable is received
+     * the state will not be changed untill we receive a semicolon at which point the state
+     * is reset to 0.
+     * State 3 : if we receive a number in state 3 we will go to state 3 and this expects the next token to be
+     * a semicolon.
+     *
+     * @throws Exception : if the input statement is wrong, illegal state exception is thrown.
+     */
     public void runStateMachine(Scanner in) throws Exception {
         int constantsCount = 0;
         String variable = "";
@@ -59,7 +79,7 @@ public class L4Driver {
                 expression.add(variable);
                 expression.add(symbol);
             } else if (state == 3 && Token.NUM == token) {
-                variableMap.put("t" + constantsCount, new Num(symbol));
+                variableMap.put("t" + constantsCount, new Num(symbol,base));
                 expression.add("t" + constantsCount++);
                 state++;
             } else if (state == 3 && Token.VAR == token) {
@@ -73,7 +93,7 @@ public class L4Driver {
             } else if (state == 5 && (Token.VAR == token || Token.OP == token)) {
                 expression.add(symbol);
             } else if (state == 5 && Token.NUM == token) {
-                variableMap.put("t" + constantsCount, new Num(symbol));
+                variableMap.put("t" + constantsCount, new Num(symbol,base));
                 expression.add("t" + constantsCount++);
             } else if (state == 5 && Token.EOL == token) {
                 if (isLabel) {
@@ -114,7 +134,8 @@ public class L4Driver {
                     System.out.println(variableMap.get(entry.variable));
                 }
             } else {
-                executeGoto(entry.expression);
+                int updatePc = evaluateGoto(entry.expression);
+                pc = updatePc!= -1 ? updatePc : pc;
             }
         }
         if(entry !=null){
@@ -149,32 +170,18 @@ public class L4Driver {
         }
     }
 
-    private void executeGoto(Queue<String> expression) {
+    private int evaluateGoto(Queue<String> expression) {
         int label = getBranchValue(expression, variableMap.get(expression.peek()));
         if (label != -1) {
-            executeFromTable(label);
+            return label;
         }
+        return -1;
     }
 
     private void addLabelEntry(String var, Queue<String> expression, int label, boolean isLabel) {
         labelEntries.add(new LabelEntry(new ArrayDeque<>(expression), var,isLabel));
         if(isLabel)
             labelMap.put(label,labelEntries.size()-1 );
-    }
-
-    private void executeFromTable(int branchTo) {
-        while (branchTo != -1 && labelEntries.size() > branchTo) {
-            LabelEntry entry = labelEntries.get(branchTo);
-            if (entry.variable != null) {
-                variableMap.put(entry.variable, PostfixEvaluatorL4.evaluate(variableMap, entry.expression));
-                if(!entry.isLabel){
-                    System.out.println(variableMap.get(entry.variable));
-                }
-                branchTo++;
-            } else {
-                branchTo = getBranchValue(entry.expression, variableMap.get(entry.expression.peek()));
-            }
-        }
     }
 
     private int getBranchValue(Queue<String> infixExp, Num num) {
@@ -196,23 +203,15 @@ public class L4Driver {
         return -1;
     }
 
-    /**
-     * This function uses state machine to evaluate the input string
-     * State 0 : Is the starting point of SM and expects a variable or a semicolon
-     * State 1 : Expects an equals symbol
-     * State 2 : The next token could be either a Number or a variable, if a varable is received
-     * the state will not be changed untill we receive a semicolon at which point the state
-     * is reset to 0.
-     * State 3 : if we receive a number in state 3 we will go to state 3 and this expects the next token to be
-     * a semicolon.
-     *
-     * @param args : not used
-     * @throws Exception : if the input statement is wrong, illegal state exception is thrown.
-     */
+
 
     public static void main(String[] args) throws Exception {
+        int base = Num.defaultBase;
+        if(args.length == 1){
+            base = Integer.parseInt(args[0]);
+        }
         Scanner in = new Scanner(new File("./src/LP1/lp1-l4-in3.txt"));
-        L4Driver l4Driver = new L4Driver();
+        L4Driver l4Driver = new L4Driver(base);
         l4Driver.runStateMachine(in);
     }
 
