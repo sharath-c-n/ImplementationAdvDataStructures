@@ -38,12 +38,13 @@ public class L4Driver {
     /**
      * This function uses state machine to evaluate the input string
      * State 0 : Is the starting point of SM and expects a variable or a semicolon
-     * State 1 : Expects an equals symbol
-     * State 2 : The next token could be either a Number or a variable, if a varable is received
-     * the state will not be changed untill we receive a semicolon at which point the state
+     * State 1 : Expects an equals symbol or a VAR
+     * State 2 : The next token could be either a Number or a variable, if a variable is received
+     * the state will not be changed until we receive a semicolon at which point the state
      * is reset to 0.
      * State 3 : if we receive a number in state 3 we will go to state 3 and this expects the next token to be
      * a semicolon.
+     * State 4
      *
      * @throws Exception : if the input statement is wrong, illegal state exception is thrown.
      */
@@ -211,8 +212,8 @@ public class L4Driver {
             base = Integer.parseInt(args[0]);
         }
         Scanner in = new Scanner(new File("./src/LP1/lp1-l4-in3.txt"));
-        L4Driver l4Driver = new L4Driver(base);
-        l4Driver.runStateMachine(in);
+        LP1L4 LP1L4 = new LP1L4(base);
+        LP1L4.runStateMachine(in);
     }
 
 }

@@ -1,15 +1,13 @@
-// Sample code for Level 2 driver for lp1
-
-// Change following line to your group number
+// G26
 
 public class LP1L2 {
     public static void main(String[] args) {
-	Num x = new Num(999);
-	Num y = new Num("8");
-	Num z = Num.add(x, y);
+	Num x = new Num("32437274782774");
+	Num y = new Num("100000");
+	Num z = Num.divide(x, y);
+
 	System.out.println(z);
-	//Num a = Num.power(x, y);
-	//System.out.println(a);
-	z.printList();
+	System.out.println(x);
+	x.printList();
     }
 }
