@@ -1,4 +1,4 @@
-
+package cs6301.g26;
 // Starter code for lp1.
 
 // Change following line to your group number
@@ -106,8 +106,8 @@ public class Num implements Comparable<Num> {
     /**
      * Adds 2 number without checking for the sign.
      *
-     * @param a : Of type Num
-     * @param b : of Type Num
+     * @param a : Of type cs6301.g26.Num
+     * @param b : of Type cs6301.g26.Num
      * @return : a new number which the sum of a and b
      */
     static Num unsignedAdd(Num a, Num b) {
@@ -131,8 +131,8 @@ public class Num implements Comparable<Num> {
     /**
      * Signed addition of the two parameters
      *
-     * @param a : Of type Num
-     * @param b : of Type Num
+     * @param a : Of type cs6301.g26.Num
+     * @param b : of Type cs6301.g26.Num
      * @return : a new number which the sum of a and b
      */
     static Num add(Num a, Num b) {
@@ -148,8 +148,8 @@ public class Num implements Comparable<Num> {
     /**
      * Subtracts 2 number without checking for the sign.
      *
-     * @param a : Of type Num
-     * @param b : of Type Num
+     * @param a : Of type cs6301.g26.Num
+     * @param b : of Type cs6301.g26.Num
      * @return : a new number which the difference of a and b
      */
     static Num unsignedSub(Num a, Num b) {
@@ -213,7 +213,7 @@ public class Num implements Comparable<Num> {
      *
      * @param a : the number to be divided
      * @param b : the divisor
-     * @return : the quotient of type Num
+     * @return : the quotient of type cs6301.g26.Num
      */
     public static Num divide(Num a, long b) {
         int compareTo;
@@ -381,7 +381,7 @@ public class Num implements Comparable<Num> {
     /**
      * Returns a new number which is positive and a copy of the given number
      *
-     * @param a : Num type
+     * @param a : cs6301.g26.Num type
      * @return : positive clone of a
      */
     static Num abs(Num a) {
@@ -448,7 +448,7 @@ public class Num implements Comparable<Num> {
      * @param low      : usually equal to 1
      * @param divisor  :  the number which is the divisor
      * @param dividend : the number to be divided
-     * @return : Num [] : function will return  multiplicand in the first index and product of multiplicant
+     * @return : cs6301.g26.Num [] : function will return  multiplicand in the first index and product of multiplicant
      * and divisor in the second index.
      */
     private static Num[] getMultiplicand(long high, long low, Num divisor, Num dividend) {

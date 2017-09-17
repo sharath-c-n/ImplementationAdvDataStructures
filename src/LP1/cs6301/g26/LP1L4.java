@@ -1,7 +1,9 @@
-import java.io.File;
+package cs6301.g26;
+
 import java.util.*;
 
-public class L4Driver {
+//Group G26
+public class LP1L4 {
     private Map<Integer, Integer> labelMap;
     private Map<String, Num> variableMap;
     private List<LabelEntry> labelEntries;
@@ -22,13 +24,13 @@ public class L4Driver {
         }
     }
 
-    public L4Driver() {
+    public LP1L4() {
         labelMap = new HashMap<>();
         variableMap = new HashMap<>();
         labelEntries = new ArrayList<>();
     }
 
-    public L4Driver(int base) {
+    public LP1L4(int base) {
         labelMap = new HashMap<>();
         variableMap = new HashMap<>();
         labelEntries = new ArrayList<>();
@@ -211,7 +213,7 @@ public class L4Driver {
         if(args.length == 1){
             base = Integer.parseInt(args[0]);
         }
-        Scanner in = new Scanner(new File("./src/LP1/lp1-l4-in3.txt"));
+        Scanner in = new Scanner(System.in);
         LP1L4 LP1L4 = new LP1L4(base);
         LP1L4.runStateMachine(in);
     }

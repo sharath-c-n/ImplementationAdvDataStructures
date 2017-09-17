@@ -1,4 +1,4 @@
-// G26
+package cs6301.g26;// G26
 
 public class LP1L2 {
     public static void main(String[] args) {

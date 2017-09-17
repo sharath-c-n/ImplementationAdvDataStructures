@@ -1,3 +1,5 @@
+package cs6301.g26;
+
 import cs6301.g26.Operators;
 
 import java.util.ArrayDeque;
@@ -6,7 +8,7 @@ import java.util.Stack;
 
 /**
  * This class provides a static method to parse an Infix expression and return the corresponding
- * expression expression. This uses ShuntingYard algorithm.
+ * expression expression. This uses cs6301.g26.ShuntingYard algorithm.
  * Source : https://en.wikipedia.org/wiki/Shunting-yard_algorithm
  *
  * @author Sharath
