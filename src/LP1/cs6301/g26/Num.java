@@ -20,10 +20,18 @@ public class Num implements Comparable<Num> {
 
     /* Start of Level 1 */
     Num(String s) {
+        int startIndex = 0;
         if (s.length() > 0) {
-            Num x = new Num(Long.parseLong(String.valueOf(s.charAt(0))));
+            if(s.startsWith("-")){
+                setPositive(false);
+                startIndex++;
+                if(s.length() == 1){
+                    return ;
+                }
+            }
+            Num x = new Num(Long.parseLong(String.valueOf(s.charAt(startIndex++))));
             Num base = new Num(Num.defaultBase);
-            for (int i = 1; i < s.length(); i++) {
+            for (int i = startIndex; i < s.length(); i++) {
                 x = add(product(x, base), new Num(Long.parseLong(String.valueOf(s.charAt(i)))));
             }
             numbers = x.numbers;
@@ -35,10 +43,14 @@ public class Num implements Comparable<Num> {
         if (x == 0) {
             numbers.add(0L);
         }
+        if(x<0){
+            setPositive(false);
+        }
         while (x != 0) {
             numbers.add(x % base);
             x /= base;
         }
+
     }
 
     Num(String s, long radix) {
@@ -287,7 +299,7 @@ public class Num implements Comparable<Num> {
      * @param b : the number to be multiplied
      * @return : the product of this and the b.
      */
-    public Num multiply(Num b) {
+    private Num multiply(Num b) {
         Iterator<Long> multiplier = b.iterator();
         Num product = new Num();
         product.setBase(base);
@@ -309,9 +321,7 @@ public class Num implements Comparable<Num> {
             }
             product = unsignedAdd(product, tempProd);
         }
-        if (isPositive() ^ b.isPositive()) {
-            product.setPositive(false);
-        }
+
         product.trim();
         return product;
     }
@@ -333,7 +343,7 @@ public class Num implements Comparable<Num> {
     }
 
     // Implement Karatsuba algorithm for excellence credit
-    static Num product(Num a, Num b) {
+    static Num unsignedProduct(Num a, Num b) {
         if (a.getSize() < 5 || b.getSize() < 5) {
             return a.multiply(b);
         }
@@ -342,20 +352,29 @@ public class Num implements Comparable<Num> {
         Num low1 = a.subNum(0, m);
         Num high2 = b.subNum(m, b.getSize());
         Num low2 = b.subNum(0, m);
-        Num z0 = product(low1, low2);
-        Num z1 = product(add(low1, high1), add(low2, high2));
-        Num z2 = product(high1, high2);
+        Num z0 = unsignedProduct(low1, low2);
+        Num z1 = unsignedProduct(add(low1, high1), add(low2, high2));
+        Num z2 = unsignedProduct(high1, high2);
         Num y0 = new Num(a.base, a.base);
         y0.shiftLeft(m - 1);
         Num y1 = y0.clone();
         y1.shiftLeft(m);
         Num t1 = z2.multiply(y1);
-        Num t2 = product(unsignedSub(subtract(z1, z2), z0), y0);
+        Num t2 = unsignedProduct(unsignedSub(subtract(z1, z2), z0), y0);
         Num t3 = unsignedAdd(t1, t2);
         t3.trim();
         z0.trim();
         return unsignedAdd(t3, z0);
     }
+
+    static Num product(Num a, Num b) {
+        Num product = unsignedProduct(a,b);
+        if (a.isPositive() ^ b.isPositive()) {
+            product.setPositive(false);
+        }
+        return product;
+    }
+
 
     protected Num clone() {
         Num cloned = new Num();
