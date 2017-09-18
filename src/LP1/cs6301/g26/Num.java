@@ -35,6 +35,9 @@ public class Num implements Comparable<Num> {
                 x = add(product(x, base), new Num(Long.parseLong(String.valueOf(s.charAt(i)))));
             }
             numbers = x.numbers;
+            if(isZero()){
+                setPositive(true);
+            }
         }
     }
 
@@ -149,7 +152,7 @@ public class Num implements Comparable<Num> {
      */
     static Num add(Num a, Num b) {
         if ((!a.isPositive() && b.isPositive()) || (!b.isPositive() && a.isPositive())) {
-            return subtract(a, b);
+            return unsignedSub(a, b);
         }
         Num response = unsignedAdd(a, b);
         //Comes here only if both of the operands have same sign
@@ -368,6 +371,9 @@ public class Num implements Comparable<Num> {
     }
 
     static Num product(Num a, Num b) {
+        if(a.isZero() || b.isZero()){
+            return new Num(0);
+        }
         Num product = unsignedProduct(a,b);
         if (a.isPositive() ^ b.isPositive()) {
             product.setPositive(false);
