@@ -39,6 +39,9 @@ public class Num implements Comparable<Num> {
     }
 
     Num(long x) {
+        if(x<0)
+            positive=false;
+        x=Math.abs(x);
         numbers = new LinkedList<>();
         if (x == 0) {
             numbers.add(0L);
@@ -148,9 +151,17 @@ public class Num implements Comparable<Num> {
      * @return : a new number which the sum of a and b
      */
     static Num add(Num a, Num b) {
-        if ((!a.isPositive() && b.isPositive()) || (!b.isPositive() && a.isPositive())) {
-            return subtract(a, b);
+        if ((!a.isPositive() && b.isPositive())) {
+            Num temp=b.clone();
+            temp.positive=false;
+            return subtract(a, temp);
         }
+        else if( (!b.isPositive() && a.isPositive())){
+            Num temp=b.clone();
+            temp.positive=true;
+           return  subtract(a,temp);
+        }
+
         Num response = unsignedAdd(a, b);
         //Comes here only if both of the operands have same sign
         response.setPositive(a.isPositive());
@@ -208,14 +219,12 @@ public class Num implements Comparable<Num> {
         if (a.compareTo(b) > 0) {
             //Check if both a and b are negative, no need to check if b is negative since if the execution
             //comes here both should be of same sign
-            return a.isPositive() ? unsignedSub(a, b) : unsignedSub(b, a);
+           return a.isPositive() ? unsignedSub(a, b) : unsignedSub(b, a);
         } else {
             //Check if both a and b are negative
             response = a.isPositive() ? unsignedSub(b, a) : unsignedSub(a, b);
             //If a is negative and b is also negative but greater than a, then don't set as negative number
-            if (a.isPositive() && b.isPositive()) {
-                response.setPositive(false);
-            }
+            response.setPositive(false);
             return response;
         }
     }
@@ -369,7 +378,7 @@ public class Num implements Comparable<Num> {
 
     static Num product(Num a, Num b) {
         Num product = unsignedProduct(a,b);
-        if (a.isPositive() ^ b.isPositive()) {
+        if (a.isPositive() ^ b.isPositive() && (!product.isZero())) {
             product.setPositive(false);
         }
         return product;
