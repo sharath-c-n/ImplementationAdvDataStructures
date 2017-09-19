@@ -22,11 +22,11 @@ public class Num implements Comparable<Num> {
     Num(String s) {
         int startIndex = 0;
         if (s.length() > 0) {
-            if(s.startsWith("-")){
+            if (s.startsWith("-")) {
                 setPositive(false);
                 startIndex++;
-                if(s.length() == 1){
-                    return ;
+                if (s.length() == 1) {
+                    return;
                 }
             }
             Num x = new Num(Long.parseLong(String.valueOf(s.charAt(startIndex++))));
@@ -35,7 +35,7 @@ public class Num implements Comparable<Num> {
                 x = add(product(x, base), new Num(Long.parseLong(String.valueOf(s.charAt(i)))));
             }
             numbers = x.numbers;
-            if(isZero()){
+            if (isZero()) {
                 setPositive(true);
             }
         }
@@ -45,15 +45,16 @@ public class Num implements Comparable<Num> {
         numbers = new LinkedList<>();
         if (x == 0) {
             numbers.add(0L);
+            return;
         }
-        if(x<0){
+        if (x < 0) {
             setPositive(false);
+            x = Math.abs(x);
         }
         while (x != 0) {
             numbers.add(x % base);
             x /= base;
         }
-
     }
 
     Num(String s, long radix) {
@@ -63,7 +64,7 @@ public class Num implements Comparable<Num> {
         }
         base = radix;
         if (s.length() > 0) {
-            Num x = new Num(Long.parseLong(String.valueOf(s.charAt(0))),radix);
+            Num x = new Num(Long.parseLong(String.valueOf(s.charAt(0))), radix);
             Num base = new Num(Num.defaultBase, radix);
             for (int i = 1; i < s.length(); i++) {
                 x = add(product(x, base), new Num(Long.parseLong(String.valueOf(s.charAt(i))), radix));
@@ -151,8 +152,14 @@ public class Num implements Comparable<Num> {
      * @return : a new number which the sum of a and b
      */
     static Num add(Num a, Num b) {
-        if ((!a.isPositive() && b.isPositive()) || (!b.isPositive() && a.isPositive())) {
-            return unsignedSub(a, b);
+        if ((!a.isPositive() && b.isPositive())) {
+            Num temp = b.clone();
+            temp.positive = false;
+            return subtract(a, temp);
+        } else if ((!b.isPositive() && a.isPositive())) {
+            Num temp = b.clone();
+            temp.positive = true;
+            return subtract(a, temp);
         }
         Num response = unsignedAdd(a, b);
         //Comes here only if both of the operands have same sign
@@ -205,7 +212,7 @@ public class Num implements Comparable<Num> {
         }
 
         if (a.compareTo(b) == 0) {
-            response = new Num(0,a.base);
+            response = new Num(0, a.base);
             return response;
         }
         if (a.compareTo(b) > 0) {
@@ -216,9 +223,7 @@ public class Num implements Comparable<Num> {
             //Check if both a and b are negative
             response = a.isPositive() ? unsignedSub(b, a) : unsignedSub(a, b);
             //If a is negative and b is also negative but greater than a, then don't set as negative number
-            if (a.isPositive() && b.isPositive()) {
-                response.setPositive(false);
-            }
+            response.setPositive(false);
             return response;
         }
     }
@@ -371,10 +376,10 @@ public class Num implements Comparable<Num> {
     }
 
     static Num product(Num a, Num b) {
-        if(a.isZero() || b.isZero()){
+        if (a.isZero() || b.isZero()) {
             return new Num(0);
         }
-        Num product = unsignedProduct(a,b);
+        Num product = unsignedProduct(a, b);
         if (a.isPositive() ^ b.isPositive()) {
             product.setPositive(false);
         }
@@ -638,7 +643,7 @@ public class Num implements Comparable<Num> {
     }
 
     private void trim() {
-        if(numbers.size() <= 1){
+        if (numbers.size() <= 1) {
             return;
         }
         Iterator<Long> itr = ((LinkedList<Long>) numbers).descendingIterator();
