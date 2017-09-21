@@ -1,4 +1,4 @@
-package common.g00;
+package cs6301.g00;
 
 import java.util.Random;
 
