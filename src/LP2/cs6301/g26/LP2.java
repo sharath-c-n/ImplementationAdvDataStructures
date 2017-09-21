@@ -2,7 +2,6 @@
 // change following line to your group number
 package cs6301.g26;
 
-import cs6301.g00.Graph;
 import cs6301.g00.Timer;
 
 import java.util.Scanner;

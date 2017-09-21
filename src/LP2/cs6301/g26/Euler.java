@@ -1,18 +1,15 @@
-
-// change following line to your group number
 package cs6301.g26;
-
-import cs6301.g00.Graph;
 
 import java.util.List;
 import java.util.LinkedList;
 
-public class Euler {
+public class Euler extends GraphAlgorithm<Euler.Vertex>{
     int VERBOSE;
     List<Graph.Edge> tour;
     // Constructor
     Euler(Graph g, Graph.Vertex start) {
-	VERBOSE = 1;
+        super(g);
+        VERBOSE = 1;
 	tour = new LinkedList<>();
     }
 
@@ -31,9 +28,21 @@ public class Euler {
      * "Graph is not strongly connected"
      */
     boolean isEulerian() {
+
 	System.out.println("Graph is not Eulerian");
 	System.out.println("Reason: Graph is not strongly connected");
 	return false;
+    }
+
+    public static boolean isEqlEdgeCount(Graph graph) {
+        boolean isEqual = true;
+        for(Graph.Vertex v : graph){
+            if(v.getRevAdj().size()!=v.getAdj().size()){
+                isEqual = false;
+                break;
+            }
+        }
+        return isEqual;
     }
 
     // Find tours starting at vertices with unexplored edges
@@ -58,5 +67,9 @@ public class Euler {
 
     void setVerbose(int v) {
 	VERBOSE = v;
+    }
+
+    public class Vertex {
+        //Add all the needed attributes i.e parallel array stuff
     }
 }
