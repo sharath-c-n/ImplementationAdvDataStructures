@@ -55,6 +55,10 @@ public class Graph implements Iterable<Graph.Vertex> {
 	    return node[u.name];
 	}
 
+	public static<T> void setVertex(T[] node, Vertex u, T vertex) {
+	     node[u.name] = vertex;
+	}
+
 	/**
 	 * Method to get vertex number.  +1 is needed because [0] is vertex 1.
 	 */

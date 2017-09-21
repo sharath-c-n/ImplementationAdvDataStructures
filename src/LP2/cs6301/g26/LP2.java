@@ -27,7 +27,7 @@ public class LP2 {
             VERBOSE = Integer.parseInt(args[2]);
         }
         Graph g = Graph.readDirectedGraph(in);
-	Graph.Vertex startVertex = g.getVertex(start);
+     	Graph.Vertex startVertex = g.getVertex(start);
 
         Timer timer = new Timer();
 	Euler euler = new Euler(g, startVertex);

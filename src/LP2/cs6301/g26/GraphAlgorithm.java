@@ -14,5 +14,9 @@ public class GraphAlgorithm<T> {
     T getVertex(Graph.Vertex u) {
 	return Graph.Vertex.getVertex(node, u);
     }
+
+    void setVertex(Graph.Vertex u, T vertex) {
+	    Graph.Vertex.setVertex(node, u, vertex);
+    }
 }
 

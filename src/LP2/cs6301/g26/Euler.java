@@ -1,24 +1,38 @@
+/**
+ * Group 26
+ *
+ * @author Ankitha, Sharath, Sandeep
+ */
 package cs6301.g26;
 
-import java.util.List;
-import java.util.LinkedList;
+import java.util.*;
 
-public class Euler extends GraphAlgorithm<Euler.Vertex>{
-    int VERBOSE;
-    List<Graph.Edge> tour;
+public class Euler extends GraphAlgorithm<Euler.Vertex> {
+    private int VERBOSE;
+    private List<Graph.Edge> tour;
+    private Graph.Vertex start;
+
     // Constructor
     Euler(Graph g, Graph.Vertex start) {
         super(g);
         VERBOSE = 1;
-	tour = new LinkedList<>();
+        tour = new LinkedList<>();
+        node = new Vertex[g.size()];
+        // Create array for storing vertex properties
+        for (Graph.Vertex u : g) {
+            setVertex(u, new Vertex(u));
+        }
+        this.start = start == null ? g.getVertex(1) : start;
     }
 
     // To do: function to find an Euler tour
     public List<Graph.Edge> findEulerTour() {
-	findTours();
-	if(VERBOSE > 9) { printTours(); }
-	stitchTours();
-	return tour;
+        findTours();
+        if (VERBOSE > 9) {
+            printTours();
+        }
+        stitchTours();
+        return tour;
     }
 
     /* To do: test if the graph is Eulerian.
@@ -28,25 +42,44 @@ public class Euler extends GraphAlgorithm<Euler.Vertex>{
      * "Graph is not strongly connected"
      */
     boolean isEulerian() {
-
-	System.out.println("Graph is not Eulerian");
-	System.out.println("Reason: Graph is not strongly connected");
-	return false;
-    }
-
-    public static boolean isEqlEdgeCount(Graph graph) {
-        boolean isEqual = true;
-        for(Graph.Vertex v : graph){
-            if(v.getRevAdj().size()!=v.getAdj().size()){
-                isEqual = false;
-                break;
-            }
+        GraphUtil util = new GraphUtil(g);
+        if (!util.isStronglyConnected()) {
+            System.out.println("Graph is not Eulerian");
+            return false;
         }
-        return isEqual;
+        Graph.Vertex vertex = util.inEqlOutEdges();
+        if (vertex != null) {
+            System.out.println("inDegree = " + vertex.adj.size() + ", outDegree =" + vertex.revAdj.size() + " at Vertex" + vertex);
+            System.out.println("Graph is not Eulerian");
+            return false;
+        }
+        return true;
     }
 
     // Find tours starting at vertices with unexplored edges
+    void findTour(Graph.Vertex u, List<Graph.Edge> tour) {
+        Iterator<Graph.Edge> itr = getVertex(u).itr;
+        while (itr.hasNext()) {
+            Graph.Edge e = itr.next();
+            tour.add(e);
+            u = e.otherEnd(u);
+            itr = getVertex(u).itr;
+        }
+    }
+
     void findTours() {
+        //Start the tour from the given vertex
+        Vertex eulerVertex = getVertex(start);
+        eulerVertex.tour = new LinkedList<Graph.Edge>();
+        findTour(start, eulerVertex.tour);
+
+        for (Graph.Vertex vertex : g) {
+            eulerVertex = getVertex(vertex);
+            if (eulerVertex.itr.hasNext()) {
+                eulerVertex.tour = new LinkedList<Graph.Edge>();
+                findTour(vertex, eulerVertex.tour);
+            }
+        }
     }
 
     /* Print tours found by findTours() using following format:
@@ -59,17 +92,50 @@ public class Euler extends GraphAlgorithm<Euler.Vertex>{
      * Just use System.out.print(u) and System.out.print(e)
      */
     void printTours() {
+        for (Graph.Vertex vertex : g) {
+            List<Graph.Edge> currentTour = getVertex(vertex).tour;
+            if (currentTour != null) {
+                System.out.print(vertex + " : ");
+                for (Graph.Edge e : currentTour) {
+                    System.out.print(e);
+                }
+                System.out.print("\n");
+            }
+        }
     }
 
     // Stitch tours into a single tour using the algorithm discussed in class
     void stitchTours() {
+        explore(start);
+    }
+
+    private void explore(Graph.Vertex vertex) {
+        Vertex temp = getVertex(vertex);
+        temp.isExplored = true;
+        for (Graph.Edge e : temp.tour) {
+            tour.add(e);
+            Graph.Vertex otherVertex = e.otherEnd(vertex);
+            Vertex otherEulerVertex = getVertex(otherVertex);
+            if (otherEulerVertex.tour != null && !otherEulerVertex.isExplored) {
+                explore(otherVertex);
+            }
+        }
     }
 
     void setVerbose(int v) {
-	VERBOSE = v;
+        VERBOSE = v;
     }
 
     public class Vertex {
         //Add all the needed attributes i.e parallel array stuff
+        boolean isExplored;
+        List<Graph.Edge> tour;
+        Iterator<Graph.Edge> itr;
+
+        public Vertex(Graph.Vertex v) {
+            this.isExplored = false;
+            this.tour = null;
+            this.itr = v.iterator();
+        }
     }
 }
