@@ -5,23 +5,18 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by Ankitha on 9/13/2017.
- */
 
 /**
- * Created by Ankitha on 8/29/2017.
- * This class contains the SSCCount which returns the count of the
- * number of strongly connected components
+ * @author  Sharath
+ * This class contains graph utility functions
  */
 public class GraphUtil extends GraphAlgorithm<GraphUtil.Vertex> {
 
     public GraphUtil(Graph g) {
         super(g);
         node = new Vertex[g.size()];
-        // Create array for storing vertex properties
         for (Graph.Vertex u : g) {
-            node[u.getName()] = new Vertex();
+            setVertex(u,new Vertex());
         }
     }
 
@@ -85,7 +80,7 @@ public class GraphUtil extends GraphAlgorithm<GraphUtil.Vertex> {
                 topologicalSortUtil(vertex, list);
             }
         }
-        return new ArrayList(list);
+        return new ArrayList<Graph.Vertex>(list);
     }
 
     /**
@@ -94,7 +89,7 @@ public class GraphUtil extends GraphAlgorithm<GraphUtil.Vertex> {
      * @param vertex : graph vertex
      * @param list   : output is stored the order of highest discovery time
      */
-    private void topologicalSortUtil(Graph.Vertex vertex, ArrayDeque list) {
+    private void topologicalSortUtil(Graph.Vertex vertex, ArrayDeque<Graph.Vertex> list) {
         getVertex(vertex).isVisited = true;
         for (Graph.Edge e : vertex) {
             if (!getVertex(e.otherEnd(vertex)).isVisited) {
