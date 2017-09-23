@@ -158,13 +158,7 @@ public class Graph implements Iterable<Graph.Vertex> {
     
     /**
      * Method to add an edge to the graph
-     * 
-     * @param a
-     *            : int - one end of edge
-     * @param b
-     *            : int - other end of edge
-     * @param weight
-     *            : int - the weight of the edge
+     * @param weight : int - the weight of the edge
      */
     public void addEdge(Vertex from, Vertex to, int weight) {
 	Edge e = new Edge(from, to, weight);

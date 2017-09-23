@@ -1,16 +1,13 @@
-
-// change following line to your group number
 package cs6301.g26;
 
 import cs6301.g00.Timer;
-
 import java.util.Scanner;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.List;
 
 public class LP2 {
-    static int VERBOSE = 1;
+    private static int VERBOSE = 1;
     public static void main(String[] args) throws FileNotFoundException {
         Scanner in;
         if (args.length > 0) {

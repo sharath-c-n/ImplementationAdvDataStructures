@@ -20,7 +20,7 @@ public class GraphUtil extends GraphAlgorithm<GraphUtil.Vertex> {
         }
     }
 
-    // reinitialize allows running BFS many times, with different sources
+    // reinitialize allows running multiple algorithms many times.
     void reinitialize() {
         for (Graph.Vertex u : g) {
             Vertex utilVertex = getVertex(u);
@@ -30,7 +30,6 @@ public class GraphUtil extends GraphAlgorithm<GraphUtil.Vertex> {
 
     public class Vertex {
         boolean isVisited;
-
         public Vertex() {
             this.isVisited = false;
         }
@@ -49,28 +48,33 @@ public class GraphUtil extends GraphAlgorithm<GraphUtil.Vertex> {
         reinitialize();
         //Step 1 : find the topological oder of the vertices of the given graph
         List<Graph.Vertex> path = topologicalSort();
-        //Step 2 : do a DFS on the reverse graph by picking each vertex from the path in the topological order
+        reinitialize();
+        //Step 2 : do a reverseDFS on the reverse graph by picking each vertex from the path in the topological order
         //Step 3: Increment the count of Strongly Connected Components when a vertex which is
         // not explored previously is found indicating the discovery of a new component
         for (Graph.Vertex v : path) {
             if (!getVertex(v).isVisited) {
                 count++;
-                DFS(v);
+                reverseDFS(v);
             }
         }
         return count == 1;
     }
 
-    private void DFS(Graph.Vertex v) {
+    private void reverseDFS(Graph.Vertex v) {
         getVertex(v).isVisited = true;
         //reverse graph is got by traversing over the reverse adjacency list which is maintained
         for (Graph.Edge e : v.getRevAdj()) {
             if (!getVertex(e.otherEnd(v)).isVisited) {
-                DFS(e.otherEnd(v));
+                reverseDFS(e.otherEnd(v));
             }
         }
     }
 
+    /**
+     * Finds the topological ordering of the input graph
+     * @return topological order
+     */
     public List<Graph.Vertex> topologicalSort() {
         //output is stored the order of highest discovery time
         reinitialize();
@@ -84,8 +88,7 @@ public class GraphUtil extends GraphAlgorithm<GraphUtil.Vertex> {
     }
 
     /**
-     * This function will run the topological sort on all vertices of the input graph using DFS.
-     *
+     * This function will run the topological sort on all vertices of the input graph.
      * @param vertex : graph vertex
      * @param list   : output is stored the order of highest discovery time
      */
@@ -99,6 +102,11 @@ public class GraphUtil extends GraphAlgorithm<GraphUtil.Vertex> {
         list.addFirst(vertex);
     }
 
+    /**
+     * Checks if indegree and outdegree of all the vertices are same
+     * @return null if all hte vertices have same indegree and out degree count or returns the
+     * first vertex with different indegree and outdegree count
+     */
     Graph.Vertex inEqlOutEdges() {
         for (Graph.Vertex vertex : g) {
             if (vertex.revAdj.size() != vertex.adj.size()) {

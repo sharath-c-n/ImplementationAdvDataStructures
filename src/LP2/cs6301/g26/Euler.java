@@ -44,13 +44,13 @@ public class Euler extends GraphAlgorithm<Euler.Vertex> {
     boolean isEulerian() {
         GraphUtil util = new GraphUtil(g);
         if (!util.isStronglyConnected()) {
-            System.out.println("Graph is not Eulerian");
+            System.out.println("Graph is not strongly connected\nHence graph is not Eulerian");
             return false;
         }
         Graph.Vertex vertex = util.inEqlOutEdges();
         if (vertex != null) {
-            System.out.println("inDegree = " + vertex.adj.size() + ", outDegree =" + vertex.revAdj.size() + " at Vertex" + vertex);
-            System.out.println("Graph is not Eulerian");
+            System.out.println("inDegree = " + vertex.adj.size() + ", outDegree =  " + vertex.revAdj.size() + " at Vertex " + vertex);
+            System.out.println("hence graph is not Eulerian");
             return false;
         }
         return true;
