@@ -9,19 +9,13 @@ public class DLLBST {
     void sortedListToBST() {
         head = list.head.next;
         root = sortedListToBST(list.size);
-        printTree(root);
-        System.out.println();
     }
 
-    private void printTree(DoublyLinkedList.Entry root) {
-        if (root == null)
-            return;
-        printTree(root.prev);
-        System.out.print(root.element + " ");
-        printTree(root.next);
-    }
-
-
+    /**
+     * Converts a sorted list into balanced binary tree
+     * @param n : sorted list
+     * @return : The root of the tree
+     */
     private DoublyLinkedList.Entry sortedListToBST(int n) {
         if (n == 0){
             return null;
@@ -46,6 +40,10 @@ public class DLLBST {
         BSTTosortedList(root);
     }
 
+    /**
+     * Converts the input BST into a sorted list
+     * @param root : root off the BST
+     */
     private void BSTTosortedList(DoublyLinkedList.Entry root) {
         if (root == null)
             return;
@@ -66,6 +64,18 @@ public class DLLBST {
         BSTTosortedList(root.next);
     }
 
+    /**
+     * In-order traversal of the tree
+     * @param root : root node of the tree
+     */
+    private void printTree(DoublyLinkedList.Entry root) {
+        if (root == null)
+            return;
+        printTree(root.prev);
+        System.out.print(root.element + " ");
+        printTree(root.next);
+    }
+
     public static void main(String args[]){
         int startIdx = 1;
         int endIdx = 9;
@@ -73,13 +83,12 @@ public class DLLBST {
         for(int i = startIdx ; i<=endIdx ; i++){
             list.add(i);
         }
-       // list.printList();
         DLLBST dlList = new DLLBST();
         dlList.list = list;
         dlList.sortedListToBST();
+        dlList.printTree(dlList.root);
         dlList.BSTtoSortedList();
         dlList.sortedListToBST();
-        //list.printList();
     }
 
 }

@@ -1,7 +1,10 @@
 package cs6301.g26;
-
 import java.math.BigInteger;
 
+/**
+ * Finds the fibonacci numbers
+ * @author Sharath
+ */
 public class Fibonacci {
     /**
      * A simple linear scan algorithm: Fib[n] = Fin[n-1] + Fin[n-2]; to find the asked
