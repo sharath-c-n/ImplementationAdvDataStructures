@@ -19,22 +19,34 @@ public class QuickSort {
         }
     }
 
-    public static <T extends Comparable<? super T>> void quickSort(T[] arr) {
-        quickSort(arr, 0, arr.length - 1);
+    public static <T extends Comparable<? super T>> void quickSort1(T[] arr) {
+        quickSort1(arr, 0, arr.length - 1);
     }
 
-    public static <T extends Comparable<? super T>> void dualPivotQuickSort(T[] arr) {
-        dualPivotQuickSort(arr, 0, arr.length - 1);
-    }
-
-
-    private static <T extends Comparable<? super T>> void quickSort(T[] arr, int p, int r) {
-        if (p <= r) {
-            int q = partitionType2(arr, p, r);
-            quickSort(arr, p, q - 1);
-            quickSort(arr, q + 1, r);
+    private static <T extends Comparable<? super T>> void quickSort1(T[] arr, int p, int r) {
+        if (p < r) {
+            int q = partitionType1(arr, p, r);
+            quickSort1(arr, p, q - 1);
+            quickSort1(arr, q + 1, r);
         }
     }
+
+
+    public static <T extends Comparable<? super T>> void quickSort2(T[] arr) {
+        quickSort2(arr, 0, arr.length - 1);
+    }
+
+
+
+
+    private static <T extends Comparable<? super T>> void quickSort2(T[] arr, int p, int r) {
+        if (p < r) {
+            int q = partitionType2(arr, p, r);
+            quickSort2(arr, p, q - 1);
+            quickSort2(arr, q + 1, r);
+        }
+    }
+
 
     private static <T extends Comparable<? super T>> int partitionType1(T[] arr, int p, int r) {
         Random rand = new Random();
@@ -74,11 +86,14 @@ public class QuickSort {
 
     }
 
+
+    public static <T extends Comparable<? super T>> void dualPivotQuickSort(T[] arr) {
+        dualPivotQuickSort(arr, 0, arr.length - 1);
+    }
+
     private static <T extends Comparable<? super T>> void dualPivotQuickSort(T[] arr, int p, int r) {
         if (p < r) {
-            int[] pivotes = new int[2];
-            Pivot pivot = dualPartition(arr, p, r, pivotes);
-
+            Pivot pivot = dualPartition(arr, p, r);
             dualPivotQuickSort(arr, p, pivot.left - 1);
             dualPivotQuickSort(arr, pivot.right + 1, r);
             if (arr[pivot.left].compareTo(arr[pivot.right]) != 0)
@@ -86,7 +101,7 @@ public class QuickSort {
         }
     }
 
-    private static <T extends Comparable<? super T>> Pivot dualPartition(T[] arr, int p, int r, int[] pivotes) {
+    private static <T extends Comparable<? super T>> Pivot dualPartition(T[] arr, int p, int r) {
         Random rand = new Random();
         int x = p + rand.nextInt(r - p + 1);
         int y = p + rand.nextInt(r - p + 1);
@@ -147,5 +162,25 @@ public class QuickSort {
         Object temp = arr[x];
         arr[x] = arr[r];
         arr[r] = temp;
+    }
+
+    /**
+     * This function sorts the input array using insertion sort.
+     * @param arr : input array
+     * @param <T> : Generic class which implements comparable interface
+     */
+    public static <T extends Comparable<? super T>> void insertionSort(T[] arr,int left, int right) {
+        for (int i = left + 1; i <= right; ++i) {
+            T key = arr[i];
+            int j = i - 1;
+            /* Move elements of arr[0..i-1], that are
+               greater than key, to one position ahead
+               of their current position */
+            while (j >= left && arr[j].compareTo(key) > 0) {
+                arr[j + 1] = arr[j];
+                j = j - 1;
+            }
+            arr[j + 1] = key;
+        }
     }
 }
