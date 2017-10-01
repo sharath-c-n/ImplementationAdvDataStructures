@@ -7,7 +7,7 @@ import  cs6301.g00.Timer;
 /**
  * Created by Ankitha on 9/30/2017.
  */
-public class sp5Q1Driver {
+public class SP5Q1Driver {
     public static void main(String args[]) {
         System.out.print("Enter the Array Size to be sorted : ");
         Scanner scanner = new Scanner(System.in);

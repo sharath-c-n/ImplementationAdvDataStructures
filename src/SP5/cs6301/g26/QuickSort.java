@@ -54,7 +54,7 @@ public class QuickSort {
 
     }
 
-    private static <T extends Comparable<? super T>> int partitionType2(T[] arr, int p, int r) {
+    public static <T extends Comparable<? super T>> int partitionType2(T[] arr, int p, int r) {
         Random rand = new Random();
         int x = p + rand.nextInt(r - p);
         swap(arr, x, r);
