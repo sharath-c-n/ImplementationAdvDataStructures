@@ -5,8 +5,7 @@ import sun.plugin.dom.exception.InvalidStateException;
 import java.util.Comparator;
 
 /**
- * BinaryHeap:
- *
+ * BinaryHeap: An abstract class which contains the implementation of the heap
  * @author : Sharath
  * 30/09/2017
  */
@@ -21,6 +20,10 @@ public abstract class  BinaryHeap <T extends Comparable<? super T>> implements C
         this.heap = new Object[capacity];
     }
 
+    /**
+     * Adds the input element to the heap
+     * @param x input element
+     */
     public void add(T x){
         if(capacity == heapSize){
             throw new InvalidStateException("Heap Capacity reached");
@@ -43,6 +46,10 @@ public abstract class  BinaryHeap <T extends Comparable<? super T>> implements C
         return (i-1)/2;
     }
 
+    /**
+     * Removes the root
+     * @return
+     */
     public T remove(){
         if(capacity == 0){
             throw new InvalidStateException("Heap Size 0 ");
@@ -53,6 +60,10 @@ public abstract class  BinaryHeap <T extends Comparable<? super T>> implements C
       return (T)min;
     }
 
+    /**
+     * Returns the root element
+     * @return : root element
+     */
     public T peek(){
         return (T)heap[0];
     }

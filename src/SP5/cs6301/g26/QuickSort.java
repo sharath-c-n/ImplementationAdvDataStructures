@@ -3,9 +3,12 @@ package cs6301.g26;
 import java.util.Random;
 
 /**
- * Created by Ankitha on 9/30/2017.
+ * Created by Ankitha,Sharath on 9/30/2017.
  */
 public class QuickSort {
+    /**
+     * pivot class to maintain left and right pivots in dual partition
+     */
     static class Pivot {
         int left;
         int right;
@@ -19,10 +22,20 @@ public class QuickSort {
         }
     }
 
+    /**
+     * Normal quick sort
+     * @param arr input generic array
+     * @param <T>
+     */
     public static <T extends Comparable<? super T>> void quickSort1(T[] arr) {
         quickSort1(arr, 0, arr.length - 1);
     }
 
+    /**
+     * Normal quick sort
+     * @param arr input generic array
+     * @param <T>
+     */
     private static <T extends Comparable<? super T>> void quickSort1(T[] arr, int p, int r) {
         if (p < r) {
             int q = partitionType1(arr, p, r);
@@ -31,14 +44,23 @@ public class QuickSort {
         }
     }
 
-
+    /**
+     * quick sort which second partition type
+     * @param arr input generic array
+     * @param <T>
+     */
     public static <T extends Comparable<? super T>> void quickSort2(T[] arr) {
         quickSort2(arr, 0, arr.length - 1);
     }
 
 
-
-
+    /**
+     *
+     * @param arr input generic array
+     * @param p start of the array
+     * @param r end of the array
+     * @param <T>
+     */
     private static <T extends Comparable<? super T>> void quickSort2(T[] arr, int p, int r) {
         if (p < r) {
             int q = partitionType2(arr, p, r);
@@ -47,7 +69,13 @@ public class QuickSort {
         }
     }
 
-
+    /**
+     * Normal partition algorithm
+     * @param arr input generic array
+     * @param p start of the array
+     * @param r end of the array
+     * @param <T>
+     */
     public static <T extends Comparable<? super T>> int partitionType1(T[] arr, int p, int r) {
         Random rand = new Random();
         int x = p + rand.nextInt(r - p);
@@ -66,6 +94,13 @@ public class QuickSort {
 
     }
 
+    /**
+     * Second algorithm to partition
+     * @param arr input generic array
+     * @param p start of the array
+     * @param r end of the array
+     * @param <T>
+     */
     public static <T extends Comparable<? super T>> int partitionType2(T[] arr, int p, int r) {
         Random rand = new Random();
         int x = p + rand.nextInt(r - p);
@@ -87,10 +122,20 @@ public class QuickSort {
     }
 
 
+    /**
+     * Quick sort using dual pivot
+     * @param arr input array
+     * @param <T>
+     */
     public static <T extends Comparable<? super T>> void dualPivotQuickSort(T[] arr) {
         dualPivotQuickSort(arr, 0, arr.length - 1);
     }
 
+    /**
+     * Quick sort using dual pivot
+     * @param arr input array
+     * @param <T>
+     */
     private static <T extends Comparable<? super T>> void dualPivotQuickSort(T[] arr, int p, int r) {
         if (p < r) {
             Pivot pivot = dualPartition(arr, p, r);
@@ -101,6 +146,11 @@ public class QuickSort {
         }
     }
 
+    /**
+     * dual pivot partition algorithm
+     * @param arr input array
+     * @param <T>
+     */
     private static <T extends Comparable<? super T>> Pivot dualPartition(T[] arr, int p, int r) {
         Random rand = new Random();
         int x = p + rand.nextInt(r - p + 1);
@@ -111,6 +161,7 @@ public class QuickSort {
 
         swap(arr, p, x);
         swap(arr, r, y);
+        //make sure x1>=x2
         if (arr[p].compareTo(arr[r]) > 0) {
             swap(arr, p, r);
         }

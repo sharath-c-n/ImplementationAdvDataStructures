@@ -1,8 +1,8 @@
 package cs6301.g26;
 
 /**
- * MinHeap:
- *
+ * MinHeap:Extends the Binary heap and implements min heap by implementing the
+ * comparator function
  * @author : Sharath
  * 30/09/2017
  */
