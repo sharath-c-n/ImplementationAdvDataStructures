@@ -14,9 +14,8 @@ import java.util.Scanner;
 public class SPQ3Driver {
 
     public static void minHeap(Integer genericArray[], int k) {
+        int arr[] = new int[k];
         MinHeap<Integer> minHeap = new MinHeap<>(genericArray.length);
-        Timer timer = new Timer();
-        timer.start();
         for (int i = 0; i < k; i++) {
             minHeap.add(genericArray[i]);
         }
@@ -26,24 +25,23 @@ public class SPQ3Driver {
                 minHeap.add(genericArray[i]);
             }
         }
-        System.out.println("K largest elements using MinHeap: " + timer.end());
+        for(int i=0;i<k;i++){
+            arr[i] = minHeap.remove();
+        }
     }
 
 
     public static void maxHeap(Integer genericArray[], int k) {
-
         MaxHeap<Integer> maxHeap = new MaxHeap<>(genericArray.length);
-        Timer timer = new Timer();
-        timer.start();
         for (int i : genericArray) {
             maxHeap.add(genericArray[i]);
         }
-        System.out.println("K largest elements using MaxHeap: "+timer.end());
     }
 
     public static void main(String args[]) {
         System.out.println("Enter the Array Size to be sorted : ");
         Scanner scanner = new Scanner(System.in);
+        SelectAlgorithm s = new SelectAlgorithm();
         int arraySize = scanner.nextInt();
         System.out.println("Enter K : ");
         int k = scanner.nextInt();
@@ -52,12 +50,17 @@ public class SPQ3Driver {
             genericArray[i] = i;
         }
         Shuffle.shuffle(genericArray);
-        maxHeap(genericArray,k);
-        minHeap(genericArray,k);
         Timer timer = new Timer();
         timer.start();
-        //Shuffle the integer array
-        SelectAlgorithm s = new SelectAlgorithm();
+        maxHeap(genericArray,k);
+        System.out.println("K largest elements using MaxHeap: "+timer.end());
+
+        timer.start();
+        minHeap(genericArray,k);
+        System.out.println("K largest elements using MinHeap: " + timer.end());
+
+
+        timer.start();
         Integer [] output = s.select(genericArray, k);
         System.out.println("K largest elements using select algorithm: "+ timer.end());
     }

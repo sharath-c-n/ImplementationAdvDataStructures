@@ -9,7 +9,7 @@ import java.util.Arrays;
  * 30/09/2017
  */
 public class SelectAlgorithm {
-    public int threshold = 6;
+    public int threshold = 5;
 
     public <T extends Comparable<? super T>> T[] select(T[] arr, int k) {
         int n = arr.length;

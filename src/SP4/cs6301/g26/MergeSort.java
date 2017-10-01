@@ -152,8 +152,8 @@ public class MergeSort {
             } else {
                  /*Avoiding over flow*/
                 int mid = left + (right - left) / 2;
-                mergeSortWithTemp(tmp, arr, left, mid);
-                mergeSortWithTemp(tmp, arr, mid + 1, right);
+                mergeSortWithCopy(tmp, arr, left, mid);
+                mergeSortWithCopy(tmp, arr, mid + 1, right);
                 mergeWithCopy(tmp, left, mid, right, arr);
             }
 
