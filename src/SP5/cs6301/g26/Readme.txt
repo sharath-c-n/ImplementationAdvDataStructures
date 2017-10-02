@@ -12,3 +12,5 @@ MaxHeap,SelectAlgorithm and the driver class is SP5Q3Driver.
 
 Solution 4: The solution file is QuickSort.java (dual pivot) and the driver class is SP5Q4Driver which
 contains mergeSort function as well.
+
+solution 5: The solution files are ExternalMergeSort.java and ExternalQuickSort.java and the driver class is ExternalSorting.java. 
