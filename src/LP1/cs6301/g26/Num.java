@@ -253,6 +253,7 @@ public class Num implements Comparable<Num> {
         Num numB = new Num(b);
         while (itr.hasNext()) {
             dividend.addFront(itr.next());
+            dividend.trim();
             compareTo = dividend.compareTo(numB);
             if (compareTo < 0 || dividend.isZero()) {
                 quotient.shiftLeft(1L);
@@ -264,7 +265,7 @@ public class Num implements Comparable<Num> {
                 long low = 1;
                 long mid = 1;
                 Long divisor = 0L;
-                while (high > low) {
+                while (high >= low) {
                     mid = low + (high - low) / 2;
                     divisor = b * mid;
                     compareTo = dividend.compareTo(new Num(divisor));
@@ -272,9 +273,9 @@ public class Num implements Comparable<Num> {
                         break;
                     }
                     if (compareTo > 0) {
-                        low = mid;
+                        low = mid+1;
                     } else {
-                        high = mid;
+                        high = mid-1;
                     }
                 }
                 dividend = subtract(dividend, new Num(divisor));
@@ -495,9 +496,9 @@ public class Num implements Comparable<Num> {
                 break;
             }
             if (compareTo > 0) {
-                low = mid;
+                low = mid+1;
             } else {
-                high = mid;
+                high = mid-1;
             }
         }
         return new Num[]{multiplicand, product};
@@ -540,6 +541,9 @@ public class Num implements Comparable<Num> {
             }
             if (product(mid, mid).compareTo(a) < 0) {
                 left = add(mid, one);
+                if(product(left,left).compareTo(a)>0){
+                    return mid;
+                }
                 sqrt = mid;
             } else {
                 right = subtract(mid, one);
