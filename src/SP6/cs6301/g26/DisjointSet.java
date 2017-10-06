@@ -1,8 +1,7 @@
 package cs6301.g26;
 
 /**
- * DisjointSet:
- *
+ * DisjointSet: ADT for sets
  * @author : Sharath
  * 03/10/2017
  */

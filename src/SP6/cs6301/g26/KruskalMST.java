@@ -1,5 +1,7 @@
-
-/* Ver 1.0: Starter code for Kruskal's MST algorithm */
+/**
+ * KruskalMST
+ * @author : sharath
+ */
 
 package cs6301.g26;
 
@@ -50,6 +52,10 @@ public class KruskalMST extends GraphAlgorithm<KruskalMST.Node> implements Disjo
             setVertex(vertex, new Node(vertex));
     }
 
+    /**
+     * Implementation of  kruskal algorithm
+     * @return : sum of all weights of the minimum spanning tree
+     */
     public int kruskal() {
         int wmst = 0;
         PriorityQueue<CustomGraph.Edge> pq = new PriorityQueue<>(Comparator.comparingInt(x -> x.weight));

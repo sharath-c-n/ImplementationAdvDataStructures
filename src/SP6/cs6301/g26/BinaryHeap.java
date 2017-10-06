@@ -1,6 +1,8 @@
-// Ver 1.0:  Starter code for bounded size Binary Heap implementation
-
 package cs6301.g26;
+
+/**
+ * @author Ankitha
+ */
 
 import cs6301.g00.Shuffle;
 import cs6301.g00.Timer;
