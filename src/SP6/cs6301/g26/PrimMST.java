@@ -11,7 +11,7 @@ import java.util.Scanner;
 import java.io.FileNotFoundException;
 import java.io.File;
 
-public class PrimMST extends GraphAlgorithm {
+public class PrimMST extends GraphAlgorithm<PrimMST.Node> {
     static final int Infinity = Integer.MAX_VALUE;
 
     //The below class can be simplified for Prim1 implementation by removing unwanted  fields
@@ -47,25 +47,33 @@ public class PrimMST extends GraphAlgorithm {
             setVertex(vertex, new Node(vertex));
     }
 
+    public void resetNodes() {
+        for (Node n : node) {
+            n.seen = false;
+            n.parent = null;
+            n.d = Infinity;
+        }
+    }
+
     public int prim1(CustomGraph.Vertex s) {
         int wmst = 0;
         PriorityQueue<CustomGraph.Edge> pq = new PriorityQueue<>(Comparator.comparingInt(x -> x.weight));
-        ((Node) getVertex(s)).seen = true;
-        ((Node) getVertex(s)).parent = null;
+        getVertex(s).seen = true;
+        getVertex(s).parent = null;
         for (CustomGraph.Edge e : s) {
             pq.add(e);
         }
         while (!pq.isEmpty()) {
             CustomGraph.Edge edge = pq.poll();
-            if (((Node) getVertex(edge.from)).seen) {
-                Node toVertex = ((Node) getVertex(edge.to));
+            if (getVertex(edge.from).seen) {
+                Node toVertex = getVertex(edge.to);
                 if (toVertex.seen)
                     continue;
                 toVertex.seen = true;
                 toVertex.parent = edge.from;
                 wmst += edge.weight;
                 for (CustomGraph.Edge e : edge.to) {
-                    if (!((Node) getVertex(e.otherEnd(edge.to))).seen)
+                    if (!getVertex(e.otherEnd(edge.to)).seen)
                         pq.add(e);
                 }
             }
@@ -75,15 +83,16 @@ public class PrimMST extends GraphAlgorithm {
 
     public int prim2(CustomGraph.Vertex s) {
         int wmst = 0;
+        resetNodes();
         Node pqArray[] = new Node[g.size()];
-        ((Node) getVertex(s)).d = 0;
+        getVertex(s).d = 0;
         IndexedBinaryHeap<PrimMST.Node> pq = new IndexedBinaryHeap<>(pqArray, Comparator.comparingInt(x -> x.d), g.size());
         while (!pq.isEmpty()) {
             Node u = pq.remove();
             u.seen = true;
             wmst += u.d;
             for (CustomGraph.Edge edge : u.graphVertex) {
-                Node v = (Node) getVertex(edge.otherEnd(u.graphVertex));
+                Node v = getVertex(edge.otherEnd(u.graphVertex));
                 if (!v.seen && edge.weight < v.d) {
                     v.d = edge.weight;
                     v.parent = u.graphVertex;

@@ -11,15 +11,15 @@ import java.util.Scanner;
 import java.io.FileNotFoundException;
 import java.io.File;
 
-public class KruskalMST extends GraphAlgorithm<KruskalMST.Node> implements DisjointSet<KruskalMST.Node>{
+public class KruskalMST extends GraphAlgorithm<KruskalMST.Node> implements DisjointSet<KruskalMST.Node> {
 
     @Override
     public Node findSet(Node u) {
         Node vertex;
-        if(u == u.parent)
+        if (u == u.parent)
             vertex = u;
-        else{
-            vertex= findSet(u.parent);
+        else {
+            vertex = findSet(u.parent);
             //Set compression
             u.parent = vertex;
         }
@@ -36,8 +36,9 @@ public class KruskalMST extends GraphAlgorithm<KruskalMST.Node> implements Disjo
         Node parent;
         CustomGraph.Vertex parentGraphNode;
         CustomGraph.Vertex graphNode;
-        Node(CustomGraph.Vertex vertex){
-            this.parent =  this;
+
+        Node(CustomGraph.Vertex vertex) {
+            this.parent = this;
             this.graphNode = vertex;
         }
     }
@@ -50,21 +51,21 @@ public class KruskalMST extends GraphAlgorithm<KruskalMST.Node> implements Disjo
     }
 
     public int kruskal() {
-	int wmst = 0;
+        int wmst = 0;
         PriorityQueue<CustomGraph.Edge> pq = new PriorityQueue<>(Comparator.comparingInt(x -> x.weight));
-        for(CustomGraph.Vertex vertex:g){
-            for(CustomGraph.Edge edge : vertex){
+        for (CustomGraph.Vertex vertex : g) {
+            for (CustomGraph.Edge edge : vertex) {
                 pq.add(edge);
             }
         }
 
-        while (!pq.isEmpty()){
+        while (!pq.isEmpty()) {
             CustomGraph.Edge edge = pq.remove();
-            if(findSet(getVertex(edge.to))!= findSet(getVertex(edge.from))){
+            if (findSet(getVertex(edge.to)) != findSet(getVertex(edge.from))) {
                 Node toVertex = getVertex(edge.to);
                 toVertex.parentGraphNode = edge.from;
-                union(getVertex(edge.from),toVertex);
-                wmst+=edge.weight;
+                union(getVertex(edge.from), toVertex);
+                wmst += edge.weight;
             }
         }
 
@@ -73,7 +74,7 @@ public class KruskalMST extends GraphAlgorithm<KruskalMST.Node> implements Disjo
 
 
     public static void main(String[] args) throws FileNotFoundException {
-	Scanner in;
+        Scanner in;
 
         if (args.length > 0) {
             File inputFile = new File(args[0]);
@@ -85,10 +86,10 @@ public class KruskalMST extends GraphAlgorithm<KruskalMST.Node> implements Disjo
         CustomGraph g = CustomGraph.readGraph(in);
         CustomGraph.Vertex s = g.getVertex(1);
 
-	Timer timer = new Timer();
-	KruskalMST mst = new KruskalMST(g);
-	int wmst = mst.kruskal();
-	timer.end();
+        Timer timer = new Timer();
+        KruskalMST mst = new KruskalMST(g);
+        int wmst = mst.kruskal();
+        timer.end();
         System.out.println(wmst);
     }
 }
