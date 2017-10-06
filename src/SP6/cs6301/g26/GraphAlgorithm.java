@@ -18,5 +18,6 @@ public class GraphAlgorithm<T> {
     void setVertex(CustomGraph.Vertex u, T vertex) {
 	    CustomGraph.Vertex.setVertex(node, u, vertex);
     }
+
 }
 
