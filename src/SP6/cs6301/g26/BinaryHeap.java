@@ -67,7 +67,7 @@ public class BinaryHeap<T> {
 
     public void replace(T x) {
     /* TO DO.  Replaces root of binary heap by x if x has higher priority
-	     (smaller) than root, and restore heap order.  Otherwise do nothing. 
+         (smaller) than root, and restore heap order.  Otherwise do nothing.
 	   This operation is used in finding largest k elements in a stream.
 	 */
     }
@@ -78,10 +78,14 @@ public class BinaryHeap<T> {
     void percolateUp(int i) {
         T x = pq[i];
         while (i > 0 && c.compare(pq[parent(i)], x) > 0) {
-            pq[i] = pq[parent(i)];
+            move(i, pq[parent(i)]);
             i = parent(i);
         }
         pq[i] = x;
+    }
+
+    void move(int i, T element) {
+        pq[i] = element;
     }
 
     private int parent(int i) {
@@ -99,7 +103,7 @@ public class BinaryHeap<T> {
                 child++;
             }
             if (c.compare(x, pq[child]) <= 0) break;
-            pq[i] = pq[child];
+            move(i, pq[child]);
             i = child;
             child = 2 * i + 1;
         }
@@ -114,8 +118,9 @@ public class BinaryHeap<T> {
             percolateDown(i);
         }
     }
-    private boolean isEmpty() {
-        return heapSize ==0;
+
+    public boolean isEmpty() {
+        return heapSize == 0;
     }
 
     /* sort array A[].
@@ -124,20 +129,19 @@ public class BinaryHeap<T> {
        max heap ==> ascending order
      */
     public static <T> void heapSort(T[] A, Comparator<T> comp) {
-        T [] temp = (T[]) new Object[A.length];
-        BinaryHeap heap = new BinaryHeap(temp, comp,A.length);
-        for(T item:A){
+        T[] temp = (T[]) new Object[A.length];
+        BinaryHeap heap = new BinaryHeap(temp, comp, A.length);
+        for (T item : A) {
             heap.add(item);
         }
-       // heap.buildHeap();
+        // heap.buildHeap();
         int count = 0;
-        while(!heap.isEmpty())
-        {
-            A[count++] = (T)heap.remove();
+        while (!heap.isEmpty()) {
+            A[count++] = (T) heap.remove();
         }
     }
 
-    public static void main(String []args){
+    public static void main(String[] args) {
         System.out.print("Enter the Array Size to be sorted : ");
         Scanner scanner = new Scanner(System.in);
         int arraySize = scanner.nextInt();
@@ -146,17 +150,17 @@ public class BinaryHeap<T> {
 
         //For arrays sorted in descending order
         for (int i = 0; i < arraySize; i++) {
-            genericArray1[i] = arraySize-i;
+            genericArray1[i] = arraySize - i;
         }
         Shuffle.shuffle(genericArray1);
-        System.arraycopy(genericArray1,0,genericArray2,0,genericArray1.length);
+        System.arraycopy(genericArray1, 0, genericArray2, 0, genericArray1.length);
         Timer timer = new Timer();
         timer.start();
         heapSort(genericArray1, Integer::compareTo);
         System.out.println("Binary heap ascending order" + timer.end());
 
         timer.start();
-        heapSort(genericArray2, (x,y)->y-x);
+        heapSort(genericArray2, (x, y) -> y - x);
         System.out.println("Binary heap descending order" + timer.end());
     }
 }

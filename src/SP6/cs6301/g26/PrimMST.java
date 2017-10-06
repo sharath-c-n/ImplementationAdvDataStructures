@@ -8,19 +8,35 @@ import cs6301.g00.Timer;
 import java.util.Comparator;
 import java.util.PriorityQueue;
 import java.util.Scanner;
-import java.lang.Comparable;
 import java.io.FileNotFoundException;
 import java.io.File;
 
 public class PrimMST extends GraphAlgorithm {
     static final int Infinity = Integer.MAX_VALUE;
 
-    public static class Node {
+    //The below class can be simplified for Prim1 implementation by removing unwanted  fields
+    public static class Node implements IndexedNode {
         boolean seen;
         CustomGraph.Vertex parent;
+        CustomGraph.Vertex graphVertex;
+        public int d;
+        int index;
 
-        public Node() {
+        public Node(CustomGraph.Vertex vertex) {
             seen = false;
+            parent = null;
+            d = Infinity;
+            graphVertex = vertex;
+        }
+
+        @Override
+        public int getIndex() {
+            return index;
+        }
+
+        @Override
+        public void setIndex(int index) {
+            this.index = index;
         }
     }
 
@@ -28,7 +44,7 @@ public class PrimMST extends GraphAlgorithm {
         super(g);
         node = new Node[g.size()];
         for (CustomGraph.Vertex vertex : g)
-            setVertex(vertex, new Node());
+            setVertex(vertex, new Node(vertex));
     }
 
     public int prim1(CustomGraph.Vertex s) {
@@ -59,8 +75,22 @@ public class PrimMST extends GraphAlgorithm {
 
     public int prim2(CustomGraph.Vertex s) {
         int wmst = 0;
-        // SP6.Q6: Prim's algorithm using IndexedHeap<PrimVertex>:
-
+        Node pqArray[] = new Node[g.size()];
+        ((Node) getVertex(s)).d = 0;
+        IndexedBinaryHeap<PrimMST.Node> pq = new IndexedBinaryHeap<>(pqArray, Comparator.comparingInt(x -> x.d), g.size());
+        while (!pq.isEmpty()) {
+            Node u = pq.remove();
+            u.seen = true;
+            wmst += u.d;
+            for (CustomGraph.Edge edge : u.graphVertex) {
+                Node v = (Node) getVertex(edge.otherEnd(u.graphVertex));
+                if (!v.seen && edge.weight < v.d) {
+                    v.d = edge.weight;
+                    v.parent = u.graphVertex;
+                    pq.percolateUp(v.getIndex());
+                }
+            }
+        }
         return wmst;
     }
 

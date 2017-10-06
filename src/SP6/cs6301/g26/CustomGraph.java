@@ -85,7 +85,7 @@ public class CustomGraph implements Iterable<CustomGraph.Vertex> {
     public static class Edge {
         public Vertex from; // head vertex
         public Vertex to; // tail vertex
-        public int weight;// weight of edge
+        public int weight;// d of edge
 
         /**
          * Constructor for Edge
@@ -162,7 +162,7 @@ public class CustomGraph implements Iterable<CustomGraph.Vertex> {
     /**
      * Method to add an edge to the graph
      * @param weight
-     *            : int - the weight of the edge
+     *            : int - the d of the edge
      */
     public void addEdge(Vertex from, Vertex to, int weight) {
         Edge e = new Edge(from, to, weight);
