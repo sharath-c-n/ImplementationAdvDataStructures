@@ -66,10 +66,10 @@ public class BinaryHeap<T> {
     }
 
     public void replace(T x) {
-    /* TO DO.  Replaces root of binary heap by x if x has higher priority
-         (smaller) than root, and restore heap order.  Otherwise do nothing.
-	   This operation is used in finding largest k elements in a stream.
-	 */
+        if(c.compare(peek(),x) > 0){
+            pq[0] = x;
+            percolateDown(0);
+        }
     }
 
     /**
