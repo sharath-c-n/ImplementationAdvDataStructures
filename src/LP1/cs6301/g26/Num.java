@@ -273,9 +273,9 @@ public class Num implements Comparable<Num> {
                         break;
                     }
                     if (compareTo > 0) {
-                        low = mid+1;
+                        low = mid + 1;
                     } else {
-                        high = mid-1;
+                        high = mid - 1;
                     }
                 }
                 dividend = subtract(dividend, new Num(divisor));
@@ -396,6 +396,25 @@ public class Num implements Comparable<Num> {
         return cloned;
     }
 
+    public static Num divideBy2(Num a) {
+        Num newNum;
+        if (a.base == 2) {
+            newNum = a.clone();
+            ((LinkedList) newNum.numbers).removeLast();
+        } else {
+            newNum = new Num();
+            long carry = 0;
+            Iterator<Long> itr = ((LinkedList<Long>) a.numbers).descendingIterator();
+            while (itr.hasNext()) {
+                Long node = itr.next() + carry;
+                carry = node%2 * a.base ;
+                newNum.addFront(node / 2);
+            }
+        }
+        newNum.trim();
+        return newNum;
+    }
+
     // Use divide and conquer
     static Num power(Num a, long n) {
         Num temp;
@@ -496,9 +515,9 @@ public class Num implements Comparable<Num> {
                 break;
             }
             if (compareTo > 0) {
-                low = mid+1;
+                low = mid + 1;
             } else {
-                high = mid-1;
+                high = mid - 1;
             }
         }
         return new Num[]{multiplicand, product};
@@ -513,7 +532,7 @@ public class Num implements Comparable<Num> {
         Num temp;
         if (n.isZero())
             return new Num(1, a.base);
-        temp = power(a, divide(n, 2));
+        temp = power(a, divideBy2(n));
         if (mod(n, new Num(2, a.base)).isZero())
             return product(temp, temp);
         else
@@ -534,19 +553,16 @@ public class Num implements Comparable<Num> {
         Num left = one.clone();
         Num right = a;
         Num sqrt = new Num(0);
-        while (left.compareTo(right) <= 0) {
-            Num mid = divide(add(left, right), 2);
+        while (left.compareTo(right) < 0) {
+            Num mid = divideBy2(add(left, right));
             if (product(mid, mid).compareTo(a) == 0) {
                 return mid;
             }
             if (product(mid, mid).compareTo(a) < 0) {
-                left = add(mid, one);
-                if(product(left,left).compareTo(a)>0){
-                    return mid;
-                }
+                left = mid;
                 sqrt = mid;
             } else {
-                right = subtract(mid, one);
+                right = mid;
             }
         }
         return sqrt;
