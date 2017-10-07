@@ -1,6 +1,3 @@
-
-/* Ver 1.0: Starter code for Prim's MST algorithm */
-
 package cs6301.g26;
 
 import cs6301.g00.Timer;
@@ -65,14 +62,22 @@ public class PrimMST extends GraphAlgorithm<PrimMST.Node> {
         }
         while (!pq.isEmpty()) {
             CustomGraph.Edge edge = pq.poll();
-            if (getVertex(edge.from).seen) {
-                Node toVertex = getVertex(edge.to);
-                if (toVertex.seen)
+            Node toVertex = getVertex(edge.to);
+            Node fromVertex = getVertex(edge.from);
+            if (toVertex.seen || fromVertex.seen) {
+                if (toVertex.seen && fromVertex.seen)
                     continue;
-                toVertex.seen = true;
-                toVertex.parent = edge.from;
+                Node currentVertex;
+                if (toVertex.seen) {
+                    currentVertex = fromVertex;
+                    currentVertex.parent = toVertex.graphVertex;
+                } else {
+                    currentVertex = toVertex;
+                    currentVertex.parent = fromVertex.graphVertex;
+                }
+                currentVertex.seen = true;
                 wmst += edge.weight;
-                for (CustomGraph.Edge e : edge.to) {
+                for (CustomGraph.Edge e : currentVertex.graphVertex) {
                     if (!getVertex(e.otherEnd(edge.to)).seen)
                         pq.add(e);
                 }
@@ -87,6 +92,9 @@ public class PrimMST extends GraphAlgorithm<PrimMST.Node> {
         Node pqArray[] = new Node[g.size()];
         getVertex(s).d = 0;
         IndexedBinaryHeap<PrimMST.Node> pq = new IndexedBinaryHeap<>(pqArray, Comparator.comparingInt(x -> x.d), g.size());
+        for(CustomGraph.Vertex vertex : g){
+            pq.add(getVertex(vertex));
+        }
         while (!pq.isEmpty()) {
             Node u = pq.remove();
             u.seen = true;
