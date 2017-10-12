@@ -114,10 +114,9 @@ public class Euler extends GraphAlgorithm<Euler.Vertex> {
         temp.isExplored = true;
         for (Graph.Edge e : temp.tour) {
             tour.add(e);
-            Graph.Vertex otherVertex = e.otherEnd(vertex);
-            Vertex otherEulerVertex = getVertex(otherVertex);
+            Vertex otherEulerVertex = getVertex(e.to);
             if (otherEulerVertex.tour != null && !otherEulerVertex.isExplored) {
-                explore(otherVertex);
+                explore(e.to);
             }
         }
     }
