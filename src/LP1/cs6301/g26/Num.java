@@ -544,21 +544,21 @@ public class Num implements Comparable<Num> {
     }
 
     static Num squareRoot(Num a) {
-        // Base Cases
         Num one = new Num(1);
         if (a.isZero() || a.compareTo(one) == 0) {
             return a;
         }
-
-        Num left = one.clone();
-        Num right = a;
-        Num sqrt = new Num(0);
+        Num left = one;
+        Num right = divideBy2(a);
+        Num sqrt = new Num("0");
         while (left.compareTo(right) < 0) {
             Num mid = divideBy2(add(left, right));
-            if (product(mid, mid).compareTo(a) == 0) {
+            Num res= product(mid, mid);
+            int cmpValue=res.compareTo(a);
+            if (cmpValue == 0) {
                 return mid;
             }
-            if (product(mid, mid).compareTo(a) < 0) {
+            if (cmpValue< 0) {
                 left = mid;
                 sqrt = mid;
             } else {
@@ -566,6 +566,7 @@ public class Num implements Comparable<Num> {
             }
         }
         return sqrt;
+
     }
     /* End of Level 2 */
 
