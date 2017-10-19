@@ -10,13 +10,13 @@ import java.util.Stack;
  * @author : Sharath
  * 12/10/2017
  */
-public class BTIterator<E extends TreeEntry<T>, T> implements Iterator<T> {
+public class BTIterator<T> implements Iterator<T> {
     /**
      * Maintains the list of nodes that will be processed next
      */
     private Stack<TreeEntry<T>> stack;
 
-    public BTIterator(E root) {
+    public BTIterator(TreeEntry root) {
         stack = new Stack<>();
         addToStack(root);
     }

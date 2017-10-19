@@ -4,6 +4,7 @@
 
 package SP7.cs6301.g26;
 
+
 import java.util.Iterator;
 import java.util.Scanner;
 import java.util.Stack;
@@ -25,12 +26,12 @@ public class BST<T extends Comparable<? super T>> implements Iterable<T> {
         }
 
         @Override
-        public TreeEntry getLeft() {
+        public Entry<T> getLeft() {
             return left;
         }
 
         @Override
-        public TreeEntry getRight() {
+        public Entry<T> getRight() {
             return right;
         }
 
@@ -40,8 +41,8 @@ public class BST<T extends Comparable<? super T>> implements Iterable<T> {
         }
     }
 
-    private Entry<T> root;
-    private int size;
+    protected Entry<T> root;
+    protected int size;
     private Stack<Entry<T>> stack;
 
     public BST() {
@@ -51,7 +52,10 @@ public class BST<T extends Comparable<? super T>> implements Iterable<T> {
 
 
     /**
-     * TO DO: Is x contained in tree?
+     * Returns true if x is contained in tree
+     *
+     * @param x : value to be searched in the tree
+     * @return : true/false
      */
     public boolean contains(T x) {
         Entry<T> t = find(x);
@@ -59,17 +63,21 @@ public class BST<T extends Comparable<? super T>> implements Iterable<T> {
     }
 
     /**
-     * TO DO: Is there an element that is equal to x in the tree?
-     * Element in tree that is equal to x is returned, null otherwise.
+     * returns element in tree that is equal to x is returned, null otherwise.
+     *
+     * @param x : value to be searched
+     * @return : entry or null
      */
     public T get(T x) {
         Entry<T> t = find(x);
-        return t != null && t.element.compareTo(x) == 0 ? t.element : null ;
+        return t != null && t.element.compareTo(x) == 0 ? t.element : null;
     }
 
     /**
      * If tree contains a node with same key, replace element by x.
-     * Returns true if x is a new element added to tree.
+     *
+     * @param x : element to be added to the tree
+     * @return : true if x is a new element added to tree.
      */
     public boolean add(T x) {
         if (root == null) {
@@ -120,26 +128,37 @@ public class BST<T extends Comparable<? super T>> implements Iterable<T> {
     }
 
     public T min() {
-        if (root == null) return null;
-        Entry<T> t = root;
-        while (t.left != null) {
-            t = t.left;
-        }
-        return t.element;
+        Entry<T> node = min(root);
+        return node  == null ? null : node.element;
     }
 
-    public T max() {
-        if (root == null) return null;
-        Entry<T> t = root;
-        while (t.right != null) {
-            t = t.right;
+    public Entry<T> min(Entry<T> node) {
+        if (node == null) return null;
+        while (node.left != null) {
+            node = node.left;
         }
-        return t.element;
+        return node;
+    }
+
+
+    public T max() {
+        Entry<T> node = max(root);
+        return node  == null ? null : node.element;
+    }
+
+    public Entry<T> max(Entry<T> node) {
+        if (node == null) return null;
+        while (node.right != null) {
+            node = node.right;
+        }
+        return node;
     }
 
     /**
-     * TO DO: Remove x from tree.
-     * Return x if found, otherwise return null
+     * Remove x from tree.
+     *
+     * @param x : the element that needs to be removed from the tree
+     * @return : x if found, otherwise return null
      */
     public T remove(T x) {
         if (root == null) return null;
@@ -160,6 +179,11 @@ public class BST<T extends Comparable<? super T>> implements Iterable<T> {
         return result;
     }
 
+    /**
+     * replace element t with its successor;
+     *
+     * @param t : element to be replaced
+     */
     private void bypass(Entry<T> t) {
         Entry<T> pt = stack.peek();
         Entry<T> c = t.left == null ? t.right : t.left;
@@ -209,6 +233,7 @@ public class BST<T extends Comparable<? super T>> implements Iterable<T> {
             printTree(node.right);
         }
     }
+
     public static void main(String[] args) {
         BST<Integer> t = new BST<>();
         Scanner in = new Scanner(System.in);
@@ -233,11 +258,11 @@ public class BST<T extends Comparable<? super T>> implements Iterable<T> {
             }
         }
         System.out.print("Iterator : ");
-        for(int i : t){
-            System.out.print(i+" ");
+        for (int i : t) {
+            System.out.print(i + " ");
         }
-        System.out.println("\nMin : "+ t.min());
-        System.out.println("Max : "+ t.max());
+        System.out.println("\nMin : " + t.min());
+        System.out.println("Max : " + t.max());
     }
 
 }
