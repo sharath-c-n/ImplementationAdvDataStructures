@@ -11,16 +11,16 @@ import java.util.Stack;
 
 public class BST<T extends Comparable<? super T>> implements Iterable<T> {
     static class Entry<T> implements TreeEntry<T> {
-        T element;
+        T key;
         Entry<T> left, right;
 
         Entry(T x) {
-            this.element = x;
+            this.key = x;
             this.left = this.right = null;
         }
 
         Entry(T x, Entry<T> left, Entry<T> right) {
-            this.element = x;
+            this.key = x;
             this.left = left;
             this.right = right;
         }
@@ -36,14 +36,14 @@ public class BST<T extends Comparable<? super T>> implements Iterable<T> {
         }
 
         @Override
-        public T getValue() {
-            return element;
+        public T getKey() {
+            return key;
         }
     }
 
     protected Entry<T> root;
     protected int size;
-    private Stack<Entry<T>> stack;
+    protected Stack<Entry<T>> stack;
 
     public BST() {
         root = null;
@@ -59,43 +59,48 @@ public class BST<T extends Comparable<? super T>> implements Iterable<T> {
      */
     public boolean contains(T x) {
         Entry<T> t = find(x);
-        return t != null && t.element.compareTo(x) == 0;
+        return t != null && t.key.compareTo(x) == 0;
     }
 
     /**
-     * returns element in tree that is equal to x is returned, null otherwise.
+     * returns key in tree that is equal to x is returned, null otherwise.
      *
      * @param x : value to be searched
      * @return : entry or null
      */
     public T get(T x) {
         Entry<T> t = find(x);
-        return t != null && t.element.compareTo(x) == 0 ? t.element : null;
+        return t != null && t.key.compareTo(x) == 0 ? t.key : null;
     }
 
     /**
-     * If tree contains a node with same key, replace element by x.
+     * If tree contains a node with same key, replace key by x.
      *
-     * @param x : element to be added to the tree
-     * @return : true if x is a new element added to tree.
+     * @param x : key to be added to the tree
+     * @return : true if x is a new key added to tree.
      */
     public boolean add(T x) {
         if (root == null) {
-            root = new Entry<>(x);
+            root = createEntry(x);
             size = 1;
             return true;
         }
         Entry<T> t = find(x);
-        if (x.compareTo(t.element) == 0) {
-            t.element = x;
+        if (x.compareTo(t.key) == 0) {
+            t.key = x;
             return false;
-        } else if (x.compareTo(t.element) < 0) {
-            t.left = new Entry<>(x);
+        } else if (x.compareTo(t.key) < 0) {
+            t.left = createEntry(x);
         } else {
-            t.right = new Entry<>(x);
+            t.right = createEntry(x);
         }
+        stack.push(t);
         size++;
         return true;
+    }
+
+    protected Entry<T> createEntry(T x){
+        return new Entry<>(x);
     }
 
     public Entry<T> find(T x) {
@@ -105,17 +110,17 @@ public class BST<T extends Comparable<? super T>> implements Iterable<T> {
     }
 
     private Entry<T> find(Entry<T> t, T x) {
-        if (t == null || x.compareTo(t.element) == 0) {
+        if (t == null || x.compareTo(t.key) == 0) {
             return t;
         }
         while (true) {
-            if (x.compareTo(t.element) < 0) {
+            if (x.compareTo(t.key) < 0) {
                 if (t.left == null) break;
                 else {
                     stack.push(t);
                     t = t.left;
                 }
-            } else if (x.compareTo(t.element) == 0) break;
+            } else if (x.compareTo(t.key) == 0) break;
             else {
                 if (t.right == null) break;
                 else {
@@ -129,7 +134,7 @@ public class BST<T extends Comparable<? super T>> implements Iterable<T> {
 
     public T min() {
         Entry<T> node = min(root);
-        return node  == null ? null : node.element;
+        return node  == null ? null : node.key;
     }
 
     public Entry<T> min(Entry<T> node) {
@@ -143,7 +148,7 @@ public class BST<T extends Comparable<? super T>> implements Iterable<T> {
 
     public T max() {
         Entry<T> node = max(root);
-        return node  == null ? null : node.element;
+        return node  == null ? null : node.key;
     }
 
     public Entry<T> max(Entry<T> node) {
@@ -157,21 +162,21 @@ public class BST<T extends Comparable<? super T>> implements Iterable<T> {
     /**
      * Remove x from tree.
      *
-     * @param x : the element that needs to be removed from the tree
+     * @param x : the key that needs to be removed from the tree
      * @return : x if found, otherwise return null
      */
     public T remove(T x) {
         if (root == null) return null;
         Entry<T> t = find(x);
-        if (t.element != x) return null;
-        T result = t.element;
+        if (t.key != x) return null;
+        T result = t.key;
         if (t.left == null || t.right == null) {
             bypass(t);
         } else // t has 2 children
         {
             stack.push(t);
-            Entry<T> minRight = find(t.right, t.element);
-            t.element = minRight.element;
+            Entry<T> minRight = find(t.right, t.key);
+            t.key = minRight.key;
             bypass(minRight);
 
         }
@@ -180,9 +185,9 @@ public class BST<T extends Comparable<? super T>> implements Iterable<T> {
     }
 
     /**
-     * replace element t with its successor;
+     * replace key t with its successor;
      *
-     * @param t : element to be replaced
+     * @param t : key to be replaced
      */
     private void bypass(Entry<T> t) {
         Entry<T> pt = stack.peek();
@@ -211,7 +216,7 @@ public class BST<T extends Comparable<? super T>> implements Iterable<T> {
             index = addToArray(entry.getLeft(), arr, index);
         }
 
-        arr[index++] = entry.getValue();
+        arr[index++] = entry.getKey();
 
         if (entry.getRight() != null) {
             index = addToArray(entry.getRight(), arr, index);
@@ -229,7 +234,7 @@ public class BST<T extends Comparable<? super T>> implements Iterable<T> {
     void printTree(Entry<T> node) {
         if (node != null) {
             printTree(node.left);
-            System.out.print(" " + node.element);
+            System.out.print(" " + node.key);
             printTree(node.right);
         }
     }
@@ -239,23 +244,10 @@ public class BST<T extends Comparable<? super T>> implements Iterable<T> {
         Scanner in = new Scanner(System.in);
         while (in.hasNext()) {
             int x = in.nextInt();
-            if (x > 0) {
-                System.out.print("Add " + x + " : ");
-                t.add(x);
-                t.printTree();
-            } else if (x < 0) {
-                System.out.print("Remove " + x + " : ");
-                t.remove(-x);
-                t.printTree();
-            } else {
-                Comparable[] arr = t.toArray();
-                System.out.print("Final: ");
-                for (int i = 0; i < t.size; i++) {
-                    System.out.print(arr[i] + " ");
-                }
-                System.out.println();
-                break;
-            }
+            testor(x, t);
+            //Checks if its a valid BST after each operation
+            if (!TestTrees.isBST(t.root,Integer.MIN_VALUE,Integer.MAX_VALUE))
+                System.out.println("IsBst : " + false);
         }
         System.out.print("Iterator : ");
         for (int i : t) {
@@ -263,8 +255,28 @@ public class BST<T extends Comparable<? super T>> implements Iterable<T> {
         }
         System.out.println("\nMin : " + t.min());
         System.out.println("Max : " + t.max());
+        System.out.println("find : " + t.find(14));
     }
 
+    public static void testor(int x, BST<Integer> t) {
+        if (x > 0) {
+            System.out.print("Add " + x + " : ");
+            t.add(x);
+            t.printTree();
+        } else if (x < 0) {
+            System.out.print("Remove " + x + " : ");
+            t.remove(-x);
+            t.printTree();
+        } else {
+            Comparable[] arr = t.toArray();
+            System.out.print("Final: ");
+            for (int i = 0; i < t.size; i++) {
+                System.out.print(arr[i] + " ");
+            }
+            System.out.println();
+        }
+
+    }
 }
 /*
 Sample input:

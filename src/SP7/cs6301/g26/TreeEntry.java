@@ -9,5 +9,5 @@ package SP7.cs6301.g26;
 public interface TreeEntry<T>  {
     TreeEntry<T> getLeft();
     TreeEntry<T> getRight();
-    T getValue();
+    T getKey();
 }

@@ -16,7 +16,7 @@ public class BTIterator<T> implements Iterator<T> {
      */
     private Stack<TreeEntry<T>> stack;
 
-    public BTIterator(TreeEntry root) {
+    public BTIterator(TreeEntry<T> root) {
         stack = new Stack<>();
         addToStack(root);
     }
@@ -44,7 +44,7 @@ public class BTIterator<T> implements Iterator<T> {
             if (entry.getRight() != null){
                 addToStack(entry.getRight());
             }
-            return entry.getValue();
+            return entry.getKey();
         }
         throw new NoSuchElementException();
     }
