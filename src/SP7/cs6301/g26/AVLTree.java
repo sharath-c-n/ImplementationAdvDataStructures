@@ -57,13 +57,6 @@ public class AVLTree<T extends Comparable<? super T>> extends BST<T> {
         return left;
     }
 
-    private int getHeight(Entry<T> node) {
-        return node == null ? 0 : node.height;
-    }
-
-    private void updateHeight(Entry<T> node) {
-        node.height = Math.max(getHeight(node.getRight()), getHeight(node.getLeft())) + 1;
-    }
 
     /**
      * Left rotates the tree about the pivot
@@ -84,6 +77,14 @@ public class AVLTree<T extends Comparable<? super T>> extends BST<T> {
 
         // Return new root
         return right;
+    }
+
+    private int getHeight(Entry<T> node) {
+        return node == null ? 0 : node.height;
+    }
+
+    private void updateHeight(Entry<T> node) {
+        node.height = Math.max(getHeight(node.getRight()), getHeight(node.getLeft())) + 1;
     }
 
     int getHeightDiff(Entry<T> node) {
@@ -150,7 +151,6 @@ public class AVLTree<T extends Comparable<? super T>> extends BST<T> {
             if (!isBalanced(predecessor)) {
                 root = balanceNode(predecessor);
             }
-            updateHeight(predecessor);
         }
     }
 
