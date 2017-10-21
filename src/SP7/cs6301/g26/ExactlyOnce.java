@@ -9,7 +9,7 @@ public class ExactlyOnce<T> {
     //Given an array A, return an array B that has those elements of A that
     // occur exactly once, in the same order in which they appear in A:
     // Ex: A = {6,3,4,5,3,5}.  exactlyOnce(A) returns {6,4}
-    static <T extends Comparable<? super T>> Comparable[] exactlyOnce(T[] A) { // RT = O(nlogn).
+    static <T extends Comparable<? super T>> T[] exactlyOnce(T[] A) { // RT = O(nlogn).
         TreeMap<T, Integer> valIndexMap = new TreeMap<>(); //TreeMap to store Val Index key value pairs
         TreeMap<Integer, T> indexValMap = new TreeMap<>(); //TreeMap to Store Index Val key value pair.
         TreeSet<T> mark = new TreeSet<>(); //Mark the visited duplicate elements
@@ -28,12 +28,12 @@ public class ExactlyOnce<T> {
                 }
             }
         }
-        Comparable[] arr = new Comparable[indexValMap.size()];
+        Comparable [] arr = new Comparable[indexValMap.size()];
         int index = 0;
         for (Map.Entry<Integer, T> val : indexValMap.entrySet()) {
             arr[index++] = val.getValue();
         }
-        return arr;
+        return (T[])arr;
     }
 
     public static void main(String[] args) {
