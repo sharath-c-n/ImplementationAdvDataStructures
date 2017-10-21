@@ -13,7 +13,7 @@ import cs6301.g00.Graph.Edge;
 import cs6301.g00.Timer;
 
 public class LP3 {
-    static int VERBOSE = 0;
+    static int VERBOSE = 1;
     public static void main(String[] args) throws FileNotFoundException {
         Scanner in;
         if (args.length > 0) {
