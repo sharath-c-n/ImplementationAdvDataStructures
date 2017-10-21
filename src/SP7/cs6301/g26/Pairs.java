@@ -1,7 +1,7 @@
 /**
  * @author Sandeep on 10/20/2017
  */
-package SP7.cs6301.g26;
+package cs6301.g26;
 
 import java.util.Map;
 import java.util.TreeMap;
