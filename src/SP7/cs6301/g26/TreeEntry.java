@@ -1,4 +1,4 @@
-package SP7.cs6301.g26;
+package cs6301.g26;
 
 /**
  * TreeEntry:

@@ -2,7 +2,7 @@
 /**
  * Starter code for AVL Tree
  */
-package SP7.cs6301.g26;
+package cs6301.g26;
 
 import java.util.Scanner;
 
@@ -38,13 +38,13 @@ public class AVLTree<T extends Comparable<? super T>> extends BST<T> {
 
     /**
      * Right rotates the tree about the pivot
+     *
      * @param pivot :
      * @return : the new root for the subtree
      */
     Entry<T> rightRotate(Entry<T> pivot) {
-        Entry<T> left = (Entry<T>) pivot.left;
-        Entry<T> right = (Entry<T>) left.right;
-
+        Entry<T> left = pivot.getLeft();
+        Entry<T> right = left.getRight();
         // Perform rotation
         left.right = pivot;
         pivot.left = right;

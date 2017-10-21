@@ -1,8 +1,9 @@
 /**
- * @author Binary search tree (starter code)
+ * @author Sharath
+ * Binary search tree
  **/
 
-package SP7.cs6301.g26;
+package cs6301.g26;
 
 
 import java.util.Iterator;

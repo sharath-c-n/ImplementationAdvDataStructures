@@ -1,4 +1,4 @@
-package SP7.cs6301.g26;
+package cs6301.g26;
 
 /**
  * TestTrees:
@@ -31,7 +31,7 @@ public class TestTrees {
 
       /* If difference between heights of left and right
          subtrees is more than 1 then this node is not balanced
-         so return 0 */
+         so return false */
         if (Math.abs(left.height - right.height) > 1)
             return new Tuple(height, false);
 
