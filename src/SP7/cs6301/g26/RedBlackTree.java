@@ -1,7 +1,7 @@
 
 /** Starter code for Red-Black Tree
  */
-package SP7.cs6301.g26;
+package cs6301.g26;
 
 import java.util.Comparator;
 

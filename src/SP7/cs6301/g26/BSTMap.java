@@ -5,7 +5,7 @@
  * Do not use TreeMap or any of Java's maps.
  **/
 
-package SP7.cs6301.g26;
+package cs6301.g26;
 
 
 import java.util.Iterator;
