@@ -178,6 +178,20 @@ public class AVLTree<T extends Comparable<? super T>> extends BST<T> {
             if (!TestTrees.isAvl(t.root))
                 System.out.println("IsAvl : " + false);
         }
+
+       /* int [] add = {1,3,-1,-10,0,10,12};
+        int [] delete = {1,3,12,0,-10};
+        for(int x:add){
+            System.out.print("Add " + x + " : ");
+            t.add(x);
+            t.printTree();
+        }
+        for(int x:delete){
+            System.out.print("Remove " + x + " : ");
+            t.remove(x);
+            t.printTree();
+        }*/
+
         System.out.print("Iterator : ");
         for (int i : t) {
             System.out.print(i + " ");

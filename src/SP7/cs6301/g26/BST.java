@@ -110,7 +110,7 @@ public class BST<T extends Comparable<? super T>> implements Iterable<T> {
         return find(root, x);
     }
 
-    private Entry<T> find(Entry<T> t, T x) {
+    protected Entry<T> find(Entry<T> t, T x) {
         if (t == null || x.compareTo(t.key) == 0) {
             return t;
         }
@@ -188,9 +188,9 @@ public class BST<T extends Comparable<? super T>> implements Iterable<T> {
     /**
      * replace key t with its successor;
      *
-     * @param t : key to be replaced
+     * @param t : entry to be replaced
      */
-    private void bypass(Entry<T> t) {
+    protected void bypass(Entry<T> t) {
         Entry<T> pt = stack.peek();
         Entry<T> c = t.left == null ? t.right : t.left;
         if (pt == null) {
@@ -250,6 +250,7 @@ public class BST<T extends Comparable<? super T>> implements Iterable<T> {
             if (!TestTrees.isBST(t.root,Integer.MIN_VALUE,Integer.MAX_VALUE))
                 System.out.println("IsBst : " + false);
         }
+
         System.out.print("Iterator : ");
         for (int i : t) {
             System.out.print(i + " ");

@@ -11,7 +11,7 @@ package cs6301.g26;
 import java.util.Iterator;
 
 public class BSTMap<K extends Comparable<? super K>, V> implements Iterable<K> {
-    private RedBlackTree<Tuple<K, V>> tree;
+    private AVLTree<Tuple<K, V>> tree;
 
     static class Tuple<K extends Comparable<? super K>, V> implements Comparable<Tuple<K, V>> {
         K key;
@@ -29,7 +29,7 @@ public class BSTMap<K extends Comparable<? super K>, V> implements Iterable<K> {
     }
 
     BSTMap() {
-        tree = new RedBlackTree<>();
+        tree = new AVLTree<>();
     }
 
     public V get(K key) {
@@ -44,5 +44,14 @@ public class BSTMap<K extends Comparable<? super K>, V> implements Iterable<K> {
     // Iterate over the keys stored in the map, in order
     public Iterator<K> iterator() {
         return new BSTMapIterator<>(tree.root);
+    }
+
+    public static void main(String[] args){
+        BSTMap<String,Integer> t = new BSTMap<>();
+        t.put("sing",2);
+        t.put("King",4);
+        t.put("Ring",8);
+        for(String i : t)
+            System.out.println("("+ i +"," + t.get(i)+ ")");
     }
 }
