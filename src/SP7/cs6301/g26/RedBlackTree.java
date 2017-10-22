@@ -12,6 +12,7 @@ public class RedBlackTree<T extends Comparable<? super T>> extends BST<T> {
             super(x, left, right);
             isRed = true;
         }
+
     }
 
     RedBlackTree() {
