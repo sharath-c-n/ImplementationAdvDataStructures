@@ -1,0 +1,21 @@
+
+package cs6301.g26;
+
+import cs6301.g26.Graph;
+
+public class GraphAlgorithm<T> {
+    Graph g;
+    // Algorithm uses a parallel array for storing information about vertices
+    T[] node;
+
+    public GraphAlgorithm(Graph g) {
+        this.g = g;
+    }
+
+    T getVertex(Graph.Vertex u) {
+        return Graph.Vertex.getVertex(node, u);
+    }
+    void setVertex(Graph.Vertex u, T vertex) {
+        Graph.Vertex.setVertex(node, u, vertex);
+    }
+}
