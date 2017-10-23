@@ -43,6 +43,10 @@ public class SplayTree<T extends Comparable<? super T>> extends BST<T> {
     protected Entry<T> createEntry(T x) {
         return new Entry<>(x);
     }
+    /**
+     *return value associated with the given key
+     *if no such value, return null
+     **/
 
     protected Entry<T> find(BST.Entry<T> t, T key) {
         root = splay((Entry<T>) root, key);
@@ -51,6 +55,13 @@ public class SplayTree<T extends Comparable<? super T>> extends BST<T> {
         else
             return null;
     }
+
+    /* This splays the key, then  swaps the root (call it node A) with its successor, it's successor (call it Node B)
+     * is moved to the root position by splaying for the deletion key in A's
+     * right subtree. Finally, A's right child is made the new root's right child.
+     * @param key : value to be added
+     * @return boolean
+     */
 
     public boolean add(T key) {
         // splay key to root
@@ -63,7 +74,7 @@ public class SplayTree<T extends Comparable<? super T>> extends BST<T> {
 
         int cmp = key.compareTo(root.key);
 
-
+        // Insert new node at root
         if (cmp < 0) {
             Entry<T> n = createEntry(key);
             n.left = root.left;
@@ -71,7 +82,7 @@ public class SplayTree<T extends Comparable<? super T>> extends BST<T> {
             root.left = null;
             root = n;
         }
-
+        // Insert new node at root
         else if (cmp > 0) {
             Entry<T> n = createEntry(key);
             n.right = root.right;
@@ -86,7 +97,12 @@ public class SplayTree<T extends Comparable<? super T>> extends BST<T> {
         }
         return  true;
     }
-
+     /* This splays the key, then  swaps the root (call it node A) with its successor, it's successor (call it Node B)
+     * is moved to the root position by splaying for the deletion key in A's
+     * right subtree. Finally, A's right child is made the new root's right child.
+     * @param key : value to be removed
+     * @return deleted Entry
+     */
     public T remove(T key) {
         if (root == null) return null; // empty tree
 
@@ -108,6 +124,13 @@ public class SplayTree<T extends Comparable<? super T>> extends BST<T> {
         }
         return null;
     }
+
+    /* splay key in the tree rooted at Node h. If a node with that key exists,
+      * it is splayed to the root of the tree. If it does not, the last node
+      * along the search path for the key is splayed to the root.
+      *   @param h : node to be splayed at
+      *   @param key : value to be splayed to root
+      *   @return deleted Entry*/
 
     private Entry splay(Entry<T> h, T key) {
         if (h == null) return null;
@@ -136,7 +159,7 @@ public class SplayTree<T extends Comparable<? super T>> extends BST<T> {
         }
 
         else if (cmp1 > 0) {
-            // key not in tree, so we're done
+            // key not in trees
             if (h.right == null) {
                 return h;
             }
@@ -183,9 +206,15 @@ public class SplayTree<T extends Comparable<? super T>> extends BST<T> {
         while (in.hasNext()) {
             int x = in.nextInt();
             testor(x, t);
-            //Checks if the tree is a valid AVL tree after each operation
-            if (!TestTrees.isSplay(t.root,x))
-                System.out.println("Is Splay : " + false);
+            //Checks if the tree is a valid Splay  tree after each operation
+            if(x>0){
+                if(!(t.root.getKey()==x ) && !TestTrees.isBST(t.root,Integer.MIN_VALUE,Integer.MAX_VALUE)){
+                    System.out.println("Is Splay : " + false);
+                }
+            }
+            else{
+
+            }
         }
 
         System.out.print("Iterator : ");
