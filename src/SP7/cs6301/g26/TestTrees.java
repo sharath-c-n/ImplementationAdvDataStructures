@@ -16,6 +16,11 @@ public class TestTrees {
             this.height = height;
             this.isBalanced = isBalanced;
         }
+
+        @Override
+        public String toString() {
+            return height + " , " + isBalanced;
+        }
     }
 
     static <T extends Comparable<? super T>>  Tuple isBalanced(TreeEntry<T> node) {

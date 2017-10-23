@@ -47,46 +47,83 @@ public class RedBlackTree<T extends Comparable<? super T>> extends BST<T> {
     }
 
 
+    protected Entry<T> find(BST.Entry<T> t, T x) {
+        Entry<T> node = (Entry<T>) t;
+        Entry<T> newNode;
+        if (node == null || x.compareTo(node.key) == 0) {
+            return node;
+        }
+        while (true) {
+            if (x.compareTo(node.key) < 0) {
+                if (node.left == null) break;
+                else {
+                    if (isRed(node.getRight())) {
+                       newNode = leftRotate(node);
+                        replaceChild(node, (Entry<T>) stack.peek(), newNode);
+                        newNode.isRed = false;
+                        node.isRed = true;
+                    }
+                    stack.push(node);
+                    node = node.getLeft();
+                }
+            } else if (x.compareTo(node.key) == 0) break;
+            else {
+                if (node.right == null) break;
+                else {
+                    if (isRed(node.getLeft())) {
+                        newNode =  rightRotate(node);
+                        replaceChild(node, (Entry<T>) stack.peek(), newNode);
+                        newNode.isRed = false;
+                        node.isRed = true;
+                    }
+                    stack.push(node);
+                    node = node.getRight();
+                }
+            }
+            recolor((Entry<T>) stack.peek());
+        }
+        return node;
+    }
+
+    private void recolor(Entry<T> t) {
+        if (!t.isRed && isRed(t.getLeft()) && isRed(t.getRight())) {
+            t.getRight().isRed = t.getLeft().isRed = false;
+            t.isRed = true;
+        }
+    }
+
+
     /**
-     * REpairs the redBlack subtree after addition of the key
+     * Repairs the redBlack subtree after addition of the key
      *
      * @param curEntry : key that just got added to the tree
      */
     private void repair(Entry<T> curEntry) {
-        while (curEntry != null && !stack.isEmpty() && stack.size() > 1) {
+        if (curEntry != null && !stack.isEmpty() && stack.size() > 1) {
             Entry<T> parent = (Entry<T>) stack.pop();
             Entry<T> grandParent = (Entry<T>) stack.pop();
             Entry<T> greatGrandParent = !stack.isEmpty() ? (Entry<T>) stack.peek() : null;
-            Entry<T> uncle = getSibling(grandParent, parent);
             if (curEntry == root || parent == root || !parent.isRed) return;
-            if (isRed(uncle)) {
-                parent.isRed = uncle.isRed = false;
-                if (grandParent != null)
-                    grandParent.isRed = true;
-                curEntry = grandParent;
-            } else {
-                //Left Case
-                if (grandParent.left == parent) {
-                    //Left-Right
-                    if (parent.right == curEntry) {
-                        replaceChild(parent, grandParent, leftRotate(parent));
-                        parent = grandParent.getLeft();
-                    }
-                    replaceChild(grandParent, greatGrandParent, rightRotate(grandParent));
+            //Left Case
+            if (grandParent.left == parent) {
+                //Left-Right
+                if (parent.right == curEntry) {
+                    replaceChild(parent, grandParent, leftRotate(parent));
+                    parent = grandParent.getLeft();
                 }
-                //Right case
-                else {
-                    //Right-Left case
-                    if (parent.left == curEntry) {
-                        replaceChild(parent, grandParent, rightRotate(parent));
-                        parent = grandParent.getRight();
-                    }
-                    replaceChild(grandParent, greatGrandParent, leftRotate(grandParent));
-                }
-                parent.isRed = false;
-                grandParent.isRed = true;
-                return;
+                replaceChild(grandParent, greatGrandParent, rightRotate(grandParent));
             }
+            //Right case
+            else {
+                //Right-Left case
+                if (parent.left == curEntry) {
+                    replaceChild(parent, grandParent, rightRotate(parent));
+                    parent = grandParent.getRight();
+                }
+                replaceChild(grandParent, greatGrandParent, leftRotate(grandParent));
+            }
+            parent.isRed = false;
+            grandParent.isRed = true;
         }
     }
 
@@ -111,12 +148,12 @@ public class RedBlackTree<T extends Comparable<? super T>> extends BST<T> {
      */
     private Entry<T> leftRotate(Entry<T> pivot) {
         Entry<T> right = pivot.getRight();
-        Entry<T> left = right != null ? right.getLeft() : null;
-
-        // Perform rotation
-        if (right != null) {
-            right.left = pivot;
+        // cannot rotate
+        if (right == null) {
+            return pivot;
         }
+        Entry<T> left = right.getLeft();
+        right.left = pivot;
         pivot.right = left;
 
         // Return new root
@@ -131,12 +168,12 @@ public class RedBlackTree<T extends Comparable<? super T>> extends BST<T> {
      */
     private Entry<T> rightRotate(Entry<T> pivot) {
         Entry<T> left = pivot.getLeft();
-        Entry<T> right = left != null ? left.getRight() : null;
-
         // Perform rotation
-        if (left != null) {
-            left.right = pivot;
+        if (left == null) {
+            return pivot;
         }
+        Entry<T> right = left.getRight();
+        left.right = pivot;
         pivot.left = right;
 
         // Return new root
@@ -179,30 +216,12 @@ public class RedBlackTree<T extends Comparable<? super T>> extends BST<T> {
             Entry<T> grandParent = (Entry<T>) stack.peek();
             Entry<T> sibling = getSibling(parent, t);
 
-            //trivial case, where the removed node/replacing node is red
+            //successor replacing node is red
             if (isRed(t)) {
                 t.isRed = false;
                 return;
             }
-            //case 5, where sibling is red rotate such that the sibling becomes black
-            if (isRed(sibling)) {
-                if (parent.getRight() == t) {
-                    replaceChild(parent, grandParent, rightRotate(parent));
-                } else {
-                    replaceChild(parent, grandParent, leftRotate(parent));
-                }
-                swapColor(parent, sibling);
-                sibling = getSibling(parent, t);
-            }
-            if (sibling == null) {
-                continue;
-            }
 
-            if (!isRed(sibling) && !isRed(sibling.getRight()) && !isRed(sibling.getLeft())) {
-                sibling.isRed = true;
-                t = parent;
-                continue;
-            }
             //Right Cases
             if (parent.getRight() == sibling) {
                 //Right-left case
@@ -210,14 +229,21 @@ public class RedBlackTree<T extends Comparable<? super T>> extends BST<T> {
                     replaceChild(sibling, parent, rightRotate(sibling));
                     swapColor(parent.getRight(), sibling);
                     sibling = parent.getRight();
+                    //Right-right case
+                    if (isRed(sibling.getRight()) && sibling.getRight() != null) {
+                        replaceChild(parent, grandParent, leftRotate(parent));
+                        swapColor(parent, sibling);
+                        sibling.getRight().isRed = false;
+                    }
+                    return;
                 }
                 //Right-right case
-                if (isRed(sibling.getRight())) {
+                if (isRed(sibling.getRight()) && sibling.getRight() != null) {
                     replaceChild(parent, grandParent, leftRotate(parent));
                     swapColor(parent, sibling);
                     sibling.getRight().isRed = false;
+                    return;
                 }
-                return;
             }
             //Left Cases
             else {
@@ -226,14 +252,20 @@ public class RedBlackTree<T extends Comparable<? super T>> extends BST<T> {
                     replaceChild(sibling, parent, leftRotate(sibling));
                     swapColor(parent.getLeft(), sibling);
                     sibling = parent.getLeft();
+                    if (isRed(sibling.getLeft())) {
+                        replaceChild(parent, grandParent, rightRotate(parent));
+                        swapColor(parent, sibling);
+                        sibling.getRight().isRed = false;
+                    }
+                    return;
                 }
                 //Left-left case
                 if (isRed(sibling.getLeft())) {
                     replaceChild(parent, grandParent, rightRotate(parent));
                     swapColor(parent, sibling);
                     sibling.getRight().isRed = false;
+                    return;
                 }
-                return;
             }
         }
     }
@@ -291,7 +323,7 @@ public class RedBlackTree<T extends Comparable<? super T>> extends BST<T> {
         Scanner in = new Scanner(System.in);
         while (in.hasNext()) {
             int x = in.nextInt();
-            testor(x, t);
+            testor(Math.abs(x), t);
             //Checks if the tree is a valid RedBlack tree after each operation
             if (!TestTrees.isRedBlack((RedBlackTree.Entry<Integer>) t.root))
                 System.out.println("is RedBlack : " + false);
