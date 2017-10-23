@@ -32,6 +32,7 @@ public class RedBlackTree<T extends Comparable<? super T>> extends BST<T> {
         public Entry<T> getRight() {
             return (Entry<T>) super.getRight();
         }
+
     }
 
     RedBlackTree() {

@@ -5,7 +5,7 @@ package cs6301.g26;
 
 import java.util.*;
 
-public class ExactlyOnce<T> {
+public class ExactlyOnce{
     //Given an array A, return an array B that has those elements of A that
     // occur exactly once, in the same order in which they appear in A:
     // Ex: A = {6,3,4,5,3,5}.  exactlyOnce(A) returns {6,4}
