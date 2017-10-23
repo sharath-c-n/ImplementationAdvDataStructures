@@ -36,8 +36,8 @@ public class Pairs {
     }
 
     public static void main(String[] args) {
-        int A[] = {3, 3, 4, 5, 3, 5, 6};
-        int res = howMany(A, 9);
+        int A[] = {3, 3, 4, 5, 3, 5};
+        int res = howMany(A, 8);
         System.out.println(res);
     }
 }
