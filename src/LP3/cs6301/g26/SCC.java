@@ -39,7 +39,7 @@ public class SCC extends CC {
         for(Graph.Vertex v:g)
             getCCVertex(v).seen=false;
         int count=0;
-        while (St.empty() == false)
+        while (!St.empty())
         {
             Graph.Vertex v = St.peek();
             St.pop();

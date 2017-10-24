@@ -15,8 +15,7 @@
 
 package cs6301.g26;
 
-import cs6301.g26.ArrayIterator;
-
+import cs6301.g00.ArrayIterator;
 
 import java.util.*;
 
@@ -24,21 +23,21 @@ import java.util.*;
 public class XGraph extends Graph {
 
     public int getSize() {
-        return xVertexsize;
+        return xVertexSize;
     }
 
     static public class XVertex extends Vertex {
         boolean disabled;
         boolean isComponent;
-        List<XVertex> vertexSet;
-        List<XEdge> xadj;
+        List<XVertex> children;
+        List<XEdge> XAdj;
         List<XEdge> revXadj;
 
         XVertex(Vertex u) {
             super(u);
             disabled = false;
             isComponent = false;
-            xadj = new LinkedList<>();
+            XAdj = new LinkedList<>();
             revXadj = new LinkedList<>();
         }
 
@@ -56,11 +55,11 @@ public class XGraph extends Graph {
 
         @Override
         public Iterator<Edge> iterator() {
-            return new XZeroEgdeIterator(this);
+            return new XZeroEdgeIterator(this);
         }
 
         public Iterator<Edge> nonZeroIterator() {
-            return new XZeroEgdeIterator(this);
+            return new XZeroEdgeIterator(this);
         }
 
 
@@ -70,7 +69,7 @@ public class XGraph extends Graph {
             boolean ready;
 
             XVertexIterator(XVertex u) {
-                this.it = u.xadj.iterator();
+                this.it = u.XAdj.iterator();
                 ready = false;
             }
 
@@ -132,8 +131,8 @@ public class XGraph extends Graph {
     }
 
 
-    XVertex[] xv; // vertices of graph
-    int xVertexsize = 0;
+    private XVertex[] xv; // vertices of graph
+    private int xVertexSize = 0;
 
     public XGraph(Graph g) {
         super(g);
@@ -149,11 +148,11 @@ public class XGraph extends Graph {
                 XVertex x1 = getVertex(u);
                 XVertex x2 = getVertex(v);
                 XEdge edge= new XEdge(x1, x2, e.weight, e);
-                x1.xadj.add(edge);
+                x1.XAdj.add(edge);
                 x2.revXadj.add(edge);
             }
         }
-        xVertexsize = n;
+        xVertexSize = n;
     }
 
     @Override
@@ -199,13 +198,13 @@ public class XGraph extends Graph {
 
     }
 
-    static class XZeroEgdeIterator implements Iterator<Edge> {
+    static class XZeroEdgeIterator implements Iterator<Edge> {
         Iterator<XEdge> it;
         XEdge xcur;
         boolean ready;
 
-        XZeroEgdeIterator(XVertex vertex) {
-            this.it = vertex.xadj.iterator();  // Iterate over existing elements only
+        XZeroEdgeIterator(XVertex vertex) {
+            this.it = vertex.XAdj.iterator();
         }
 
 
@@ -235,57 +234,9 @@ public class XGraph extends Graph {
         }
     }
 
-    static class XVertexIterator implements Iterator<Edge> {
-        XEdge cur;
-        Iterator<XEdge> it;
-        boolean ready;
-
-        XVertexIterator(XVertex u) {
-            this.it = u.xadj.iterator();
-            ready = false;
-        }
-
-        public boolean hasNext() {
-            if (ready) {
-                return true;
-            }
-            if (!it.hasNext()) {
-                return false;
-            }
-            cur = it.next();
-            while (cur.isDisabled() && it.hasNext()) {
-                cur = it.next();
-            }
-            ready = true;
-            return !cur.isDisabled();
-        }
-
-        public Edge next() {
-            if (!ready) {
-                if (!hasNext()) {
-                    throw new java.util.NoSuchElementException();
-                }
-            }
-            ready = false;
-            return cur;
-        }
-
-        public void remove() {
-            throw new java.lang.UnsupportedOperationException();
-        }
-    }
-
     @Override
     public Vertex getVertex(int n) {
         return xv[n - 1];
-    }
-
-    public void updateWeights(){
-        for (Vertex u : this) {
-            for (XEdge e : ((XVertex)u).xadj) {
-                e.setWeight(e.original.getWeight());
-            }
-        }
     }
 
     XVertex getVertex(Vertex u) {
@@ -293,10 +244,10 @@ public class XGraph extends Graph {
     }
 
     public boolean addVertex(XVertex vertex){
-        if(xVertexsize >= 2*n){
+        if(xVertexSize >= 2*n){
             return false;
         }
-        xv[xVertexsize++] = vertex;
+        xv[xVertexSize++] = vertex;
         return true;
     }
 
