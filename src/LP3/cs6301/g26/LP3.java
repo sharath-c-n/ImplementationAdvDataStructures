@@ -64,9 +64,8 @@ public class LP3 {
         Vertex src = xg.getVertex(1);
         SpanningTree spanningTree = new SpanningTree(xg, (XGraph.XVertex) src);
         spanningTree.findSpanningTree();
-        //SpanningTree.toZeroWeightGraph(xg, (XGraph.XVertex) src);
-        SCC ns= new SCC(xg,src);
-        ns.Connected();
+       // SCC ns= new SCC(xg,src);
+        //ns.Connected();
         return 0;
     }
 

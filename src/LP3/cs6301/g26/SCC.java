@@ -3,6 +3,8 @@
  */
 package cs6301.g26;
 
+import java.util.Stack;
+
 public class SCC extends CC {
      XGraph xg;
      Graph.Vertex src;
@@ -12,16 +14,40 @@ public class SCC extends CC {
         this.src=src;
     }
    public void Connected(){
-        int nc=findCC();
+        int nc=findSSC();
         System.out.println("Input Graph has " + nc + " components:");
         for(Graph.Vertex u: xg) {
-            System.out.print(u + " [ " + getCCVertex(u).cno + " ] :");
-            for(Graph.Edge e: u.adj) {
-
-                Graph.Vertex v = e.otherEnd(u);
-                System.out.print(e + " ");
-            }
-            System.out.println();
+            System.out.println(u + " [ " +" has a component " + getCCVertex(u).cno + " ] :");
         }
+    }
+
+    void finishedOrder(Graph.Vertex v, Stack<Graph.Vertex> St)
+    {
+        getCCVertex(v).seen=true;
+        for(Graph.Edge t:v.adj)
+            if(!getCCVertex(t.otherEnd(v)).seen)
+                finishedOrder(t.otherEnd(v), St);
+        St.push(v);
+    }
+
+    int findSSC()
+    {
+        Stack<Graph.Vertex> St =new Stack<>();
+        for( Graph.Vertex v: g)
+            if(!getCCVertex(v).seen)
+                finishedOrder(v, St);
+        for(Graph.Vertex v:g)
+            getCCVertex(v).seen=false;
+        int count=0;
+        while (St.empty() == false)
+        {
+            Graph.Vertex v = St.peek();
+            St.pop();
+            if (!getCCVertex(v).seen) {
+                count++;
+                dfsVisit(v, count);
+            }
+        }
+        return count;
     }
 }

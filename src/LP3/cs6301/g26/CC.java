@@ -7,6 +7,7 @@
 package cs6301.g26;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.List;
 import java.util.Scanner;
 
 public class CC {
@@ -45,7 +46,7 @@ public class CC {
 
     void dfsVisit(Graph.Vertex u, int cno) {
         visit(u, cno);
-        for(Graph.Edge e: u) {
+        for(Graph.Edge e: u.revAdj) {
             Graph.Vertex v = e.otherEnd(u);
             if(!seen(v)) {
                 dfsVisit(v, cno);
