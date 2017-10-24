@@ -27,12 +27,12 @@ public class SpanningTree {
         src.disable();
         for (Graph.Vertex vertex : graph) {
             int min = Integer.MAX_VALUE;
-            for (XGraph.Edge e : ((XGraph.XVertex)vertex).revXadj) {
+            for (XGraph.Edge e : ((XGraph.XVertex) vertex).revXadj) {
                 if (e.getWeight() < min) {
                     min = e.getWeight();
                 }
             }
-            for (Graph.Edge e : ((XGraph.XVertex)vertex).revXadj)
+            for (Graph.Edge e : ((XGraph.XVertex) vertex).revXadj)
                 e.setWeight(e.getWeight() - min);
         }
         src.enable();
@@ -41,60 +41,79 @@ public class SpanningTree {
 
     public int findSpanningTree() {
         toZeroWeightGraph(graph, source);
-       // shrinkComponents();
+        shrinkComponents();
+        toZeroWeightGraph(graph, source);
         printGraph(graph);
         return 0;
     }
 
-    private void shrinkComponents() {
+    //Get a list of all Strongly connected component
+    private List<List<XGraph.XVertex>> getComponents() {
         int componentCount = cc.findCC();
-        XGraph.XVertex componentVertices[] = new XGraph.XVertex[componentCount];
         List<List<XGraph.XVertex>> components = new ArrayList<>();
         for (int i = 0; i < componentCount; i++) {
             components.add(new ArrayList<>());
         }
         for (Graph.Vertex vertex : graph) {
             CC.CCVertex component = cc.getCCVertex(vertex);
-            components.get(component.cno-1).add((XGraph.XVertex) vertex);
+            components.get(component.cno - 1).add((XGraph.XVertex) vertex);
         }
-        int index = 0;
-        for (List<XGraph.XVertex> component : components) {
-            Graph.Vertex gVertex = new Graph.Vertex(graph.getSize());
-            XGraph.XVertex vertex = new XGraph.XVertex(gVertex);
-            vertex.isComponent = true;
-            vertex.vertexSet = component;
-            componentVertices[index++] = vertex;
-            graph.addVertex(vertex);
-        }
-        addEdges(componentVertices);
-
+        return components;
     }
 
-    private void addEdges(XGraph.XVertex[] components) {
-        for (XGraph.XVertex component : components) {
-            if (component.isComponent) {
-                Graph.Edge[] edges = getMinEdges(component.vertexSet, components.length);
-                for (int i = 0; i < edges.length; i++) {
-                    if (edges[i] != null) {
-                        XGraph.XEdge edge = new XGraph.XEdge(component, components[i-1], edges[i].weight, edges[i]);
-                        component.xadj.add(edge);
-                        components[i-1].revXadj.add(edge);
-                    }
+    //Create components and disable the contents of the component
+    private void shrinkComponents() {
+
+        List<List<XGraph.XVertex>> components = getComponents();
+        XGraph.XVertex componentVertices[] = new XGraph.XVertex[components.size()];
+
+        int index = 0;
+        //create component
+        for (List<XGraph.XVertex> component : components) {
+            componentVertices[index++] = createComponent(component);
+        }
+        //Add edges
+        for (XGraph.XVertex component : componentVertices) {
+            if(component.isComponent){
+                //Disable vertex and edges of the children and get minimum edge
+                XGraph.XEdge edge = getMinIncomingEdges(component.children);
+                if(edge!=null){
+                    component.revAdj.add(edge);
+                    int otherCno = cc.getCCVertex(edge.from).cno;
+                    componentVertices[otherCno -1].XAdj.add(edge);
                 }
             }
         }
     }
 
-    private Graph.Edge[] getMinEdges(List<XGraph.XVertex> component, int componentCount) {
-        Graph.Edge[] adj = new XGraph.Edge[componentCount];
+    private XGraph.XVertex createComponent(List<XGraph.XVertex> component) {
+        if (component.size() == 1) {
+            return component.get(0);
+        }
+        Graph.Vertex gVertex = new Graph.Vertex(graph.getSize());
+        XGraph.XVertex vertex = new XGraph.XVertex(gVertex);
+        vertex.isComponent = true;
+        vertex.children = component;
+        graph.addVertex(vertex);
+        return vertex;
+    }
+
+    private XGraph.XEdge getMinIncomingEdges(List<XGraph.XVertex> component) {
+        XGraph.XEdge adj = null;
         for (XGraph.XVertex vertex : component) {
-            if (vertex.adj.size() > 0) {
+            if (vertex.revXadj.size() > 0) {
                 int cno = cc.getCCVertex(vertex).cno, otherCno;
-                for (XGraph.Edge edge : vertex.adj) {
-                    otherCno = cc.getCCVertex(edge.otherEnd(vertex)).cno-1;
+                for (XGraph.XEdge edge : vertex.revXadj) {
+                    otherCno = cc.getCCVertex(edge.otherEnd(vertex)).cno;
                     if (cno != otherCno) {
-                        if (adj[otherCno] == null || adj[otherCno].getWeight() > edge.getWeight()) {
-                            adj[otherCno] = edge;
+                        if (adj == null || adj.getWeight() > edge.getWeight()) {
+                            if(adj != null){
+                                adj.disabled = true;
+                            }
+                            adj = edge;
+                        }
+                        else {
+                            edge.disabled = true;
                         }
                     }
                 }
