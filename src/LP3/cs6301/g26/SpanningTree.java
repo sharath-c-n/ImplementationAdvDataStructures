@@ -42,6 +42,8 @@ public class SpanningTree {
     public int findSpanningTree() {
         toZeroWeightGraph(graph, source);
        // shrinkComponents();
+        SCC scc= new SCC( graph,source);
+        scc.Connected();
         printGraph(graph);
         return 0;
     }
