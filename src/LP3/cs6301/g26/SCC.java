@@ -24,7 +24,7 @@ public class SCC extends CC {
     void finishedOrder(Graph.Vertex v, Stack<Graph.Vertex> St)
     {
         getCCVertex(v).seen=true;
-        for(Graph.Edge t:v.adj)
+        for(Graph.Edge t:v.revAdj)
             if(!getCCVertex(t.otherEnd(v)).seen)
                 finishedOrder(t.otherEnd(v), St);
         St.push(v);
