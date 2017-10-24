@@ -12,10 +12,7 @@ public class SCC extends CC {
         this.src=src;
     }
    public void Connected(){
-       xg.disable(4);
-       xg.disable(3);
         int nc=findCC();
-
         System.out.println("Input Graph has " + nc + " components:");
         for(Graph.Vertex u: xg) {
             System.out.print(u + " [ " + getCCVertex(u).cno + " ] :");
