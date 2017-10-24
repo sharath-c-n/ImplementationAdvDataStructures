@@ -13,13 +13,13 @@ import static cs6301.g26.LP3.printGraph;
  * 23/10/2017
  */
 public class SpanningTree {
-    private CC cc;
+    private SCC cc;
     private XGraph.XVertex source;
     private XGraph graph;
 
     SpanningTree(XGraph graph, XGraph.XVertex source) {
         this.graph = graph;
-        cc = new CC(graph);
+        cc = new SCC(graph,source);
         this.source = source;
     }
 
@@ -49,7 +49,7 @@ public class SpanningTree {
 
     //Get a list of all Strongly connected component
     private List<List<XGraph.XVertex>> getComponents() {
-        int componentCount = cc.findCC();
+        int componentCount = cc.findSSC();
         List<List<XGraph.XVertex>> components = new ArrayList<>();
         for (int i = 0; i < componentCount; i++) {
             components.add(new ArrayList<>());
