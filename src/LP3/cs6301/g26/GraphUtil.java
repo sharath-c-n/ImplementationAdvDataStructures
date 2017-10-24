@@ -12,11 +12,11 @@ import java.util.List;
  */
 public class GraphUtil extends GraphAlgorithm<GraphUtil.Vertex> {
 
-    public GraphUtil(Graph g) {
+    public GraphUtil(XGraph g) {
         super(g);
         node = new Vertex[g.size()];
         for (Graph.Vertex u : g) {
-            setVertex(u,new Vertex());
+            node[u.getName()] = new Vertex();
         }
     }
 

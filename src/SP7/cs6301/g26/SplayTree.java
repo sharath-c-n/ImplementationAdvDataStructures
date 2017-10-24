@@ -1,9 +1,10 @@
-/** Starter code for Splay Tree
- */
 package cs6301.g26;
 
-import java.util.Comparator;
 import java.util.Scanner;
+/**
+ *
+ * @author : Ankitha
+ */
 
 public class SplayTree<T extends Comparable<? super T>> extends BST<T> {
     static class Entry<T> extends BST.Entry<T> {
@@ -132,7 +133,7 @@ public class SplayTree<T extends Comparable<? super T>> extends BST<T> {
       *   @param key : value to be splayed to root
       *   @return deleted Entry*/
 
-    private Entry splay(Entry<T> h, T key) {
+    private Entry<T> splay(Entry<T> h, T key) {
         if (h == null) return null;
 
         int cmp1 = key.compareTo(h.key);
@@ -212,9 +213,6 @@ public class SplayTree<T extends Comparable<? super T>> extends BST<T> {
                     System.out.println("Is Splay : " + false);
                 }
             }
-            else{
-
-            }
         }
 
         System.out.print("Iterator : ");
@@ -223,7 +221,6 @@ public class SplayTree<T extends Comparable<? super T>> extends BST<T> {
         }
         System.out.println("\nMin : " + t.min());
         System.out.println("Max : " + t.max());
-       // System.out.println("Is Splay  : " + TestTrees.isSplay(t.root));
     }
 
 

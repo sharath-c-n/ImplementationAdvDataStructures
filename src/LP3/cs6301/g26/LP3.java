@@ -62,18 +62,18 @@ public class LP3 {
 
         XGraph xg = new XGraph(g);
         Vertex src = xg.getVertex(1);
-        BFSZeroEdge zeroGraph = new BFSZeroEdge(xg, src);
-        zeroGraph.computeZeroEdgeGraph();
-        printGraph(g);
+        SpanningTree spanningTree = new SpanningTree(xg, (XGraph.XVertex) src);
+        spanningTree.findSpanningTree();
+        //SpanningTree.toZeroWeightGraph(xg, (XGraph.XVertex) src);
         SCC ns= new SCC(xg,src);
         ns.Connected();
         return 0;
     }
 
-    static void printGraph(Graph g) {
-        for (Graph.Vertex v : g) {
+    static void printGraph(XGraph g) {
+        for (XGraph.Vertex v : g) {
             for (Graph.Edge e : v) {
-                System.out.println(v + " " + e.otherEnd(v) + " " + e.weight);
+                System.out.println(v + " " + e.otherEnd(v) + " " + e.getWeight());
             }
         }
     }

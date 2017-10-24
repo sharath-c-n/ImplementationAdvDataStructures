@@ -8,8 +8,6 @@ package cs6301.g26;
  */
 public class TestTrees {
 
-
-
     static class Tuple {
         int height;
         boolean isBalanced;
@@ -17,6 +15,11 @@ public class TestTrees {
         public Tuple(int height, boolean isBalanced) {
             this.height = height;
             this.isBalanced = isBalanced;
+        }
+
+        @Override
+        public String toString() {
+            return height + " , " + isBalanced;
         }
     }
 
@@ -59,6 +62,37 @@ public class TestTrees {
                 isBST(node.getRight(), node.getKey(), max);
     }
 
+    static <T extends Comparable<? super T>>  Tuple isRBBalanced(RedBlackTree.Entry<T> node) {
+        if (node == null) {
+            return new Tuple(0, true);
+        }
+
+        if (node.getLeft() == null && node.getRight() == null) {
+            return new Tuple(node.isRed?0:1, true);
+        }
+
+        Tuple left = isRBBalanced(node.getLeft());
+        Tuple right = isRBBalanced(node.getRight());
+
+          /* Height of current node is max of heights of left and
+             right subtrees plus 1*/
+        int height = Math.max(left.height, right.height) + (node.isRed?0:1);
+        if(node.getLeft() == null || node.getRight() == null){
+            return new Tuple(height,left.isBalanced && right.isBalanced);
+        }
+
+      /* If difference between heights of left and right
+         subtrees is more than 1 then this node is not balanced
+         so return false */
+        if (left.height!=right.height)
+            return new Tuple(height, false);
+
+          /* If this node is balanced and left and right subtrees
+            are balanced then return true */
+        else
+            return new Tuple(height, left.isBalanced && right.isBalanced);
+    }
+
     static boolean isAvl(TreeEntry<Integer> node){
         return isBST(node,Integer.MIN_VALUE,Integer.MAX_VALUE) &&
                 isBalanced(node).isBalanced;
@@ -70,33 +104,7 @@ public class TestTrees {
     }
     static boolean isRedBlack(RedBlackTree.Entry<Integer> node){
         return isBST(node,Integer.MIN_VALUE,Integer.MAX_VALUE) &&
-                blackHeight(node).isBalanced;
-
-    }
-
-    static Tuple blackHeight(RedBlackTree.Entry<Integer> node)
-    {
-        if (node == null) {
-            return new Tuple(0, true);
-        }
-        if(node.left == null && node.right == null){
-            return new Tuple(node.isRed?0:1, true);
-        }
-
-        Tuple left = blackHeight(node.getLeft());
-        Tuple right = blackHeight(node.getRight());
-
-      /* If difference between heights of left and right
-         subtrees is more than 1 then this node is not balanced
-         so return 0 */
-        if ((node.getLeft()!=null && node.getRight() != null) && left.height != right.height)
-            return new Tuple(0, false);
-
-          /* If this node is balanced and left and right subtrees
-            are balanced then return true */
-        else
-            return new Tuple(!node.isRed?left.height+1:left.height , left.isBalanced && right.isBalanced);
-
+                isRBBalanced(node).isBalanced;
 
     }
 
