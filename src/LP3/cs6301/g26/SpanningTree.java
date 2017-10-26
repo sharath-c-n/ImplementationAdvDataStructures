@@ -44,6 +44,7 @@ public class SpanningTree {
         shrinkComponents();
         toZeroWeightGraph(graph, source);
         printGraph(graph);
+        shrinkComponents();
         return 0;
     }
 
@@ -89,6 +90,10 @@ public class SpanningTree {
                     } else if (adj != null && adj.getWeight() < minEdge.getWeight()) {
                         minEdge.disabled = true;
                         minEdge = adj;
+                    }
+                    else
+                    {
+                        adj.disabled = true;
                     }
                     vertex.disable();
                 }
