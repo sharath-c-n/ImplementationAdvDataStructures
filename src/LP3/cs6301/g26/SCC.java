@@ -6,10 +6,10 @@ package cs6301.g26;
 import java.util.Stack;
 
 public class SCC extends CC {
-     XGraph xg;
-     Graph.Vertex src;
+     private XGraph xg;
+     private Graph.Vertex src;
     SCC(XGraph g, Graph.Vertex src){
-        super((Graph)g);
+        super(g);
         this.xg=g;
         this.src=src;
     }
@@ -32,17 +32,17 @@ public class SCC extends CC {
 
     int findSSC()
     {
-        Stack<Graph.Vertex> St =new Stack<>();
+        Stack<Graph.Vertex> stack =new Stack<>();
         for( Graph.Vertex v: g)
             if(!getCCVertex(v).seen)
-                finishedOrder(v, St);
+                finishedOrder(v, stack);
         for(Graph.Vertex v:g)
             getCCVertex(v).seen=false;
         int count=0;
-        while (!St.empty())
+        while (!stack.empty())
         {
-            Graph.Vertex v = St.peek();
-            St.pop();
+            Graph.Vertex v = stack.peek();
+            stack.pop();
             if (!getCCVertex(v).seen) {
                 count++;
                 dfsVisit(v, count);

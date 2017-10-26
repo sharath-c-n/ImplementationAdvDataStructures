@@ -63,9 +63,7 @@ public class LP3 {
         XGraph xg = new XGraph(g);
         Vertex src = xg.getVertex(1);
         SpanningTree spanningTree = new SpanningTree(xg, (XGraph.XVertex) src);
-        spanningTree.findSpanningTree();
-       // SCC ns= new SCC(xg,src);
-        //ns.Connected();
+        spanningTree.findSpanningTree(dmst);
         return 0;
     }
 

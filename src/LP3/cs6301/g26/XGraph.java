@@ -166,7 +166,7 @@ public class XGraph extends Graph {
         boolean ready;
 
         XGraphIterator(XGraph xg) {
-            this.it = new ArrayIterator<>(xg.xv, 0, xg.size() - 1);  // Iterate over existing elements only
+            this.it = new ArrayIterator<>(xg.xv, 0, getSize() - 1);  // Iterate over existing elements only
         }
 
 
@@ -254,5 +254,13 @@ public class XGraph extends Graph {
     void disable(int i) {
         XVertex u = (XVertex) getVertex(i);
         u.disable();
+    }
+
+    public int size(){
+        return xVertexSize;
+    }
+
+    public int getOriginalSize(){
+        return super.size();
     }
 }
