@@ -63,8 +63,7 @@ public class LP3 {
         XGraph xg = new XGraph(g);
         Vertex src = xg.getVertex(1);
         SpanningTree spanningTree = new SpanningTree(xg, (XGraph.XVertex) src);
-        spanningTree.findSpanningTree(dmst);
-        return 0;
+        return spanningTree.findSpanningTree(dmst);
     }
 
     static void printGraph(XGraph g) {
