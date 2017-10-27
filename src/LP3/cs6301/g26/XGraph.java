@@ -33,6 +33,8 @@ public class XGraph extends Graph {
         List<XEdge> XAdj;
         List<XEdge> revXadj;
         boolean isAdjItr =true;
+        int componentNo;
+        Graph.Edge stEdge;
         XVertex(Vertex u) {
             super(u);
             disabled = false;
@@ -264,5 +266,18 @@ public class XGraph extends Graph {
 
     public int getOriginalSize(){
         return super.size();
+    }
+    public void enableAll(){
+        int count =0;
+        for(XVertex v : xv){
+            if(count == xVertexSize){
+                break;
+            }
+            count++;
+            if(!v.isComponent)
+                v.disabled = false;
+            else
+                v.disabled = true;
+        }
     }
 }
