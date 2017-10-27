@@ -32,13 +32,16 @@ public class XGraph extends Graph {
         List<XVertex> children;
         List<XEdge> XAdj;
         List<XEdge> revXadj;
-
+        boolean isAdjItr =true;
         XVertex(Vertex u) {
             super(u);
             disabled = false;
             isComponent = false;
             XAdj = new LinkedList<>();
             revXadj = new LinkedList<>();
+        }
+        public void setRevItr(){
+            isAdjItr = false;
         }
 
         boolean isDisabled() {
@@ -55,13 +58,14 @@ public class XGraph extends Graph {
 
         @Override
         public Iterator<Edge> iterator() {
-            return new XZeroEdgeIterator(this);
+            Iterator<Edge>itr = isAdjItr? new XZeroEdgeIterator(this.XAdj):new XZeroEdgeIterator(this.revXadj);
+            isAdjItr = true;
+            return itr;
         }
 
         public Iterator<Edge> nonZeroIterator() {
-            return new XZeroEdgeIterator(this);
+            return new XVertexIterator(this);
         }
-
 
         class XVertexIterator implements Iterator<Edge> {
             XEdge cur;
@@ -116,9 +120,7 @@ public class XGraph extends Graph {
         }
 
         boolean isDisabled() {
-            XVertex xfrom = (XVertex) from;
-            XVertex xto = (XVertex) to;
-            return disabled || xfrom.isDisabled() || xto.isDisabled();
+            return disabled;
         }
 
         @Override
@@ -203,8 +205,8 @@ public class XGraph extends Graph {
         XEdge xcur;
         boolean ready;
 
-        XZeroEdgeIterator(XVertex vertex) {
-            this.it = vertex.XAdj.iterator();
+        XZeroEdgeIterator(List<XEdge> vertex) {
+            this.it = vertex.iterator();
         }
 
 
