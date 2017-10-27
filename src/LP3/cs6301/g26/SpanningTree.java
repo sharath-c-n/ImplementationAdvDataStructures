@@ -36,15 +36,16 @@ public class SpanningTree {
                 e.setWeight(e.getWeight() - min);
         }
         src.enable();
-        printEdges(graph);
     }
 
     public int findSpanningTree(List<Graph.Edge> edges) {
-        toZeroWeightGraph(graph, source);
-        shrinkComponents();
-        toZeroWeightGraph(graph, source);
-        printGraph(graph);
-        shrinkComponents();
+        BFSZeroEdge bfsZero=new BFSZeroEdge(graph,source);
+        while( !bfsZero.isSpanningTree()) {
+            toZeroWeightGraph(graph, source);
+            shrinkComponents();
+            printGraph(graph);
+            bfsZero=new BFSZeroEdge(graph,source);
+        }
         return 0;
     }
 
@@ -76,42 +77,33 @@ public class SpanningTree {
         //Add edges
         for (XGraph.XVertex component : componentVertices) {
             //Don't process source
-            if (component == source) {
+         /*   if (component == source) {
                 continue;
-            }
-            XGraph.XEdge minEdge = null;
+            }*/
+         //   XGraph.XEdge minEdge = null;
             //Disable vertex and edges of the children and get minimum edge
-            if (component.isComponent) {
-                XGraph.XEdge adj;
+            XGraph.XEdge[] minEdges = new XGraph.XEdge[components.size()];
+            if (component.isComponent && component.XAdj.size() == 0) {
                 for (XGraph.XVertex vertex : component.children) {
-                    adj = getMinIncomingEdges(vertex);
-                    if (minEdge == null) {
-                        minEdge = adj;
-                    } else if (adj != null && adj.getWeight() < minEdge.getWeight()) {
-                        minEdge.disabled = true;
-                        minEdge = adj;
-                    }
-                    else
-                    {
-                        adj.disabled = true;
-                    }
+                    getMinIncomingEdges(vertex, minEdges);
                     vertex.disable();
                 }
             } else {
-                minEdge = getMinIncomingEdges(component);
+                getMinIncomingEdges(component, minEdges);
             }
-
-            if (minEdge != null) {
-                XGraph.XVertex fromVertex = componentVertices[getComponentNo(minEdge.from)];
-                //Edge already there in original graph no need to add
-                if (fromVertex == minEdge.from && component == minEdge.to) {
-                    continue;
+            for (XGraph.XEdge minEdge : minEdges) {
+                if (minEdge != null) {
+                    XGraph.XVertex toVertex = componentVertices[getComponentNo(minEdge.to)];
+                    //Edge already there in original graph no need to add
+                    if (toVertex == minEdge.to && component == minEdge.from) {
+                        continue;
+                    }
+                    //Need to create a new vertex
+                    minEdge.disabled = true;
+                    minEdge = new XGraph.XEdge(component, toVertex, minEdge.getWeight(), minEdge.original);
+                    component.XAdj.add(minEdge);
+                    toVertex.revXadj.add(minEdge);
                 }
-                //Need to create a new vertex
-                minEdge.disabled = true;
-                minEdge = new XGraph.XEdge(fromVertex, component, minEdge.getWeight(), minEdge.original);
-                component.revXadj.add(minEdge);
-                fromVertex.XAdj.add(minEdge);
             }
         }
     }
@@ -132,31 +124,36 @@ public class SpanningTree {
         return vertex;
     }
 
-    private XGraph.XEdge getMinIncomingEdges(XGraph.XVertex vertex) {
-        XGraph.XEdge adj = null;
-        if (vertex.revXadj.size() > 0) {
-            int cno = cc.getCCVertex(vertex).cno, otherCno;
-            for (XGraph.XEdge edge : vertex.revXadj) {
-                otherCno = cc.getCCVertex(edge.otherEnd(vertex)).cno;
+    private void getMinIncomingEdges(XGraph.XVertex vertex, XGraph.XEdge [] minEdges) {
+        //XGraph.XEdge adj = null;
+
+        if (vertex.XAdj.size() > 0) {
+            for (XGraph.XEdge edge : vertex.XAdj) {
+                if( edge.isDisabled())
+                    continue;
+            int cno = getComponentNo(vertex), otherCno;
+                otherCno = getComponentNo(edge.otherEnd(vertex));
                 if (cno != otherCno) {
-                    if (adj == null || adj.getWeight() > edge.getWeight()) {
+                    XGraph.XEdge adj= minEdges[otherCno];
+                    if (adj == null || minEdges[otherCno].getWeight() > edge.getWeight()) {
                         if (adj != null) {
                             adj.disabled = true;
                         }
-                        adj = edge;
+                        minEdges[otherCno] = edge;
                     } else {
                         edge.disabled = true;
                     }
                 }
             }
         }
-        return adj;
+
     }
 
     static public void printEdges(XGraph graph) {
         System.out.println("Printing Graph edges");
-        for (Graph.Vertex vertex : graph) {
-            for (XGraph.Edge e : vertex) {
+        for (XGraph.Vertex vertex : graph) {
+            for (XGraph.Edge e : ((XGraph.XVertex)vertex).XAdj) {
+                if(!((XGraph.XEdge)e).isDisabled())
                 System.out.println(e);
             }
         }

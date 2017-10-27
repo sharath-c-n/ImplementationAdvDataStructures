@@ -21,12 +21,14 @@ public class SCC extends CC {
         }
     }
 
-    void finishedOrder(Graph.Vertex v, Stack<Graph.Vertex> St)
+    void finishedOrder(XGraph.XVertex v, Stack<Graph.Vertex> St)
     {
         getCCVertex(v).seen=true;
-        for(Graph.Edge t:v.adj)
+     //   System.out.println("Vertex "+v+" List is "+v.revXadj);
+        v.setRevItr();
+        for(XGraph.Edge t:v)
             if(!getCCVertex(t.otherEnd(v)).seen)
-                finishedOrder(t.otherEnd(v), St);
+                finishedOrder((XGraph.XVertex) t.otherEnd(v), St);
         St.push(v);
     }
 
@@ -35,7 +37,7 @@ public class SCC extends CC {
         Stack<Graph.Vertex> stack =new Stack<>();
         for( Graph.Vertex v: g)
             if(!getCCVertex(v).seen)
-                finishedOrder(v, stack);
+                finishedOrder((XGraph.XVertex) v, stack);
         for(Graph.Vertex v:g)
             getCCVertex(v).seen=false;
         int count=0;

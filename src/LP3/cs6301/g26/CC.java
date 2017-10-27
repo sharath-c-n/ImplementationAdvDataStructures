@@ -46,7 +46,7 @@ public class CC {
 
     void dfsVisit(Graph.Vertex u, int cno) {
         visit(u, cno);
-        for(Graph.Edge e: u.revAdj) {
+        for(Graph.Edge e: u) {
             Graph.Vertex v = e.otherEnd(u);
             if(!seen(v)) {
                 dfsVisit(v, cno);

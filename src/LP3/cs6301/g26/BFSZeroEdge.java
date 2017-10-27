@@ -10,26 +10,25 @@ public class BFSZeroEdge extends BFS {
     BFSZeroEdge(Graph g, Graph.Vertex src) {
         super(g, src);
     }
-    public void computeZeroEdgeGraph() {
-        Queue<Graph.Vertex> q = new LinkedList<>();
-        q.add(src);
-        getVertex(src).seen = true;
-        while (!q.isEmpty()) {
-            Graph.Vertex u = q.remove();
-            int min = Integer.MAX_VALUE;
-            for (Graph.Edge e : u.revAdj) {
-                if (e.weight < min) ;
-                min = e.weight;
+    boolean isSpanningTree(){
+        bfs();
+       // System.out.println("Iteration ");
+        printGraph(this);
+        for(XGraph.Vertex vertex:g ){
+            if(vertex!=null && vertex!=src ){
+                if(!seen(vertex))
+                    return false;
             }
-            for (Graph.Edge e : u.revAdj)
-                e.weight = e.weight - min;
-            for (Graph.Edge e : u) {
-                Graph.Vertex v = e.otherEnd(u);
-                if (!seen(v)) {
-                    visit(u, v);
-                    q.add(v);
-                }
+        }
+        return  true;
+    }
+    void printGraph(BFS b) {
+        for(Graph.Vertex u: g) {
+            System.out.print("  " + u + "  :   " + b.distance(u) + "  : ");
+            for(Graph.Edge e: u) {
+                System.out.print(e);
             }
+            System.out.println();
         }
     }
 }
