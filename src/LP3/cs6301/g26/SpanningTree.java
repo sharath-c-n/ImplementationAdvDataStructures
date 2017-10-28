@@ -54,18 +54,16 @@ public class SpanningTree {
     }
 
     private void expand(XGraph.XVertex source, Graph.Edge edge) {
+        if (source.seen) {
+            return;
+        }
+        source.seen = true;
         XGraph.XEdge xEdge = (XGraph.XEdge) edge;
         if (source.isComponent) {
             //Expand the component which edge.to vertex as root
             expand(graph.getVertex(xEdge.original.toVertex()), xEdge.original);
         } else if (edge != null) {
-            //If vertex not visited
-            if (source.stEdge == null) {
-                source.stEdge = xEdge.original;
-            } else {
-                //Return if already explored
-                return;
-            }
+            source.stEdge = xEdge.original;
         }
         //explore other components
         for (Graph.Edge e : source) {
@@ -131,7 +129,7 @@ public class SpanningTree {
                 if (toVertex == minEdge.toVertex() && component == minEdge.fromVertex()) {
                     continue;
                 }
-                //Need to create a new vertex
+                //Need to create a new edge
                 minEdge.disabled = true;
                 //Avoid loopback
                 if (toVertex.isComponent && toVertex != minEdge.toVertex()) {
@@ -173,7 +171,7 @@ public class SpanningTree {
                     }
                     minEdges.put(otherCno, (XGraph.XEdge) edge);
                 } else {
-                    ((XGraph.XEdge)edge).disabled = true;
+                    ((XGraph.XEdge) edge).disabled = true;
                 }
             }
         }
