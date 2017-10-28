@@ -1,6 +1,5 @@
 package cs6301.g26;
 
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -9,7 +8,7 @@ import java.util.Map;
 import cs6301.g00.Graph;
 
 /**
- * SpanningTree:
+ * SpanningTree: Finds A Spanning tree for a directed non negative weighted graph.
  * @author : Sharath
  * 23/10/2017
  */
@@ -24,8 +23,35 @@ public class SpanningTree {
         scc = new SCC(this.graph, this.source);
     }
 
-    private void toZeroWeightGraph(XGraph graph, XGraph.XVertex src) {
-        src.disable();
+    /**
+     * This is the main function which will generate the spanning tree for the input graph
+     *
+     * @param edges : this list will contains the edges of the spanning tree at the end of run.
+     * @return : weight of the spanning tree
+     */
+    public int findSpanningTree(List<Graph.Edge> edges) {
+        while (!isSpanningTree()) {
+            toZeroWeightGraph();
+            shrinkComponents();
+        }
+        return populateEdges(edges);
+    }
+
+    /**
+     * Checks if the current graph has a spanning tree of zero edges
+     * @return : true is there is a spanning tree of zero edges else false.
+     */
+    private boolean isSpanningTree() {
+        BFSZeroEdge bfsZero = new BFSZeroEdge(graph, source);
+        return bfsZero.isSpanningTree();
+    }
+
+    /**
+     * This will reduce the weight of the incoming edges of every vertex by the weight of the edge with
+     * minimum weight of all the incoming edges to that particular vertex.
+     */
+    private void toZeroWeightGraph() {
+        source.disable();
         for (Graph.Vertex v : graph) {
             int min = Integer.MAX_VALUE;
             XGraph.XVertex vertex = (XGraph.XVertex) v;
@@ -37,68 +63,12 @@ public class SpanningTree {
             for (Graph.Edge e : vertex.revXadj)
                 e.setWeight(e.getWeight() - min);
         }
-        src.enable();
+        source.enable();
     }
 
-    public int findSpanningTree(List<Graph.Edge> edges) {
-        BFSZeroEdge bfsZero = new BFSZeroEdge(graph, source);
-        while (!bfsZero.isSpanningTree()) {
-            toZeroWeightGraph(graph, source);
-            shrinkComponents();
-            bfsZero = new BFSZeroEdge(graph, source);
-        }
-        expand(source, null);
-        graph.enableGraphVertices();
-        return populateEdges(edges);
-    }
-
-    private void expand(XGraph.XVertex source, Graph.Edge edge) {
-        if (source.seen) {
-            return;
-        }
-        source.seen = true;
-        XGraph.XEdge xEdge = (XGraph.XEdge) edge;
-        if (source.isComponent) {
-            //Expand the component which edge.to vertex as root
-            expand(graph.getVertex(xEdge.original.toVertex()), xEdge.original);
-        } else if (edge != null) {
-            source.stEdge = xEdge.original;
-        }
-        //explore other components
-        for (Graph.Edge e : source) {
-            expand(graph.getVertex(e.toVertex()), e);
-        }
-    }
-
-    private int populateEdges(List<Graph.Edge> edges) {
-        int weight = 0;
-        for (Graph.Vertex v : graph) {
-
-            Graph.Edge edge = ((XGraph.XVertex) v).stEdge;
-            if (edge != null) {
-                weight += edge.getWeight();
-            }
-            edges.add(edge);
-        }
-        return weight;
-    }
-
-    //Get a list of all Strongly connected component
-    private List<List<XGraph.XVertex>> getComponents() {
-        scc = new SCC(graph, source);
-        int componentCount = scc.findSSC();
-        List<List<XGraph.XVertex>> components = new ArrayList<>();
-        for (int i = 0; i < componentCount; i++) {
-            components.add(new ArrayList<>());
-        }
-        for (Graph.Vertex vertex : graph) {
-            CC.CCVertex component = scc.getCCVertex(vertex);
-            components.get(component.cno - 1).add((XGraph.XVertex) vertex);
-        }
-        return components;
-    }
-
-    //Create components and disable the contents of the component
+    /**
+     * Creates components and disables the contents of the components.
+     */
     private void shrinkComponents() {
         List<List<XGraph.XVertex>> components = getComponents();
         XGraph.XVertex componentVertices[] = new XGraph.XVertex[components.size()];
@@ -126,7 +96,7 @@ public class SpanningTree {
             }
             for (Map.Entry<Integer, XGraph.XEdge> edgeEntry : minEdges.entrySet()) {
                 XGraph.XEdge minEdge = edgeEntry.getValue();
-                XGraph.XVertex toVertex = componentVertices[getComponentNo(minEdge.toVertex())];
+                XGraph.XVertex toVertex = componentVertices[scc.getComponentNo(minEdge.toVertex())];
                 //Edge already there in original graph no need to add
                 if (toVertex == minEdge.toVertex() && component == minEdge.fromVertex()) {
                     continue;
@@ -145,14 +115,80 @@ public class SpanningTree {
         }
     }
 
-    private int getComponentNo(Graph.Vertex v) {
-        return scc.getCCVertex(v).cno - 1;
+    /**
+     * This will generate the MST edges list and also calculates the total MST weight
+     * @param edges : edges list
+     * @return : weigh of the MST
+     */
+    private int populateEdges(List<Graph.Edge> edges) {
+        expand(source, null);
+        graph.enableGraphVertices();
+        int weight = 0;
+        for (Graph.Vertex v : graph) {
+
+            Graph.Edge edge = ((XGraph.XVertex) v).stEdge;
+            if (edge != null) {
+                weight += edge.getWeight();
+            }
+            edges.add(edge);
+        }
+        return weight;
     }
 
+    /**
+     * Expands each components and finds the MST in them.
+     * @param source : root of the MST to be found in the component
+     * @param edge   : incoming edge to the root
+     */
+    private void expand(XGraph.XVertex source, Graph.Edge edge) {
+        if (source.seen) {
+            return;
+        }
+        source.seen = true;
+        XGraph.XEdge xEdge = (XGraph.XEdge) edge;
+        if (source.isComponent) {
+            //Expand the component which edge.to vertex as root
+            expand(graph.getVertex(xEdge.original.toVertex()), xEdge.original);
+        } else if (edge != null) {
+            source.stEdge = xEdge.original;
+        }
+        //explore other components
+        for (Graph.Edge e : source) {
+            expand(graph.getVertex(e.toVertex()), e);
+        }
+    }
+
+
+
+    /**
+     * Creates a consolidated list of all SCC
+     * @return :list of all Strongly connected component
+     */
+    private List<List<XGraph.XVertex>> getComponents() {
+        scc = new SCC(graph, source);
+        int componentCount = scc.findSSC();
+        List<List<XGraph.XVertex>> components = new ArrayList<>();
+        for (int i = 0; i < componentCount; i++) {
+            components.add(new ArrayList<>());
+        }
+        for (Graph.Vertex vertex : graph) {
+            CC.CCVertex component = scc.getCCVertex(vertex);
+            components.get(component.cno - 1).add((XGraph.XVertex) vertex);
+        }
+        return components;
+    }
+
+
+
+    /**
+     * Returns a list of all minimum outgoing edges out of all the children in the component
+     * @param vertex   : child of the component
+     * @param minEdges : list of edges
+     */
     private void getMinEdges(XGraph.XVertex vertex, HashMap<Integer, XGraph.XEdge> minEdges) {
         for (Graph.Edge edge : vertex.getNonZeroItr()) {
-            int cno = getComponentNo(vertex), otherCno;
-            otherCno = getComponentNo(edge.otherEnd(vertex));
+            int cno = scc.getComponentNo(vertex), otherCno;
+            otherCno = scc.getComponentNo(edge.otherEnd(vertex));
             if (cno != otherCno) {
                 XGraph.XEdge adj = minEdges.get(otherCno);
                 if (adj == null || adj.getWeight() > edge.getWeight()) {

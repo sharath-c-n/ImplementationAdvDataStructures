@@ -15,13 +15,6 @@ public class SCC extends CC {
         this.xg=g;
         this.src=src;
     }
-   public void Connected(){
-        int nc=findSSC();
-        System.out.println("Input Graph has " + nc + " components:");
-        for(Graph.Vertex u: xg) {
-            System.out.println(u + " [ " +" has a component " + getCCVertex(u).cno + " ] :");
-        }
-    }
 
     void finishedOrder(XGraph.XVertex v, Stack<Graph.Vertex> St)
     {
@@ -52,4 +45,9 @@ public class SCC extends CC {
         }
         return count;
     }
+
+    public int getComponentNo(Graph.Vertex v) {
+        return getCCVertex(v).cno - 1;
+    }
+
 }
