@@ -58,10 +58,7 @@ public class LP3 {
      * The function should return the total weight of the MST it found.
      */
     public static int directedMST(Graph g, Vertex start, List<Edge> dmst) {
-
-        XGraph xg = new XGraph(g);
-        Vertex src = xg.getVertex(1);
-        SpanningTree spanningTree = new SpanningTree(xg, (XGraph.XVertex) src);
+        SpanningTree spanningTree = new SpanningTree(g, start);
         return spanningTree.findSpanningTree(dmst);
     }
 

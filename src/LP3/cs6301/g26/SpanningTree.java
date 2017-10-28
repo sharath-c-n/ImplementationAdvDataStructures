@@ -10,19 +10,18 @@ import cs6301.g00.Graph;
 
 /**
  * SpanningTree:
- *
  * @author : Sharath
  * 23/10/2017
  */
 public class SpanningTree {
-    private SCC cc;
+    private SCC scc;
     private XGraph.XVertex source;
     private XGraph graph;
 
-    SpanningTree(XGraph graph, XGraph.XVertex source) {
-        this.graph = graph;
-        cc = new SCC(graph, source);
-        this.source = source;
+    SpanningTree(Graph graph, Graph.Vertex source) {
+        this.graph = new XGraph(graph);
+        this.source = this.graph.getVertex(source);
+        scc = new SCC(this.graph, this.source);
     }
 
     private void toZeroWeightGraph(XGraph graph, XGraph.XVertex src) {
@@ -49,7 +48,7 @@ public class SpanningTree {
             bfsZero = new BFSZeroEdge(graph, source);
         }
         expand(source, null);
-        graph.enableAll();
+        graph.enableGraphVertices();
         return populateEdges(edges);
     }
 
@@ -86,14 +85,14 @@ public class SpanningTree {
 
     //Get a list of all Strongly connected component
     private List<List<XGraph.XVertex>> getComponents() {
-        cc = new SCC(graph, source);
-        int componentCount = cc.findSSC();
+        scc = new SCC(graph, source);
+        int componentCount = scc.findSSC();
         List<List<XGraph.XVertex>> components = new ArrayList<>();
         for (int i = 0; i < componentCount; i++) {
             components.add(new ArrayList<>());
         }
         for (Graph.Vertex vertex : graph) {
-            CC.CCVertex component = cc.getCCVertex(vertex);
+            CC.CCVertex component = scc.getCCVertex(vertex);
             components.get(component.cno - 1).add((XGraph.XVertex) vertex);
         }
         return components;
@@ -118,12 +117,12 @@ public class SpanningTree {
             //Process all child vertices only if this is a new component
             if (components.get(index).size() > 1) {
                 for (XGraph.XVertex vertex : components.get(index++)) {
-                    getMinIncomingEdges(vertex, minEdges);
+                    getMinEdges(vertex, minEdges);
                     vertex.disable();
                 }
             } else {
                 index++;
-                getMinIncomingEdges(component, minEdges);
+                getMinEdges(component, minEdges);
             }
             for (Map.Entry<Integer, XGraph.XEdge> edgeEntry : minEdges.entrySet()) {
                 XGraph.XEdge minEdge = edgeEntry.getValue();
@@ -147,10 +146,10 @@ public class SpanningTree {
     }
 
     private int getComponentNo(Graph.Vertex v) {
-        return cc.getCCVertex(v).cno - 1;
+        return scc.getCCVertex(v).cno - 1;
     }
 
-    private void getMinIncomingEdges(XGraph.XVertex vertex, HashMap<Integer, XGraph.XEdge> minEdges) {
+    private void getMinEdges(XGraph.XVertex vertex, HashMap<Integer, XGraph.XEdge> minEdges) {
         for (Graph.Edge edge : vertex.getNonZeroItr()) {
             int cno = getComponentNo(vertex), otherCno;
             otherCno = getComponentNo(edge.otherEnd(vertex));

@@ -251,17 +251,14 @@ public class XGraph extends Graph {
         return xVertexSize;
     }
 
-    public void enableAll() {
+    public void enableGraphVertices() {
         int count = 0;
         for (XVertex v : xv) {
             if (count == xVertexSize) {
                 break;
             }
             count++;
-            if (!v.isComponent)
-                v.disabled = false;
-            else
-                v.disabled = true;
+            v.disabled = v.isComponent;
         }
     }
 }
