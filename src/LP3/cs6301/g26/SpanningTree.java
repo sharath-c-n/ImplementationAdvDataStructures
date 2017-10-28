@@ -105,21 +105,24 @@ public class SpanningTree {
         XGraph.XVertex componentVertices[] = new XGraph.XVertex[components.size()];
 
         int index = 0;
-        //create component
+        //create or assign component
         for (List<XGraph.XVertex> component : components) {
-            componentVertices[index++] = createComponent(component);
-
+            componentVertices[index++] = component.size() == 1 ? component.get(0) :
+                    graph.getNewComponent();
         }
+        index = 0;
         //Add edges
         for (XGraph.XVertex component : componentVertices) {
             //Disable vertex and edges of the children and get minimum edge
             HashMap<Integer, XGraph.XEdge> minEdges = new HashMap<>();
-            if (component.isComponent && component.XAdj.size() == 0) {
-                for (XGraph.XVertex vertex : component.children) {
+            //Process all child vertices only if this is a new component
+            if (components.get(index).size() > 1) {
+                for (XGraph.XVertex vertex : components.get(index++)) {
                     getMinIncomingEdges(vertex, minEdges);
                     vertex.disable();
                 }
             } else {
+                index++;
                 getMinIncomingEdges(component, minEdges);
             }
             for (Map.Entry<Integer, XGraph.XEdge> edgeEntry : minEdges.entrySet()) {
@@ -137,7 +140,7 @@ public class SpanningTree {
                 } else {
                     minEdge = new XGraph.XEdge(component, toVertex, minEdge.getWeight(), minEdge.original);
                 }
-                component.XAdj.add(minEdge);
+                component.xAdj.add(minEdge);
                 toVertex.revXadj.add(minEdge);
             }
         }
@@ -145,18 +148,6 @@ public class SpanningTree {
 
     private int getComponentNo(Graph.Vertex v) {
         return cc.getCCVertex(v).cno - 1;
-    }
-
-    private XGraph.XVertex createComponent(List<XGraph.XVertex> component) {
-        if (component.size() == 1) {
-            return component.get(0);
-        }
-        Graph.Vertex gVertex = new Graph.Vertex(graph.size());
-        XGraph.XVertex vertex = new XGraph.XVertex(gVertex);
-        vertex.isComponent = true;
-        vertex.children = component;
-        graph.addVertex(vertex);
-        return vertex;
     }
 
     private void getMinIncomingEdges(XGraph.XVertex vertex, HashMap<Integer, XGraph.XEdge> minEdges) {

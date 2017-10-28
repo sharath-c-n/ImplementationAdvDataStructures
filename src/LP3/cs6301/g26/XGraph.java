@@ -17,23 +17,25 @@ package cs6301.g26;
 
 import cs6301.g00.ArrayIterator;
 import cs6301.g00.Graph;
+
 import java.util.*;
 
 
 public class XGraph extends Graph {
 
-     static public class XVertex extends Vertex {
+    static public class XVertex extends Vertex {
         boolean disabled;
         boolean isComponent;
-        List<XVertex> children;
-        List<XEdge> XAdj;
+        boolean seen;
+        List<XEdge> xAdj;
         List<XEdge> revXadj;
         Graph.Edge stEdge;
+
         XVertex(Vertex u) {
             super(u);
             disabled = false;
             isComponent = false;
-            XAdj = new LinkedList<>();
+            xAdj = new LinkedList<>();
             revXadj = new LinkedList<>();
         }
 
@@ -51,15 +53,15 @@ public class XGraph extends Graph {
 
         @Override
         public Iterator<Edge> iterator() {
-            return new XZeroEdgeIterator(this.XAdj);
+            return new XZeroEdgeIterator(this.xAdj);
         }
 
-        public Iterable<Edge> getRevEdgeItr(){
+        public Iterable<Edge> getRevEdgeItr() {
             return () -> new XZeroEdgeIterator(this.revXadj);
         }
 
-        public Iterable<Edge> getNonZeroItr(){
-            return () -> new NonZeroItrator(this.XAdj);
+        public Iterable<Edge> getNonZeroItr() {
+            return () -> new NonZeroItrator(this.xAdj);
         }
 
     }
@@ -96,8 +98,8 @@ public class XGraph extends Graph {
                 Vertex v = e.otherEnd(u);
                 XVertex x1 = getVertex(u);
                 XVertex x2 = getVertex(v);
-                XEdge edge= new XEdge(x1, x2, e.getWeight(), e);
-                x1.XAdj.add(edge);
+                XEdge edge = new XEdge(x1, x2, e.getWeight(), e);
+                x1.xAdj.add(edge);
                 x2.revXadj.add(edge);
             }
         }
@@ -229,27 +231,34 @@ public class XGraph extends Graph {
         return Vertex.getVertex(xv, u);
     }
 
-    public boolean addVertex(XVertex vertex){
-        if(xVertexSize >= 2*super.size()){
+    public boolean addVertex(XVertex vertex) {
+        if (xVertexSize >= 2 * super.size()) {
             return false;
         }
         xv[xVertexSize++] = vertex;
         return true;
     }
 
+    public XVertex getNewComponent(){
+        Vertex gVertex = new Graph.Vertex(xVertexSize);
+        XGraph.XVertex vertex = new XGraph.XVertex(gVertex);
+        vertex.isComponent = true;
+        addVertex(vertex);
+        return vertex;
+    }
 
-    public int size(){
+    public int size() {
         return xVertexSize;
     }
 
-    public void enableAll(){
-        int count =0;
-        for(XVertex v : xv){
-            if(count == xVertexSize){
+    public void enableAll() {
+        int count = 0;
+        for (XVertex v : xv) {
+            if (count == xVertexSize) {
                 break;
             }
             count++;
-            if(!v.isComponent)
+            if (!v.isComponent)
                 v.disabled = false;
             else
                 v.disabled = true;
