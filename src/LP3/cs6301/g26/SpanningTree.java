@@ -5,9 +5,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
-import static cs6301.g26.LP3.printGraph;
 
 /**
  * SpanningTree:
@@ -26,7 +23,7 @@ public class SpanningTree {
         this.source = source;
     }
 
-    static public void toZeroWeightGraph(XGraph graph, XGraph.XVertex src) {
+    public void toZeroWeightGraph(XGraph graph, XGraph.XVertex src) {
         src.disable();
         for (Graph.Vertex vertex : graph) {
             int min = Integer.MAX_VALUE;
@@ -46,28 +43,11 @@ public class SpanningTree {
         while (!bfsZero.isSpanningTree()) {
             toZeroWeightGraph(graph, source);
             shrinkComponents();
-            // printGraph(graph);
             bfsZero = new BFSZeroEdge(graph, source);
         }
         expand(source, null);
         graph.enableAll();
         return populateEdges(edges);
-    }
-
-    public int printAll(XGraph.XVertex source) {
-        int lcount = 0;
-        if (source.isComponent) {
-            System.out.print("[ ");
-            for (XGraph.XVertex vertex : source.children) {
-                lcount += printAll(vertex);
-            }
-        } else {
-            System.out.print(source + " , ");
-            lcount++;
-        }
-
-        System.out.print(" ]");
-        return lcount;
     }
 
     public void expand(XGraph.XVertex source, Graph.Edge edge) {
@@ -96,7 +76,6 @@ public class SpanningTree {
             Graph.Edge edge = ((XGraph.XVertex) v).stEdge;
             if (edge != null) {
                 weight += edge.getWeight();
-                //System.out.println(edge + "  " + edge.getWeight());
             }
             edges.add(edge);
         }
@@ -128,6 +107,7 @@ public class SpanningTree {
         //create component
         for (List<XGraph.XVertex> component : components) {
             componentVertices[index++] = createComponent(component);
+
         }
         //Add edges
         for (XGraph.XVertex component : componentVertices) {
@@ -201,17 +181,4 @@ public class SpanningTree {
         }
 
     }
-
-
-    static public void printEdges(XGraph graph) {
-        System.out.println("Printing Graph edges");
-        for (XGraph.Vertex vertex : graph) {
-            for (XGraph.Edge e : ((XGraph.XVertex) vertex).XAdj) {
-                if (!((XGraph.XEdge) e).isDisabled())
-                    System.out.println(e);
-            }
-        }
-        System.out.println("End of Printing Graph edges");
-    }
-
 }
