@@ -99,7 +99,7 @@ public class XGraph extends Graph {
         /**
          * Used to iterate over all outgoing edges which are not disabled, note that even zero weighted
          * edges will be included
-         * @return
+         * @return : iterator
          */
         public Iterable<Edge> getNonZeroItr() {
             return () -> new NonZeroItrator(this.xAdj);
@@ -107,7 +107,7 @@ public class XGraph extends Graph {
         /**
          * Used to iterate over all incoming edges which are not disabled, note that even zero weighted
          * edges will be included
-         * @return
+         * @return : iterator
          */
         public Iterable<Edge> getNonZeroRevItr() {
             return () -> new NonZeroItrator(this.revXadj);

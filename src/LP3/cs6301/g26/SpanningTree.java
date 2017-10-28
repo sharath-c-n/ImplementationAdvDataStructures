@@ -9,7 +9,6 @@ import cs6301.g00.Graph;
 
 /**
  * SpanningTree: Finds A Spanning tree for a directed non negative weighted graph.
- *
  * @author : Sharath
  * 23/10/2017
  */
@@ -25,7 +24,6 @@ public class SpanningTree {
 
     /**
      * This is the main function which will generate the spanning tree for the input graph
-     *
      * @param edges : this list will contains the edges of the spanning tree at the end of run.
      * @return : weight of the spanning tree
      */
@@ -39,7 +37,6 @@ public class SpanningTree {
 
     /**
      * Checks if the current graph has a spanning tree of zero edges
-     *
      * @return : true is there is a spanning tree of zero edges else false.
      */
     private boolean isSpanningTree() {
@@ -118,7 +115,6 @@ public class SpanningTree {
 
     /**
      * This will generate the MST edges list and also calculates the total MST weight
-     *
      * @param edges : edges list
      * @return : weigh of the MST
      */
@@ -139,7 +135,6 @@ public class SpanningTree {
 
     /**
      * Expands each components and finds the MST in them.
-     *
      * @param source : root of the MST to be found in the component
      * @param edge   : incoming edge to the vertex
      */
@@ -163,7 +158,6 @@ public class SpanningTree {
 
     /**
      * Creates a consolidated list of all SCC
-     *
      * @return :list of all Strongly connected component
      */
     private List<List<XGraph.XVertex>> getComponents() {
@@ -183,7 +177,6 @@ public class SpanningTree {
 
     /**
      * Returns a list of all minimum outgoing edges out of all the children in the component
-     *
      * @param vertex   : child of the component
      * @param minEdges : list of edges
      */
