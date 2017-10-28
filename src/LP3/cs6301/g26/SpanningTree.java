@@ -20,7 +20,6 @@ public class SpanningTree {
     SpanningTree(Graph graph, Graph.Vertex source) {
         this.graph = new XGraph(graph);
         this.source = this.graph.getVertex(source);
-        scc = new SCC(this.graph, this.source);
     }
 
     /**
@@ -165,7 +164,7 @@ public class SpanningTree {
      * @return :list of all Strongly connected component
      */
     private List<List<XGraph.XVertex>> getComponents() {
-        scc = new SCC(graph, source);
+        scc = new SCC(graph);
         int componentCount = scc.findSSC();
         List<List<XGraph.XVertex>> components = new ArrayList<>();
         for (int i = 0; i < componentCount; i++) {

@@ -8,12 +8,8 @@ import java.util.Stack;
 import cs6301.g00.Graph;
 
 public class SCC extends CC {
-     private XGraph xg;
-     private Graph.Vertex src;
-    SCC(XGraph g, Graph.Vertex src){
+    SCC(XGraph g){
         super(g);
-        this.xg=g;
-        this.src=src;
     }
 
     void finishedOrder(XGraph.XVertex v, Stack<Graph.Vertex> St)
