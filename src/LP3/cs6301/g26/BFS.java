@@ -7,6 +7,7 @@ package cs6301.g26;
 
 import java.util.Queue;
 import java.util.LinkedList;
+import cs6301.g00.Graph;
 
 public class BFS extends GraphAlgorithm<BFS.BFSVertex> {
     public static final int INFINITY = Integer.MAX_VALUE;

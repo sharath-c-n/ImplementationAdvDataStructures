@@ -16,35 +16,25 @@
 package cs6301.g26;
 
 import cs6301.g00.ArrayIterator;
-
+import cs6301.g00.Graph;
 import java.util.*;
 
 
 public class XGraph extends Graph {
 
-    public int getSize() {
-        return xVertexSize;
-    }
-
-    static public class XVertex extends Vertex {
+     static public class XVertex extends Vertex {
         boolean disabled;
         boolean isComponent;
         List<XVertex> children;
         List<XEdge> XAdj;
         List<XEdge> revXadj;
-        boolean isAdjItr =true;
-        int componentNo;
         Graph.Edge stEdge;
-        boolean seen = false;
         XVertex(Vertex u) {
             super(u);
             disabled = false;
             isComponent = false;
             XAdj = new LinkedList<>();
             revXadj = new LinkedList<>();
-        }
-        public void setRevItr(){
-            isAdjItr = false;
         }
 
         boolean isDisabled() {
@@ -61,58 +51,20 @@ public class XGraph extends Graph {
 
         @Override
         public Iterator<Edge> iterator() {
-            Iterator<Edge>itr = isAdjItr? new XZeroEdgeIterator(this.XAdj):new XZeroEdgeIterator(this.revXadj);
-            isAdjItr = true;
-            return itr;
+            return new XZeroEdgeIterator(this.XAdj);
         }
 
-        public Iterator<Edge> nonZeroIterator() {
-            return new XVertexIterator(this);
+        public Iterable<Edge> getRevEdgeItr(){
+            return () -> new XZeroEdgeIterator(this.revXadj);
         }
 
-        class XVertexIterator implements Iterator<Edge> {
-            XEdge cur;
-            Iterator<XEdge> it;
-            boolean ready;
-
-            XVertexIterator(XVertex u) {
-                this.it = u.XAdj.iterator();
-                ready = false;
-            }
-
-            public boolean hasNext() {
-                if (ready) {
-                    return true;
-                }
-                if (!it.hasNext()) {
-                    return false;
-                }
-                cur = it.next();
-                while (cur.isDisabled() && it.hasNext()) {
-                    cur = it.next();
-                }
-                ready = true;
-                return !cur.isDisabled();
-            }
-
-            public Edge next() {
-                if (!ready) {
-                    if (!hasNext()) {
-                        throw new NoSuchElementException();
-                    }
-                }
-                ready = false;
-                return cur;
-            }
-
-            public void remove() {
-                throw new UnsupportedOperationException();
-            }
+        public Iterable<Edge> getNonZeroItr(){
+            return () -> new NonZeroItrator(this.XAdj);
         }
 
     }
 
-    static class XEdge extends Edge implements Comparable<Edge> {
+    static class XEdge extends Edge {
         boolean disabled;
         Edge original;
 
@@ -124,14 +76,6 @@ public class XGraph extends Graph {
 
         boolean isDisabled() {
             return disabled;
-        }
-
-        @Override
-        public int compareTo(Graph.Edge o) {
-            int result = getWeight() - o.getWeight();
-            if(result == 0)
-                return 0;
-            return result > 0 ? 1:-1;
         }
     }
 
@@ -152,12 +96,12 @@ public class XGraph extends Graph {
                 Vertex v = e.otherEnd(u);
                 XVertex x1 = getVertex(u);
                 XVertex x2 = getVertex(v);
-                XEdge edge= new XEdge(x1, x2, e.weight, e);
+                XEdge edge= new XEdge(x1, x2, e.getWeight(), e);
                 x1.XAdj.add(edge);
                 x2.revXadj.add(edge);
             }
         }
-        xVertexSize = n;
+        xVertexSize = super.size();
     }
 
     @Override
@@ -171,7 +115,8 @@ public class XGraph extends Graph {
         boolean ready;
 
         XGraphIterator(XGraph xg) {
-            this.it = new ArrayIterator<>(xg.xv, 0, getSize() - 1);  // Iterate over existing elements only
+            // Iterate over existing elements only
+            this.it = new ArrayIterator<>(xg.xv, 0, size() - 1);
         }
 
 
@@ -239,6 +184,42 @@ public class XGraph extends Graph {
         }
     }
 
+    static class NonZeroItrator implements Iterator<Edge> {
+        Iterator<XEdge> it;
+        XEdge xcur;
+        boolean ready;
+
+        NonZeroItrator(List<XEdge> vertex) {
+            this.it = vertex.iterator();
+        }
+
+
+        public boolean hasNext() {
+            if (!it.hasNext()) {
+                return false;
+            }
+            xcur = it.next();
+            while (xcur.isDisabled() && it.hasNext()) {
+                xcur = it.next();
+            }
+            ready = true;
+            return !xcur.isDisabled();
+        }
+
+        public Edge next() {
+            if (!ready) {
+                if (!hasNext()) {
+                    throw new NoSuchElementException();
+                }
+            }
+            ready = false;
+            return xcur;
+        }
+
+        public void remove() {
+        }
+    }
+
     @Override
     public Vertex getVertex(int n) {
         return xv[n - 1];
@@ -249,25 +230,18 @@ public class XGraph extends Graph {
     }
 
     public boolean addVertex(XVertex vertex){
-        if(xVertexSize >= 2*n){
+        if(xVertexSize >= 2*super.size()){
             return false;
         }
         xv[xVertexSize++] = vertex;
         return true;
     }
 
-    void disable(int i) {
-        XVertex u = (XVertex) getVertex(i);
-        u.disable();
-    }
 
     public int size(){
         return xVertexSize;
     }
 
-    public int getOriginalSize(){
-        return super.size();
-    }
     public void enableAll(){
         int count =0;
         for(XVertex v : xv){

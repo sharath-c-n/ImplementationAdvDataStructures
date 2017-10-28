@@ -3,7 +3,9 @@
  */
 package cs6301.g26;
 
+
 import java.util.Stack;
+import cs6301.g00.Graph;
 
 public class SCC extends CC {
      private XGraph xg;
@@ -24,9 +26,7 @@ public class SCC extends CC {
     void finishedOrder(XGraph.XVertex v, Stack<Graph.Vertex> St)
     {
         getCCVertex(v).seen=true;
-     //   System.out.println("Vertex "+v+" List is "+v.revXadj);
-        v.setRevItr();
-        for(XGraph.Edge t:v)
+        for(XGraph.Edge t:v.getRevEdgeItr())
             if(!getCCVertex(t.otherEnd(v)).seen)
                 finishedOrder((XGraph.XVertex) t.otherEnd(v), St);
         St.push(v);

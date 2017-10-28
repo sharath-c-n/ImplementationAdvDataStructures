@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import cs6301.g00.Graph;
+
 /**
  * SpanningTree:
  *
@@ -23,16 +25,17 @@ public class SpanningTree {
         this.source = source;
     }
 
-    public void toZeroWeightGraph(XGraph graph, XGraph.XVertex src) {
+    private void toZeroWeightGraph(XGraph graph, XGraph.XVertex src) {
         src.disable();
-        for (Graph.Vertex vertex : graph) {
+        for (Graph.Vertex v : graph) {
             int min = Integer.MAX_VALUE;
-            for (XGraph.Edge e : ((XGraph.XVertex) vertex).revXadj) {
+            XGraph.XVertex vertex = (XGraph.XVertex) v;
+            for (XGraph.Edge e : vertex.revXadj) {
                 if (e.getWeight() < min) {
                     min = e.getWeight();
                 }
             }
-            for (Graph.Edge e : ((XGraph.XVertex) vertex).revXadj)
+            for (Graph.Edge e : vertex.revXadj)
                 e.setWeight(e.getWeight() - min);
         }
         src.enable();
@@ -50,22 +53,23 @@ public class SpanningTree {
         return populateEdges(edges);
     }
 
-    public void expand(XGraph.XVertex source, Graph.Edge edge) {
-        if (source.seen) {
-            return;
-        }
-        source.seen = true;
+    private void expand(XGraph.XVertex source, Graph.Edge edge) {
+        XGraph.XEdge xEdge = (XGraph.XEdge) edge;
         if (source.isComponent) {
-            expand(graph.getVertex(((XGraph.XEdge) edge).original.to), ((XGraph.XEdge) edge).original);
+            //Expand the component which edge.to vertex as root
+            expand(graph.getVertex(xEdge.original.toVertex()), xEdge.original);
         } else if (edge != null) {
+            //If vertex not visited
             if (source.stEdge == null) {
-                source.stEdge = ((XGraph.XEdge) edge).original;
+                source.stEdge = xEdge.original;
             } else {
+                //Return if already explored
                 return;
             }
         }
+        //explore other components
         for (Graph.Edge e : source) {
-            expand(graph.getVertex(((XGraph.XEdge) e).to), e);
+            expand(graph.getVertex(e.toVertex()), e);
         }
     }
 
@@ -93,7 +97,6 @@ public class SpanningTree {
         for (Graph.Vertex vertex : graph) {
             CC.CCVertex component = cc.getCCVertex(vertex);
             components.get(component.cno - 1).add((XGraph.XVertex) vertex);
-            ((XGraph.XVertex) vertex).componentNo = graph.getSize() + component.cno - 1;
         }
         return components;
     }
@@ -123,9 +126,9 @@ public class SpanningTree {
             }
             for (Map.Entry<Integer, XGraph.XEdge> edgeEntry : minEdges.entrySet()) {
                 XGraph.XEdge minEdge = edgeEntry.getValue();
-                XGraph.XVertex toVertex = componentVertices[getComponentNo(minEdge.to)];
+                XGraph.XVertex toVertex = componentVertices[getComponentNo(minEdge.toVertex())];
                 //Edge already there in original graph no need to add
-                if (toVertex == minEdge.to && component == minEdge.from) {
+                if (toVertex == minEdge.toVertex() && component == minEdge.fromVertex()) {
                     continue;
                 }
                 //Need to create a new vertex
@@ -150,7 +153,7 @@ public class SpanningTree {
         if (component.size() == 1) {
             return component.get(0);
         }
-        Graph.Vertex gVertex = new Graph.Vertex(graph.getSize());
+        Graph.Vertex gVertex = new Graph.Vertex(graph.size());
         XGraph.XVertex vertex = new XGraph.XVertex(gVertex);
         vertex.isComponent = true;
         vertex.children = component;
@@ -159,23 +162,18 @@ public class SpanningTree {
     }
 
     private void getMinIncomingEdges(XGraph.XVertex vertex, HashMap<Integer, XGraph.XEdge> minEdges) {
-        for (XGraph.XEdge edge : vertex.XAdj) {
-            //Needed for non component vertices, so that they don't point to
-            //disabled vertices
-            if (edge.isDisabled())
-                continue;
-
+        for (Graph.Edge edge : vertex.getNonZeroItr()) {
             int cno = getComponentNo(vertex), otherCno;
             otherCno = getComponentNo(edge.otherEnd(vertex));
             if (cno != otherCno) {
                 XGraph.XEdge adj = minEdges.get(otherCno);
-                if (adj == null || minEdges.get(otherCno).getWeight() > edge.getWeight()) {
+                if (adj == null || adj.getWeight() > edge.getWeight()) {
                     if (adj != null) {
                         adj.disabled = true;
                     }
-                    minEdges.put(otherCno, edge);
+                    minEdges.put(otherCno, (XGraph.XEdge) edge);
                 } else {
-                    edge.disabled = true;
+                    ((XGraph.XEdge)edge).disabled = true;
                 }
             }
         }
