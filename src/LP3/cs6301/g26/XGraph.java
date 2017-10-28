@@ -11,6 +11,12 @@
  * times, then cursor keeps moving forward, even though the elements were not accessed
  * by next().  Also, if program calls next() multiple times, without calling hasNext()
  * in between, same element is returned.  Added UnsupportedOperationException to remove.
+ *
+ * @author Sharath
+ * Ver 2.0 2017/10/26
+ * Updated iterators to iterate over zero edges and skip disabled edges/verices. Added new fields in vertex
+ * to store reverse Edges , to indicate if the vertex is seen, is a component and couple of iterator to iterate over
+ * edges. In edge class added a field to store original edge reference.
  **/
 
 package cs6301.g26;
