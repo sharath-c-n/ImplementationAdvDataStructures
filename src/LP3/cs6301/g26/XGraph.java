@@ -35,6 +35,7 @@ public class XGraph extends Graph {
         boolean isAdjItr =true;
         int componentNo;
         Graph.Edge stEdge;
+        boolean seen = false;
         XVertex(Vertex u) {
             super(u);
             disabled = false;

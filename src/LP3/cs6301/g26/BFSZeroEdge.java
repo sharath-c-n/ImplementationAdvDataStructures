@@ -12,8 +12,6 @@ public class BFSZeroEdge extends BFS {
     }
     boolean isSpanningTree(){
         bfs();
-       // System.out.println("Iteration ");
-        printGraph(this);
         for(XGraph.Vertex vertex:g ){
             if(vertex!=null && vertex!=src ){
                 if(!seen(vertex))
@@ -21,14 +19,5 @@ public class BFSZeroEdge extends BFS {
             }
         }
         return  true;
-    }
-    void printGraph(BFS b) {
-        for(Graph.Vertex u: g) {
-            System.out.print("  " + u + "  :   " + b.distance(u) + "  : ");
-            for(Graph.Edge e: u) {
-                System.out.print(e);
-            }
-            System.out.println();
-        }
     }
 }
