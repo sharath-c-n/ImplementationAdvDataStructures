@@ -24,51 +24,111 @@ import java.util.*;
 public class XGraph extends Graph {
 
     static public class XVertex extends Vertex {
-        boolean disabled;
-        boolean isComponent;
+        /**
+         * Used to disable the vertex
+         */
+        private boolean disabled;
+        /**
+         * Used to identify if this vertex is a result of union of vertices
+         */
+        private boolean isComponent;
+        /**
+         * Used while doing BFS/DFS or while running other algorithms,
+         * need not be private as this doesn't affect graph state
+         */
         boolean seen;
-        List<XEdge> xAdj;
-        List<XEdge> revXadj;
+        /**
+         * List of outgoing edges
+         */
+        private List<XEdge> xAdj;
+        /**
+         * List of incoming edges
+         */
+        private List<XEdge> revXadj;
+        /**
+         * Used to store the Spanning tree incoming edge to this vertex
+         * need not be private as it doesn't affect graph state
+         */
         Graph.Edge stEdge;
 
-        XVertex(Vertex u) {
+        public XVertex(Vertex u) {
             super(u);
             disabled = false;
             isComponent = false;
             xAdj = new LinkedList<>();
             revXadj = new LinkedList<>();
+            seen = false;
+            stEdge = null;
         }
 
-        boolean isDisabled() {
+        public boolean isDisabled() {
             return disabled;
         }
 
-        void disable() {
+        public void disable() {
             disabled = true;
         }
 
-        void enable() {
+        public void enable() {
             disabled = false;
         }
 
+        /**
+         * Iterator to iterate over only the zero weighted outgoing edges
+         * @return : iterator
+         */
         @Override
         public Iterator<Edge> iterator() {
             return new XZeroEdgeIterator(this.xAdj);
         }
 
+        /**
+         * Used to iterate over zero weighted incoming edges
+         * @return : iterator
+         */
         public Iterable<Edge> getRevEdgeItr() {
             return () -> new XZeroEdgeIterator(this.revXadj);
         }
 
+        /**
+         * Used to iterate over all outgoing edges which are not disabled, note that even zero weighted
+         * edges will be included
+         * @return
+         */
         public Iterable<Edge> getNonZeroItr() {
             return () -> new NonZeroItrator(this.xAdj);
         }
+        /**
+         * Used to iterate over all incoming edges which are not disabled, note that even zero weighted
+         * edges will be included
+         * @return
+         */
+        public Iterable<Edge> getNonZeroRevItr() {
+            return () -> new NonZeroItrator(this.revXadj);
+        }
 
+        public void addEdge(XEdge edge){
+            xAdj.add(edge);
+        }
+
+        public void addRevEdge(XEdge edge){
+            revXadj.add(edge);
+        }
+
+        public boolean isComponent(){
+            return isComponent;
+        }
     }
 
     static class XEdge extends Edge {
-        boolean disabled;
-        Edge original;
+        /**
+         * Used to enable or disable edge
+         */
+        private boolean disabled;
+        /**
+         * Used to store the original edge to which this edge corresponds to
+         */
+        private Edge original;
 
         XEdge(XVertex from, XVertex to, int weight, Edge edge) {
             super(from, to, weight);
@@ -79,6 +139,15 @@ public class XGraph extends Graph {
         boolean isDisabled() {
             return disabled;
         }
+
+        public void disable() {
+            this.disabled = true;
+        }
+
+        public Edge getOriginal() {
+            return original;
+        }
+
     }
 
 
