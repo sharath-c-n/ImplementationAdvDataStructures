@@ -169,7 +169,7 @@ public class BST<T extends Comparable<? super T>> implements Iterable<T> {
     public T remove(T x) {
         if (root == null) return null;
         Entry<T> t = find(x);
-        if (t.key != x) return null;
+        if (t.key.compareTo(x)!=0) return null;
         T result = t.key;
         if (t.left == null || t.right == null) {
             bypass(t);
