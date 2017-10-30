@@ -47,7 +47,7 @@ public class ShortestPath extends GraphAlgorithm<ShortestPath.Vertex> {
         }
     }
 
-    // reinitialize allows running BFS many times, with different sources
+    // reinitialize allows running graph algorithms  many times, with different sources and reinitialises the graph parameters
     void reinitialize() {
         for(Vertex u: node) {
             u.seen = false;
@@ -89,6 +89,7 @@ public class ShortestPath extends GraphAlgorithm<ShortestPath.Vertex> {
         bv.distance = distance(u) + 1;
     }
 
+    /* Breadth First serach is performed on the input graph */
     void bfs() {
         reinitialize();
         Queue<Graph.Vertex> q = new LinkedList<>();
@@ -106,7 +107,8 @@ public class ShortestPath extends GraphAlgorithm<ShortestPath.Vertex> {
     }
 
 
-
+    /* Dijkstra is performed on the input graph
+    * Vertices are inserted in to the priority Queue and distance is the priority metric */
     public void dijkstraSP​(){
         boolean changed;
         reinitialize();
@@ -114,6 +116,7 @@ public class ShortestPath extends GraphAlgorithm<ShortestPath.Vertex> {
         IndexedBinaryHeap<Vertex> pq = new IndexedBinaryHeap<>(pqArray, Comparator.comparingInt(x -> x.distance), g.size());
             pq.add(getVertex(src));
         while (!pq.isEmpty()) {
+            //vertex with minimum distance to , is removed from the priority queue
             Vertex u = pq.remove();
             u.seen = true;
             for (Graph.Edge edge : u.graphVertex) {
@@ -122,8 +125,10 @@ public class ShortestPath extends GraphAlgorithm<ShortestPath.Vertex> {
                     changed = relax(edge,u.graphVertex);
                     if(changed){
                         v.parent = u.graphVertex;
+                        //if the vertex is present in the priority queue reduce key else add it to the priority queue
                         if(v.getIndex()> -1)
                         {
+                            //reduce key operation is performed for the relaxed edge
                             pq.percolateUp(v.getIndex());
                         }
                         else
