@@ -1,12 +1,11 @@
 package cs6301.g26;
-import cs6301.g00.BFS;
 import cs6301.g00.Graph;
 
 
 import java.util.*;
 
 /**
- * @author  Sharath
+ * @author  Ankitha
  * This class contains graph utility functions
  */
 public class ShortestPath extends GraphAlgorithm<ShortestPath.Vertex> {
@@ -89,7 +88,7 @@ public class ShortestPath extends GraphAlgorithm<ShortestPath.Vertex> {
         bv.distance = distance(u) + 1;
     }
 
-    /* Breadth First serach is performed on the input graph */
+    /* Breadth First search is performed on the input graph */
     void bfs() {
         reinitialize();
         Queue<Graph.Vertex> q = new LinkedList<>();

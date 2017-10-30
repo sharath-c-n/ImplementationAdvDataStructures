@@ -23,8 +23,11 @@ public class graphDriver {
 
         Graph g = Graph.readDirectedGraph(in);
         ShortestPath sp = new ShortestPath(g,g.getVertex(1));
+        sp.bfs();
+        sp.dagShortestPath();
         sp.bellmanFord();
-        System.out.println();
+        sp.dijkstraSP​();
+        sp.fastestShortestPaths();
     }
 }
 
