@@ -2,25 +2,49 @@ package cs6301.g26;
 
 import cs6301.g00.Shuffle;
 
-import java.util.Random;
 import java.util.Scanner;
+import java.util.TreeMap;
 
 /**
  * Created by Ankitha on 10/29/2017.
  */
 public class SkipListDriver {
     public static void main(String[] args) {
-       /* SkipList<Integer> skipList = new SkipList<>();
-        Scanner in = new Scanner(System.in);
+        SkipList<Integer> skipList = new SkipList<>();
+       /* Scanner in = new Scanner(System.in);
        while(in.hasNext()){
             int x = in.nextInt();
             testor(x, skipList);
         }*/
-       addRemoveTest();
+         //      addRemoveTest();
+        reArrangetest(skipList);
+    }
+
+
+    private static void reArrangetest(SkipList<Integer> skipList) {
+        int size = 10000;
+        int[] arr = new int[size];
+        for (int i = 1; i < size; i++) {
+            arr[i] = i;
+        }
+        Shuffle.shuffle(arr);
+        for (int x : arr) {
+            testor(x, skipList);
+        }
+        skipList.reBuild();
+        Shuffle.shuffle(arr);
+        for (Integer i : arr) {
+            if(i == size-1)
+                break;
+            if (skipList.get(i) != (i+1)) {
+                System.out.println("Not in sorted order!!!" + i + "::" + skipList.get(i));
+                break;
+            }
+        }
     }
 
     public static void addRemoveTest() {
-        int size = 10001;
+        int size = 100;
         int[] arr = new int[size];
         for (int i = 0; i < size; i++) {
             arr[i] = i;
@@ -50,6 +74,7 @@ public class SkipListDriver {
             skipList.remove(x);
         }
         Shuffle.shuffle(arr);
+        skipList.printList();
         System.out.println("First:" + skipList.get(9950));
         for (int x : arr) {
             if (x < size - 50 && skipList.get(x) != x + 50) {
@@ -82,8 +107,10 @@ public class SkipListDriver {
             // System.out.print("Add " + x + "  ");
             skipList.add(x);
         } else if (x < 0) {
-            System.out.print("Remove " + x + "  ");
-            // skipList.remove(-x);
+//            System.out.print("Remove " + x + "  ");
+             skipList.remove(-x);
+        }
+        else {
         }
 
     }
