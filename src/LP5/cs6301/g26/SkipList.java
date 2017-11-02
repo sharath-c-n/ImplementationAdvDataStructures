@@ -60,7 +60,6 @@ public class SkipList<T extends Comparable<? super T>> implements Iterable<T> {
 
 
     private Entry<T> head;
-    private Entry<T> tail;
     private Entry<T> lastEntry;
     private int maxLevel;
     private int size;
@@ -68,9 +67,8 @@ public class SkipList<T extends Comparable<? super T>> implements Iterable<T> {
     // Constructor
     public SkipList() {
         head = new Entry<>(null, ALLOWED_MAX_LEVEL);
-        tail = new Entry<>(null, ALLOWED_MAX_LEVEL);
         maxLevel = 0;
-        head.setNext(0, tail);
+        head.setNext(0, (Entry<T>) null);
         size = 0;
     }
 
@@ -80,7 +78,7 @@ public class SkipList<T extends Comparable<? super T>> implements Iterable<T> {
         Entry<T> p = head;
         Entry<T>[] prev = new Entry[maxLevel + 1];
         for (int i = maxLevel; i >= 0; i--) {
-            while (p.getNextEntry(i) != tail && p.getNextElement(i).compareTo(key) < 0) {
+            while (p.getNextEntry(i) != null && p.getNextElement(i).compareTo(key) < 0) {
                 p = p.getNextEntry(i);
             }
             prev[i] = p;
@@ -112,7 +110,7 @@ public class SkipList<T extends Comparable<? super T>> implements Iterable<T> {
     //rebuild skipList
     public void reBuild() {
         int maxLevel = (int) Math.ceil(Math.log(((float) size / 2)) / Math.log(2));
-        reBuild(head, tail, maxLevel - 1);
+        reBuild(head, null, maxLevel - 1);
         this.maxLevel = maxLevel - 1;
     }
 
@@ -144,7 +142,7 @@ public class SkipList<T extends Comparable<? super T>> implements Iterable<T> {
     public boolean add(T x) {
         Entry<T>[] prev = find(x);
         Entry<T> nextEntry = prev[0].getNextEntry(0);
-        if (nextEntry != tail && nextEntry.element.compareTo(x) == 0) {
+        if (nextEntry != null && nextEntry.element.compareTo(x) == 0) {
             nextEntry.element = x;
             return false;
         } else {
@@ -166,13 +164,13 @@ public class SkipList<T extends Comparable<? super T>> implements Iterable<T> {
             size++;
             if (level > maxLevel) {
                 head.setNext(level, nextEntry);
-                nextEntry.setNext(level, tail);
+                nextEntry.setNext(level, (Entry<T>) null);
                 head.next[level].span = getSpan(maxLevel, head, nextEntry);
                 nextEntry.next[level].span = size - head.next[level].span + 1;
                 maxLevel = level;
             }
         }
-        if (nextEntry.getNextEntry(0) == tail) {
+        if (nextEntry.getNextEntry(0) == null) {
             lastEntry = nextEntry;
         }
 //        printList();
@@ -192,7 +190,7 @@ public class SkipList<T extends Comparable<? super T>> implements Iterable<T> {
     // Find smallest element that is greater or equal to x
     public T ceiling(T x) {
         Entry<T> prev = find(x)[0];
-        if (prev.getNextElement(0) == tail) {
+        if (prev.getNextElement(0) == null) {
             return null;
         }
         return prev.getNextElement(0).compareTo(x) == 0 ? x : prev.getNextElement(0);
@@ -201,7 +199,7 @@ public class SkipList<T extends Comparable<? super T>> implements Iterable<T> {
     // Does list contain x?
     public boolean contains(T x) {
         Entry<T>[] prev = find(x);
-        return prev[0].getNextElement(0) != tail && prev[0].getNextElement(0).compareTo(x) == 0;
+        return prev[0].getNextElement(0) != null && prev[0].getNextElement(0).compareTo(x) == 0;
     }
 
     // Return first element of list
@@ -212,7 +210,7 @@ public class SkipList<T extends Comparable<? super T>> implements Iterable<T> {
     // Find largest element that is less than or equal to x
     public T floor(T x) {
         Entry<T>[] prev = find(x);
-        if (prev[0].getNextEntry(0) == tail) {
+        if (prev[0].getNextEntry(0) == null) {
             return null;
         }
         return prev[0].getNextEntry(0).element.compareTo(x) == 0 ? x : prev[0].element;
@@ -240,11 +238,11 @@ public class SkipList<T extends Comparable<? super T>> implements Iterable<T> {
         Entry<T> n = prev[0].getNextEntry(0);
         if (n.element.compareTo(x) != 0) return null;
         else {
-            if (n.getNextEntry(0) == tail) {
+            if (n.getNextEntry(0) == null) {
                 lastEntry = prev[0];
             }
             for (int i = 0; i <= maxLevel; i++) {
-                if (prev[i].getNextEntry(i) != tail && prev[i].getNextElement(i).compareTo(x) == 0) {
+                if (prev[i].getNextEntry(i) != null && prev[i].getNextElement(i).compareTo(x) == 0) {
                     Tuple<T> next = n.getNext(i);
                     int span = next.span + prev[i].getNext(i).span - 1;
                     prev[i].setNext(i, next);
@@ -289,16 +287,14 @@ public class SkipList<T extends Comparable<? super T>> implements Iterable<T> {
 
     public class SkipListIterator<T extends Comparable<? super T>> implements Iterator<T> {
         SkipList.Entry<T> cursor;
-        Entry<T> tail;
 
         public SkipListIterator(SkipList<T> skipList) {
             cursor = skipList.head;
-            tail = skipList.tail;
         }
 
         @Override
         public boolean hasNext() {
-            return cursor.getNextEntry(0) != tail;
+            return cursor.getNextEntry(0) != null;
         }
 
         @Override
@@ -315,7 +311,7 @@ public class SkipList<T extends Comparable<? super T>> implements Iterable<T> {
         for (int i = maxLevel; i >= 0; i--) {
             System.out.println();
             Entry<T> pre = head;
-            while (pre != tail) {
+            while (pre != null) {
                 System.out.print(pre.element);
                 //Print span lines
                 for (int j = 0; j < pre.next[i].span; j++) {
