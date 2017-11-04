@@ -9,8 +9,9 @@ import java.util.Random;
  */
 
 public class SkipList<T extends Comparable<? super T>> implements Iterable<T> {
-    private static final int ALLOWED_MAX_LEVEL = 32;
+    private static final int ALLOWED_MAX_LEVEL = 31;
 
+    //Each entry in the skip list contains and element and an array of next pointers
     static class Entry<T extends Comparable<? super T>> {
         T element;
         Tuple<T> next[];
@@ -20,35 +21,61 @@ public class SkipList<T extends Comparable<? super T>> implements Iterable<T> {
             this.next = new Tuple[level + 1];
         }
 
+        /**
+         * Gets the next tuple which contains the next entry and distance of it from the current
+         * Entry.
+         * @param level : the level  from which the next tuple is to be search.
+         * @return : Tuple
+         */
         public Tuple<T> getNext(int level) {
             return level > next.length ? null : next[level];
         }
 
+        /**
+         * Gets the next Entry
+         * @param level : the level  from which the next entry is to be search.
+         * @return : Entry
+         */
         public Entry<T> getNextEntry(int level) {
             Tuple<T> tuple = getNext(level);
             return tuple != null ? tuple.entry : null;
         }
 
+        /**
+         * Gets the next Entries element
+         * @param level : the level  from which the next entry is to be search.
+         * @return : entry value
+         */
         public T getNextElement(int level) {
             Entry<T> nextEntry = getNextEntry(level);
             return nextEntry == null ? null : nextEntry.element;
         }
 
-        public void setNext(int level, Entry<T> n) {
-            next[level] = new Tuple<>(n, 1);
+        /**
+         * Sets the next entry
+         * @param level : the level at Which the next entry is to be added
+         * @param entry : Next entry which should be stored
+         */
+        public void setNext(int level, Entry<T> entry) {
+            next[level] = new Tuple<>(entry, 1);
         }
 
+        /**
+         * Updates the next entry array with the passed tuple
+         * @param level : the level at which the tuple needs to be updated
+         * @param tuple : the tuple which replaces the existing value.
+         */
         public void setNext(int level, Tuple<T> tuple) {
             next[level] = tuple;
         }
-
-        @Override
-        public String toString() {
-            return element.toString();
-        }
     }
 
-    static class Tuple<T extends Comparable<? super T>> {
+    /**
+     * This class is a container to store the span and entry entry references.
+     * We can just as well use a parallel array in Entry class to maintain span
+     * @param <T>
+     */
+   private static class Tuple<T extends Comparable<? super T>> {
         Entry<T> entry;
         int span;
 
@@ -86,24 +113,37 @@ public class SkipList<T extends Comparable<? super T>> implements Iterable<T> {
         return prev;
     }
 
+    //Makes the skipList a perfect skip-list
     private void reBuild(Entry<T> start, Entry<T> end, int height) {
         if (start != end && start.getNextEntry(0) != end && height >= 0) {
+            //Get  the  middle element
             Entry<T> mid = findMid(start, end);
             Tuple<T> temp = mid.getNext(0);
             mid.next = new Tuple[height + 1];
             mid.setNext(0, temp);
+            //recur on left and right half of the list
             reBuild(start, mid, height - 1);
             reBuild(mid, end, height - 1);
+            //Connect left-mid-right end points
             connect(start, mid, end, height);
         }
     }
 
-    private void connect(Entry<T> start, Entry<T> mid, Entry<T> end, int height) {
-        if (height > 0) {
-            start.setNext(height, mid);
-            mid.setNext(height, end);
-            start.getNext(height).span = getSpan(height - 1, start, mid);
-            mid.getNext(height).span = getSpan(height - 1, mid, end);
+    /**
+     * This function crates the links between the start,mid and end entry nodes and
+     * also updates the span if needed.
+     * @param start : left side entry
+     * @param mid : middle entry
+     * @param end : right entry
+     * @param level : level at which the entries are to be connected
+     */
+    private void connect(Entry<T> start, Entry<T> mid, Entry<T> end, int level) {
+        //If level is 0 , then the entries are already connected
+        if (level > 0) {
+            start.setNext(level, mid);
+            mid.setNext(level, end);
+            start.getNext(level).span = getSpan(level - 1, start, mid);
+            mid.getNext(level).span = getSpan(level - 1, mid, end);
         }
     }
 
@@ -114,6 +154,12 @@ public class SkipList<T extends Comparable<? super T>> implements Iterable<T> {
         this.maxLevel = maxLevel - 1;
     }
 
+    /**
+     * Finds the middle element, for the given end points
+     * @param start : left end point
+     * @param end : right end point
+     * @return : middle entry
+     */
     private Entry<T> findMid(Entry<T> start, Entry<T> end) {
         Entry<T> fastPtr = start.getNextEntry(0);
         Entry<T> slowPtr = start.getNextEntry(0);
@@ -147,22 +193,30 @@ public class SkipList<T extends Comparable<? super T>> implements Iterable<T> {
             return false;
         } else {
             int level = chooseLevel();
+            //See that max level doesn't cross allowed max level
+            level = level < ALLOWED_MAX_LEVEL ?level : ALLOWED_MAX_LEVEL;
+            //find out upto what level the previous elements are to be updated
             int upto = maxLevel < level ? maxLevel : level;
             nextEntry = new Entry<>(x, level);
             for (int currentLevel = 0; currentLevel <= upto; currentLevel++) {
                 nextEntry.setNext(currentLevel, prev[currentLevel].getNext(currentLevel));
                 prev[currentLevel].setNext(currentLevel, nextEntry);
+                //if current level is 0, the span is always 1, so no need to update
                 if (currentLevel != 0) {
                     prev[currentLevel].getNext(currentLevel).span = getSpan(currentLevel - 1, prev[currentLevel], nextEntry);
                     nextEntry.getNext(currentLevel).span = (nextEntry.getNext(currentLevel).span + 1) - prev[currentLevel].getNext(currentLevel).span;
                 }
             }
+            //If the returned level is less than maxLevel, then increase the size of span by 1
+            // for all the levels which are above the current entries max level
             while (upto < maxLevel) {
                 Tuple<T> next = prev[++upto].getNext(upto);
                 next.span++;
             }
+            //increase the size by 1
             size++;
-            if (level > maxLevel) {
+            //If the current entries level is greater than the maxLevel, add a new level
+            if (level > maxLevel ) {
                 head.setNext(level, nextEntry);
                 nextEntry.setNext(level, (Entry<T>) null);
                 head.next[level].span = getSpan(maxLevel, head, nextEntry);
@@ -170,19 +224,25 @@ public class SkipList<T extends Comparable<? super T>> implements Iterable<T> {
                 maxLevel = level;
             }
         }
+        //If this is the last entry, update the last entry value.
         if (nextEntry.getNextEntry(0) == null) {
             lastEntry = nextEntry;
         }
-//        printList();
         return true;
     }
 
-    private int getSpan(int level, Entry<T> entry, Entry<T> n) {
+    /**
+     * Returns the span between the given entries.
+     * @param level : level at which the entries are to be traversed
+     * @param entryL : left entry
+     * @param entryR : right entry
+     * @return : span
+     */
+    private int getSpan(int level, Entry<T> entryL, Entry<T> entryR) {
         int span = 0;
-        while (entry != n) {
-            //need to test after refactor
-            span += entry.getNext(level).span;
-            entry = entry.getNextEntry(level);
+        while (entryL != entryR) {
+            span += entryL.getNext(level).span;
+            entryL = entryL.getNextEntry(level);
         }
         return span;
     }
@@ -244,11 +304,14 @@ public class SkipList<T extends Comparable<? super T>> implements Iterable<T> {
             for (int i = 0; i <= maxLevel; i++) {
                 if (prev[i].getNextEntry(i) != null && prev[i].getNextElement(i).compareTo(x) == 0) {
                     Tuple<T> next = n.getNext(i);
+                    //Update the span values
                     int span = next.span + prev[i].getNext(i).span - 1;
                     prev[i].setNext(i, next);
                     prev[i].getNext(i).span = span;
 
                 } else {
+                    //for levels where the removed element didn't exist , decrease the span value
+                    //by 1
                     prev[i].getNext(i).span--;
                 }
             }
@@ -257,6 +320,7 @@ public class SkipList<T extends Comparable<? super T>> implements Iterable<T> {
         return n.element;
     }
 
+    //return the entry by index
     public Entry<T> getEntry(int index) {
         index++;
         if (index > size) {
@@ -275,6 +339,7 @@ public class SkipList<T extends Comparable<? super T>> implements Iterable<T> {
         return entry;
     }
 
+    //public method to get value based on index
     public T get(int index) {
         Entry<T> result = getEntry(index);
         return result == null ? null : result.element;
@@ -307,6 +372,9 @@ public class SkipList<T extends Comparable<? super T>> implements Iterable<T> {
         }
     }
 
+    /**
+     * This method is purely for testing, this helps us to visualize the skipList.
+     */
     public void printList() {
         for (int i = maxLevel; i >= 0; i--) {
             System.out.println();

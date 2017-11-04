@@ -11,13 +11,13 @@ import java.util.TreeMap;
 public class SkipListDriver {
     public static void main(String[] args) {
         SkipList<Integer> skipList = new SkipList<>();
-       /* Scanner in = new Scanner(System.in);
+     /*   Scanner in = new Scanner(System.in);
        while(in.hasNext()){
             int x = in.nextInt();
             testor(x, skipList);
         }*/
-         //      addRemoveTest();
-        reArrangetest(skipList);
+               addRemoveTest();
+        //reArrangetest(skipList);
     }
 
 
@@ -44,7 +44,7 @@ public class SkipListDriver {
     }
 
     public static void addRemoveTest() {
-        int size = 100;
+        int size = 10000;
         int[] arr = new int[size];
         for (int i = 0; i < size; i++) {
             arr[i] = i;
@@ -74,16 +74,12 @@ public class SkipListDriver {
             skipList.remove(x);
         }
         Shuffle.shuffle(arr);
-        skipList.printList();
-        System.out.println("First:" + skipList.get(9950));
+        System.out.println("First:" + skipList.first());
         for (int x : arr) {
             if (x < size - 50 && skipList.get(x) != x + 50) {
                 System.out.println("Not matching : " + x + "==" + skipList.get(x));
                 break;
             }
-            if (x < size - 50)
-                System.out.println("Matching : " + (x + 50) + "==" + skipList.get(x));
-
         }
         /*for(int x : arr){
             testor(-x, skipList);
@@ -111,6 +107,7 @@ public class SkipListDriver {
              skipList.remove(-x);
         }
         else {
+            skipList.printList();
         }
 
     }
