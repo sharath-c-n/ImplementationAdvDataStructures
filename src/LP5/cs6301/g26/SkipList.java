@@ -296,7 +296,7 @@ public class SkipList<T extends Comparable<? super T>> implements Iterable<T> {
     public T remove(T x) {
         Entry<T>[] prev = find(x);
         Entry<T> n = prev[0].getNextEntry(0);
-        if (n.element.compareTo(x) != 0) return null;
+        if (isEmpty() || n.element.compareTo(x) != 0) return null;
         else {
             if (n.getNextEntry(0) == null) {
                 lastEntry = prev[0];
