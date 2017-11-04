@@ -2,7 +2,8 @@ package cs6301.g26;
 
 import cs6301.g00.Shuffle;
 
-import java.util.Scanner;
+import java.util.Map;
+import java.util.Random;
 import java.util.TreeMap;
 
 /**
@@ -11,12 +12,7 @@ import java.util.TreeMap;
 public class SkipListDriver {
     public static void main(String[] args) {
         SkipList<Integer> skipList = new SkipList<>();
-     /*   Scanner in = new Scanner(System.in);
-       while(in.hasNext()){
-            int x = in.nextInt();
-            testor(x, skipList);
-        }*/
-               addRemoveTest();
+        addRemoveTest();
         //reArrangetest(skipList);
     }
 
@@ -29,7 +25,7 @@ public class SkipListDriver {
         }
         Shuffle.shuffle(arr);
         for (int x : arr) {
-            testor(x, skipList);
+            skipList.add(x);
         }
         skipList.reBuild();
         Shuffle.shuffle(arr);
@@ -44,19 +40,20 @@ public class SkipListDriver {
     }
 
     public static void addRemoveTest() {
-        int size = 10000;
+        int size = 800000;
         int[] arr = new int[size];
         for (int i = 0; i < size; i++) {
             arr[i] = i;
         }
         Shuffle.shuffle(arr);
         SkipList<Integer> skipList = new SkipList<>();
+        TreeMap<Integer,Integer> treeMap = new TreeMap<>();
+        Random random = new Random();
         for (int x : arr) {
-            testor(x, skipList);
+            skipList.add(x);
+            treeMap.put(x,x);
         }
-        System.out.print("Iterator : ");
         int prev = skipList.get(0);
-        System.out.println("Prev: " + prev);
         for (Integer i : skipList) {
             if (prev > i) {
                 System.out.println("Not in sorted order!!!" + prev + "::" + i);
@@ -65,50 +62,34 @@ public class SkipListDriver {
             prev = i;
         }
         System.out.println("In sorted order!!!" + prev + " " + skipList.last());
-        int[] removeList = new int[50];
-        for (int i = 0; i < 50; i++) {
-            removeList[i] = i;
+        int[] removeList = new int[size/2];
+        for (int i = 0; i < size/2; i++) {
+            removeList[i] = random.nextInt(size/2);
         }
         Shuffle.shuffle(removeList);
         for (int x : removeList) {
             skipList.remove(x);
+            treeMap.remove(x);
         }
-        Shuffle.shuffle(arr);
-        System.out.println("First:" + skipList.first());
-        for (int x : arr) {
-            if (x < size - 50 && skipList.get(x) != x + 50) {
-                System.out.println("Not matching : " + x + "==" + skipList.get(x));
-                break;
-            }
+        if(findSum(skipList)!=findSum2(treeMap)){
+            System.out.println("Failed test case");
         }
-        /*for(int x : arr){
-            testor(-x, skipList);
-            if(skipList.size() == 0)
-                break;
-            prev = skipList.get(0);
-            for (Integer i : skipList) {
-                if(prev > i)
-                {
-                    System.out.println("Not in sorted order!!!" + prev +"::"+i);
-                    break;
-                }
-                prev = i;
-            }
-        }*/
-        System.out.println("In sorted order!!!" + skipList.size());
+        else
+            System.out.println("Proper");
     }
 
-    public static void testor(int x, SkipList<Integer> skipList) {
-        if (x > 0) {
-            // System.out.print("Add " + x + "  ");
-            skipList.add(x);
-        } else if (x < 0) {
-//            System.out.print("Remove " + x + "  ");
-             skipList.remove(-x);
+    private static int findSum(SkipList<Integer> skipList) {
+        int sum =0;
+        for (Integer i : skipList){
+            sum+=i;
         }
-        else {
-            skipList.printList();
+        return sum;
+    }
+    private static int findSum2(TreeMap<Integer,Integer> skipList) {
+        int sum =0;
+        for (Map.Entry<Integer,Integer> i : skipList.entrySet()){
+            sum+=i.getValue();
         }
-
+        return sum;
     }
 }
