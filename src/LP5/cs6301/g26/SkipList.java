@@ -232,7 +232,8 @@ public class SkipList<T extends Comparable<? super T>> implements Iterable<T> {
     }
 
     /**
-     * Returns the span between the given entries.
+     * Returns the span between the given entries. Not that left entry should be smaller than
+     * the right entry and also both the entries should be present in the level passed.
      * @param level : level at which the entries are to be traversed
      * @param entryL : left entry
      * @param entryR : right entry
