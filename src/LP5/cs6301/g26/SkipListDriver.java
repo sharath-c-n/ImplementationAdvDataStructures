@@ -11,7 +11,6 @@ import java.util.TreeMap;
  */
 public class SkipListDriver {
     public static void main(String[] args) {
-        SkipList<Integer> skipList = new SkipList<>();
         addRemoveTest();
         //reArrangetest(skipList);
     }
