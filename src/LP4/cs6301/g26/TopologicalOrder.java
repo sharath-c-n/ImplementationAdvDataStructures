@@ -7,8 +7,8 @@ import cs6301.g00.Graph;
  * Created by Ankitha on 11/4/2017.
  */
 public class TopologicalOrder extends GraphAlgorithm<TopologicalOrder.Vertex>{
-    long count;
-    Boolean VERBOSE ;
+    private long count;
+    private Boolean VERBOSE ;
     private Graph.Vertex[] topologicalOrder;
     private  int index;
 
@@ -26,7 +26,6 @@ public class TopologicalOrder extends GraphAlgorithm<TopologicalOrder.Vertex>{
     class Vertex {
         boolean seen;
         int inDegree;
-
         public Vertex(int inDegree) {
             this.seen = false;
             this.inDegree = inDegree;
@@ -71,15 +70,18 @@ public class TopologicalOrder extends GraphAlgorithm<TopologicalOrder.Vertex>{
         }
     }
 
-    public long getTSOrderCount(){
-        VERBOSE = false ;
+    public long getTopologicalOrder(){
         topologicalSort();
         return count;
     }
 
+    public long getTSOrderCount(){
+        VERBOSE = false ;
+        return getTopologicalOrder();
+    }
+
     public long printAllOrders(){
         VERBOSE = true ;
-        topologicalSort();
-        return count;
+        return getTopologicalOrder();
     }
 }
