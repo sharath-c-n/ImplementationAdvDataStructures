@@ -90,6 +90,7 @@ public class TopologicalOrder extends GraphAlgorithm<TopologicalOrder.Vertex>{
      * @return the number of orders possible.
      */
     private long getTopologicalOrder(){
+        count=0;
         topologicalSort();
         return count;
     }
