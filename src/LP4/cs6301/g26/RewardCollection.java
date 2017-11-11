@@ -1,7 +1,10 @@
 package cs6301.g26;
 
 import cs6301.g00.Graph;
-import java.util.*;
+import java.util.List;
+import java.util.PriorityQueue;
+import java.util.Comparator;
+import java.util.Map;
 
 /**
  * RewardCollection: finds the maximum rewards that can be collected from a given source and the following
@@ -10,6 +13,7 @@ import java.util.*;
  * 2)not allowed to visit any intermediate node more than once.
  * 3)The reward at a node can be collected only if the traversal got there using a
  * shortest path from source to that node.
+ * 4)Graph will be undirected
  * @author : Sharath
  * 07/11/2017
  */
@@ -64,7 +68,7 @@ public class RewardCollection extends GraphAlgorithm<RewardCollection.Vertex> {
         }
     }
 
-    public RewardCollection(Graph g, Graph.Vertex src, HashMap<Graph.Vertex,Integer> rewards) {
+    public RewardCollection(Graph g, Graph.Vertex src, Map<Graph.Vertex,Integer> rewards) {
         super(g);
         this.src = src;
         node = new Vertex[g.size()];
@@ -216,7 +220,9 @@ public class RewardCollection extends GraphAlgorithm<RewardCollection.Vertex> {
     }
 
     /**
-     * Finds shortest path to all vertices from the given source
+     * Finds shortest path to all vertices from the given source,
+     * Note that since we are assuming that the graph doesn't have any negative cycles we use
+     * dijkstra, other wise we should use bellman ford.
      */
     private void dijkstra() {
         boolean changed;

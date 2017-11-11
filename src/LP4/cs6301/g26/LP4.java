@@ -40,8 +40,8 @@ public class LP4 {
     // Part c. Return the number of shortest paths from s to t
     // 	Return -1 if the graph has a negative or zero cycle
     public long countShortestPaths(Vertex t) {
-	// To do
-	return 0;
+        ShortestPath scp= new ShortestPath(g,s );
+        return scp.countSPs(t);
     }
 
     
@@ -49,15 +49,15 @@ public class LP4 {
     //	return number of shortest paths from s to t.
     //	Return -1 if the graph has a negative or zero cycle.
     public long enumerateShortestPaths(Vertex t) {
-        // To do
-        return 0;
+        ShortestPath scp= new ShortestPath(g,s);
+        return  scp.FindAllSPs(t);
     }
 
 
     // Part e. Return weight of shortest path from s to t using at most k edges
     public int constrainedShortestPath(Vertex t, int k) {
-	// To do
-	return 0;
+        ShortestPath scp2 =new ShortestPath(g,s);
+        return scp2.FindConstraintShortestPaths(t, k);
     }
 
 
@@ -66,7 +66,7 @@ public class LP4 {
     // tour is empty list passed as a parameter, for output tour
     // Return total reward for tour
     public int reward(HashMap<Vertex,Integer> vertexRewardMap, List<Vertex> tour) {
-        //Note that since the expected maximum reward is in
+        //Note that the expected maximum reward is in int.
         RewardCollection rewardCollection = new RewardCollection(g,s,vertexRewardMap);
         return rewardCollection.findMaxReward(tour);
     }
