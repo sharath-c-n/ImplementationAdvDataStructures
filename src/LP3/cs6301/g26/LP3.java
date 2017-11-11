@@ -1,11 +1,9 @@
 // Do not rename this file or move it away from cs6301/g??
 package cs6301.g26;
 
-import java.util.Scanner;
+import java.util.*;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.List;
-import java.util.ArrayList;
 
 import cs6301.g00.Graph.Vertex;
 import cs6301.g00.Graph;
@@ -35,7 +33,7 @@ public class LP3 {
         Timer timer = new Timer();
         int wmst = directedMST(g, startVertex, dmst);
         timer.end();
-
+        findValidity(dmst,g.size());
         System.out.println(wmst);
         if (VERBOSE > 0) {
             System.out.println("_________________________");
@@ -46,6 +44,41 @@ public class LP3 {
             System.out.println("_________________________");
         }
         System.out.println(timer);
+    }
+    public static  void findValidity( List<Edge> dmst, int size){
+
+        Vector<Integer> vl[]= new Vector[size+1];
+        for(int i=0;i<=size;i++){
+            vl[i]=new Vector<Integer>();
+        }
+        for( Edge e: dmst){
+            if(e!=null)
+                vl[e.fromVertex().getName()].addElement(e.toVertex().getName());
+        }
+        //System.out.println(vl[0]);
+        Queue<Integer> q = new LinkedList<>();
+        q.add(0);
+        int [] seen= new int[size+1];
+        for(int i=0;i<=size;i++)
+            seen[i]=0;
+        int count=0;
+        while( !q.isEmpty()){
+            Integer top = q.peek();
+            seen[top.intValue()]=1;
+            count++;
+            q.poll();
+            for(Integer val:vl[top]){
+                if( seen[val.intValue()]==0) {
+                    q.add(val);
+                }
+            }
+        }
+
+        if(count==size){
+            System.out.println(count+ "  Valid Path");
+        }
+        else
+            System.out.println(count+ "  Not a Valid Path");
     }
 
     /**
