@@ -7,9 +7,21 @@ import cs6301.g00.Graph;
  * Created by Ankitha on 11/4/2017.
  */
 public class TopologicalOrder extends GraphAlgorithm<TopologicalOrder.Vertex>{
+    /**
+     * Used to keep count of the number of topological orders that are possible
+     */
     private long count;
+    /**
+     * If true we the topological orders are printed
+     */
     private Boolean VERBOSE ;
+    /**
+     * Temporary array used to store topological order
+     */
     private Graph.Vertex[] topologicalOrder;
+    /**
+     * temporary index in the topological order array, used while recursion
+     */
     private  int index;
 
     public TopologicalOrder(Graph g) {
@@ -61,6 +73,9 @@ public class TopologicalOrder extends GraphAlgorithm<TopologicalOrder.Vertex>{
         }
     }
 
+    /**
+     * Updates the topological order count and also prints the order if VERBOSE is set.
+     */
     private void printVertices(){
         count++;
         if(VERBOSE){
@@ -70,16 +85,28 @@ public class TopologicalOrder extends GraphAlgorithm<TopologicalOrder.Vertex>{
         }
     }
 
-    public long getTopologicalOrder(){
+    /**
+     * Private function to find all topologicalOrder
+     * @return the number of orders possible.
+     */
+    private long getTopologicalOrder(){
         topologicalSort();
         return count;
     }
 
+    /**
+     * counts the number of possible topological orders
+     * @return the number of orders possible.
+     */
     public long getTSOrderCount(){
         VERBOSE = false ;
         return getTopologicalOrder();
     }
 
+    /**
+     * counts and prints the number of possible topological orders
+     * @return the number of orders possible.
+     */
     public long printAllOrders(){
         VERBOSE = true ;
         return getTopologicalOrder();

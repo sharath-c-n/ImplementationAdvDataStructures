@@ -10,16 +10,40 @@ import java.util.*;
  * 07/11/2017
  */
 public class RewardCollection extends GraphAlgorithm<RewardCollection.Vertex> {
+    /**
+     * Source vertex from which we have to find maximum rewards path
+     */
     private Graph.Vertex src;
+    /**
+     * Stores the maximum reward that can be collected from a given source.
+     */
     private int maxReward;
+    /**
+     * Stores the intermediate maximum reward path
+     */
     private Graph.Vertex[] path;
+    /**
+     * Stores the optimal maximum reward path
+     */
     private List<Graph.Vertex> optimumPath;
+    /**
+     * Used while recursion
+     */
     private int index = 0;
 
     public static class Vertex {
+        /**
+         * Vertex's shortest path distance from the given source
+         */
         int distance;
         boolean seen;
+        /**
+         * reward that can be collected if the vertex is reached using shortest path
+         */
         int reward;
+        /**
+         * Original graph vertex which is represent by this vertex.
+         */
         Graph.Vertex graphVertex;
 
         public Vertex(int reward, Graph.Vertex graphVertex) {
