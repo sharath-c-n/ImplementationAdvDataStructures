@@ -1,11 +1,15 @@
 package cs6301.g26;
 
 import cs6301.g00.Graph;
-
 import java.util.*;
 
 /**
- * RewardCollection:
+ * RewardCollection: finds the maximum rewards that can be collected from a given source and the following
+ * constrains
+ * 1)find a traversal that starts and ends at source.
+ * 2)not allowed to visit any intermediate node more than once.
+ * 3)The reward at a node can be collected only if the traversal got there using a
+ * shortest path from source to that node.
  * @author : Sharath
  * 07/11/2017
  */
