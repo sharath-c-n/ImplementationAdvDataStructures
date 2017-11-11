@@ -47,6 +47,7 @@ public class RewardCollection extends GraphAlgorithm<RewardCollection.Vertex> {
         int reward;
         /**
          * Original graph vertex which is represent by this vertex.
+         * Needed for dijkstra
          */
         Graph.Vertex graphVertex;
 
@@ -98,9 +99,10 @@ public class RewardCollection extends GraphAlgorithm<RewardCollection.Vertex> {
     private void enumerateAllCycles(Graph.Vertex currentVertex, int reward, int weight) {
         getVertex(currentVertex).seen = true;
         for (Graph.Edge edge : currentVertex) {
-            Vertex otherEnd = getVertex(edge.otherEnd(currentVertex));
+            Graph.Vertex toVertex = edge.otherEnd(currentVertex);
+            Vertex otherEnd = getVertex(toVertex);
             //if this vertex is source
-            if (otherEnd.graphVertex == this.src) {
+            if (toVertex == this.src) {
                 updateMaxReward(reward);
             }
             //if other vertex is not visited yet
@@ -109,14 +111,14 @@ public class RewardCollection extends GraphAlgorithm<RewardCollection.Vertex> {
                  * do all enumerations from the vertex
                  */
                 if (weight + edge.getWeight() == otherEnd.distance) {
-                    path[index++] = otherEnd.graphVertex;
-                    enumerateAllCycles(otherEnd.graphVertex, reward + otherEnd.reward, weight + edge.getWeight());
+                    path[index++] = toVertex;
+                    enumerateAllCycles(toVertex, reward + otherEnd.reward, weight + edge.getWeight());
                     index--;
                 }
                 /* if not the shortest path, then find path back to source
                  * only if reward is greater than current reward
                  */
-                else if (reward > maxReward && isSourceReachable(otherEnd)) {
+                else if (reward > maxReward && isSourceReachable(toVertex)) {
                     updateMaxReward(reward);
                     /* Reset all the vertex in the path that are after current Vertex, so that we can
                      * enumerate other possible simple cycles
@@ -138,7 +140,7 @@ public class RewardCollection extends GraphAlgorithm<RewardCollection.Vertex> {
      * @param from : vertex from which the path is to be found
      * @return : true if there is a path
      */
-    private boolean isSourceReachable(Vertex from) {
+    private boolean isSourceReachable(Graph.Vertex from) {
         boolean isReachable = false;
         for (Graph.Edge e : src) {
             if (!getVertex(e.otherEnd(src)).seen) {
@@ -157,18 +159,19 @@ public class RewardCollection extends GraphAlgorithm<RewardCollection.Vertex> {
      * @param from : the vertex from which the path to source is to be found.
      * @return : returns true if there is a path from current vertex to source.
      */
-    private boolean pathToSource(Vertex from) {
-        from.seen = true;
-        path[index++] = from.graphVertex;
-        for (Graph.Edge e : from.graphVertex) {
-            Vertex otherEnd = getVertex(e.otherEnd(from.graphVertex));
+    private boolean pathToSource(Graph.Vertex from) {
+        Vertex fromVertex = getVertex(from);
+        fromVertex.seen = true;
+        path[index++] = from;
+        for (Graph.Edge e : from) {
+            Graph.Vertex otherEnd = e.otherEnd(from);
             //if we have reached source or source is reachable from other end,return true
-            if (otherEnd.graphVertex == this.src || (!otherEnd.seen && pathToSource(otherEnd))) {
+            if (otherEnd == this.src || (!getVertex(otherEnd).seen && pathToSource(otherEnd))) {
                 return true;
             }
         }
         index--;
-        from.seen = false;
+        fromVertex.seen = false;
         return false;
     }
 
