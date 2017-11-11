@@ -66,6 +66,7 @@ public class LP4 {
     // tour is empty list passed as a parameter, for output tour
     // Return total reward for tour
     public int reward(HashMap<Vertex,Integer> vertexRewardMap, List<Vertex> tour) {
+        //Note that since the expected maximum reward is in
         RewardCollection rewardCollection = new RewardCollection(g,s,vertexRewardMap);
         return rewardCollection.findMaxReward(tour);
     }
