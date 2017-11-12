@@ -6,6 +6,7 @@ public class MDS {
     }
 
     public static class Pair {
+
         long id;
         int price;
         public Pair(long id, int price) {
