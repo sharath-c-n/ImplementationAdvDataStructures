@@ -1,10 +1,8 @@
 package cs6301.g26;
 
 import cs6301.g00.Graph;
-import java.util.List;
-import java.util.PriorityQueue;
-import java.util.Comparator;
-import java.util.Map;
+
+import java.util.*;
 
 /**
  * RewardCollection: finds the maximum rewards that can be collected from a given source and the following
@@ -14,6 +12,7 @@ import java.util.Map;
  * 3)The reward at a node can be collected only if the traversal got there using a
  * shortest path from source to that node.
  * 4)Graph will be undirected
+ *
  * @author : Sharath
  * 07/11/2017
  */
@@ -50,41 +49,38 @@ public class RewardCollection extends GraphAlgorithm<RewardCollection.Vertex> {
          */
         int reward;
         /**
-         * Original graph vertex which is represent by this vertex.
-         * Needed for dijkstra
+         * Needed for bellmanFord
          */
-        Graph.Vertex graphVertex;
+        int count;
 
-        public Vertex(int reward, Graph.Vertex graphVertex) {
+        public Vertex(int reward) {
             this.reward = reward;
             distance = Integer.MAX_VALUE;
             seen = false;
-            this.graphVertex = graphVertex;
-        }
-
-        @Override
-        public String toString() {
-            return graphVertex.toString();
         }
     }
 
-    public RewardCollection(Graph g, Graph.Vertex src, Map<Graph.Vertex,Integer> rewards) {
+    public RewardCollection(Graph g, Graph.Vertex src, Map<Graph.Vertex, Integer> rewards) {
         super(g);
         this.src = src;
         node = new Vertex[g.size()];
         for (Graph.Vertex v : g) {
-            node[v.getName()] = new Vertex(rewards.get(v), v);
+            node[v.getName()] = new Vertex(rewards.get(v));
         }
         maxReward = 0;
     }
 
     /**
      * This is the driver function which finds the maximumReward
+     *
      * @param optimumPath : The end result will be stored in this queue
      * @return : returns the maximum reward amount that can be collected
      */
     public int findMaxReward(List<Graph.Vertex> optimumPath) {
-        dijkstra();
+        if (!bellmanFordTake3()) {
+            //Negative cycles exists hence can't find shortest paths
+            return -1;
+        }
         resetSeen();
         path = new Graph.Vertex[g.size()];
         path[index++] = src;
@@ -96,9 +92,10 @@ public class RewardCollection extends GraphAlgorithm<RewardCollection.Vertex> {
     /**
      * Enumerates all (shortest cycle) paths from source to find the maximum reward that can
      * be collected.
+     *
      * @param currentVertex : vertex from which we have to start the next enumeration
-     * @param reward : reward collected so far.
-     * @param weight : distance travelled from the source.
+     * @param reward        : reward collected so far.
+     * @param weight        : distance travelled from the source.
      */
     private void enumerateAllCycles(Graph.Vertex currentVertex, int reward, int weight) {
         getVertex(currentVertex).seen = true;
@@ -135,12 +132,12 @@ public class RewardCollection extends GraphAlgorithm<RewardCollection.Vertex> {
                 otherEnd.seen = false;
             }
         }
-
     }
 
     /**
      * Checks if there is a path from current vertex to source and updates the path array
      * if there is a path.
+     *
      * @param from : vertex from which the path is to be found
      * @return : true if there is a path
      */
@@ -160,6 +157,7 @@ public class RewardCollection extends GraphAlgorithm<RewardCollection.Vertex> {
 
     /**
      * finds a path from current vertex to source if there is one and stores it in path array.
+     *
      * @param from : the vertex from which the path to source is to be found.
      * @return : returns true if there is a path from current vertex to source.
      */
@@ -181,6 +179,7 @@ public class RewardCollection extends GraphAlgorithm<RewardCollection.Vertex> {
 
     /**
      * Updates the Max reward value and also updates the path to get max reward
+     *
      * @param reward : current reward, which will be compared with current Max reward
      */
     private void updateMaxReward(int reward) {
@@ -205,44 +204,29 @@ public class RewardCollection extends GraphAlgorithm<RewardCollection.Vertex> {
     }
 
     /**
-     * Relaxes the vertex
-     * @param e edge
-     * @param u vertex
-     * @return : returns true if the vertex distance got updated
+     * Finds shortest path to all vertices from the given source
      */
-    private boolean relax(Graph.Edge e, Graph.Vertex u) {
-        Graph.Vertex v = e.otherEnd(u);
-        if (getVertex(v).distance > getVertex(u).distance + e.getWeight()) {
-            getVertex(v).distance = getVertex(u).distance + e.getWeight();
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Finds shortest path to all vertices from the given source,
-     * Note that since we are assuming that the graph doesn't have any negative cycles we use
-     * dijkstra, other wise we should use bellman ford.
-     */
-    private void dijkstra() {
-        boolean changed;
+    private boolean bellmanFordTake3() {
         getVertex(src).distance = 0;
-        PriorityQueue<Vertex> pq = new PriorityQueue<>(Comparator.comparingInt(x -> x.distance));
-        pq.add(getVertex(src));
-        while (!pq.isEmpty()) {
-            //vertex with minimum distance from source, is removed from the priority queue
-            Vertex u = pq.remove();
-            u.seen = true;
-            for (Graph.Edge edge : u.graphVertex) {
-                Vertex v = getVertex(edge.otherEnd(u.graphVertex));
-                if (!v.seen) {
-                    changed = relax(edge, u.graphVertex);
-                    if (changed) {
-                        pq.remove(v);
-                        pq.add(v);
+        Queue<Graph.Vertex> q = new LinkedList<>();
+        q.add(src);
+        while (!q.isEmpty()) {
+            Graph.Vertex u = q.poll();
+            Vertex fromVertex = getVertex(u);
+            fromVertex.seen = false;
+            fromVertex.count = getVertex(u).count + 1;
+            if (fromVertex.count >= g.size()) return false;
+            for (Graph.Edge e : u.adj) {
+                Vertex toVertex = getVertex(e.toVertex());
+                if ((fromVertex.distance != Integer.MAX_VALUE) && (toVertex.distance > (fromVertex.distance + e.getWeight()))) {
+                    toVertex.distance = fromVertex.distance + e.getWeight();
+                    if (!toVertex.seen) {
+                        q.add(e.toVertex());
+                        toVertex.seen = true;
                     }
                 }
             }
         }
+        return true;
     }
 }
