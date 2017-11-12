@@ -27,7 +27,7 @@ public class ShortestPath extends GraphAlgorithm<ShortestPath.VertexUtil> {
         List<Graph.Edge> nxtAdj; // Store the next Adjacency list of tight edges from the current Vertex
         int distance;  // distance of vertex from source
         int count; // store the information about number of times a vertex is on Queue.
-        long spCount = 0; //count of shortest paths to a vertex
+        long spCount = 0; //count of the shortest paths to a vertex
 
         VertexUtil() {
             seen = false;
