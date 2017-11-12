@@ -1,5 +1,5 @@
 
-package cs6301.g26;
+package Lp4.cs6301.g26;
 
 import cs6301.g00.Graph;
 
@@ -9,25 +9,25 @@ import java.util.*;
  * @author Sandeep on 11/11/2017
  */
 
-public class ShortestPath extends GraphAlgorithm<ShortestPath.VertexUtil> {
-    private static final int INFINITY = Integer.MAX_VALUE;
-    private Graph.Vertex src;
+public class ShortestPathCount extends GraphAlgorithm<ShortestPathCount.VertexUtil> {
+    public static final int INFINITY = Integer.MAX_VALUE;
+    public Graph.Vertex src;
 
-    ShortestPath(Graph g, Graph.Vertex s) {
+    ShortestPathCount(Graph g, Graph.Vertex s) {
         super(g);
         this.src = s;
-        node = new VertexUtil[g.size()];
-        for (Graph.Vertex v : g) {
-            node[v.getName()] = new VertexUtil();
+        node  = new VertexUtil[g.size()];
+        for(Graph.Vertex v: g){
+            node[v.getName()]= new VertexUtil();
         }
     }
 
     class VertexUtil {
         boolean seen;
-        List<Graph.Edge> nxtAdj; // Store the next Adjacency list of tight edges from the current Vertex
+        List<Graph.Edge> nxtAdj;
         int distance;  // distance of vertex from source
-        int count; // store the information about number of times a vertex is on Queue.
-        long spCount = 0; //count of shortest paths to a vertex
+        int count;
+        long spCount = 0;
 
         VertexUtil() {
             seen = false;
@@ -37,20 +37,20 @@ public class ShortestPath extends GraphAlgorithm<ShortestPath.VertexUtil> {
             spCount = 0;
         }
     }
-    //Helper function to return number of times the Vertex u is on Queue.
 
-    private int getCount(Graph.Vertex u) {
+    int getCount(Graph.Vertex u) {
         return getVertex(u).count;
     }
 
-    //Reset Function to  un mark the visited vertices
-    private void reset() {
-        for (VertexUtil u : node) {
-            u.seen = false;
+    public void reset() {
+        for (Graph.Vertex u : g) {
+            VertexUtil bu = getVertex(u);
+            bu.seen = false;
         }
+
     }
 
-    private boolean bellmanFordTake3() {
+    public boolean bellmanFordTake3() {
         reset();
         getVertex(src).distance = 0;
         getVertex(src).count = 0;
@@ -61,15 +61,13 @@ public class ShortestPath extends GraphAlgorithm<ShortestPath.VertexUtil> {
             VertexUtil bu = getVertex(u);
             bu.seen = false;
             bu.count = getVertex(u).count + 1;
-            // Check if a single vertex is on queue for more than the number of vertices of Graph
-            //  Then Graph has a negative weight or zero cycle that is reachable from source
             if (getCount(u) >= g.size()) return false;
             for (Graph.Edge e : u.adj) {
-                VertexUtil bv = getVertex(e.toVertex());   //Relax the Edges
-                if ((bu.distance != INFINITY) && (bv.distance > (bu.distance + e.getWeight()))) {
-                    bv.distance = bu.distance + e.getWeight();
+                VertexUtil bv = getVertex(e.toVertex());
+                if ((bu.distance != INFINITY) && (bv.distance > (bu.distance + e.weight))) {
+                    bv.distance = bu.distance + e.weight;
                     if (!bv.seen) {
-                        q.add(e.toVertex());
+                        q.add(e.toVertex()); //?
                         bv.seen = true;
                     }
                 }
@@ -77,12 +75,8 @@ public class ShortestPath extends GraphAlgorithm<ShortestPath.VertexUtil> {
         }
         return true;
     }
-     /*
-      * This Function Finds and returns number of shortest Paths
-      * @params Graph.Vertex t is the target vertex
-      */
 
-    private long getSPCount(Graph.Vertex t) {
+    public long getSpcount(Graph.Vertex t) {
         reset();
         getVertex(src).spCount = 1;
         Queue<Graph.Vertex> q = new LinkedList<>();
@@ -90,14 +84,12 @@ public class ShortestPath extends GraphAlgorithm<ShortestPath.VertexUtil> {
         getVertex(t).seen = true;
         while (!q.isEmpty()) {
             Graph.Vertex u = q.poll();
-            VertexUtil bu = getVertex(u);
             for (Graph.Edge e : u.revAdj) {
-                Graph.Vertex v = e.fromVertex();
-                VertexUtil bv = getVertex(v);
-                if ((bv.distance != INFINITY) && (bv.distance + e.getWeight()) == bu.distance) {
-                    bv.nxtAdj.add(e);
-                    if (!bv.seen) {
-                        bv.seen = true;
+                Graph.Vertex v = e.fromVertex(); //?
+                if ((getVertex(v).distance + e.weight) == getVertex(u).distance) {
+                    getVertex(v).nxtAdj.add(e);
+                    if (!getVertex(v).seen) {
+                        getVertex(v).seen = true;
                         q.add(v);
                     }
                 }
@@ -112,11 +104,10 @@ public class ShortestPath extends GraphAlgorithm<ShortestPath.VertexUtil> {
         return getVertex(t).spCount;
     }
 
-    //Find the topological order of  vertices and insert the corresponding edges
-    private void finishedOrder(Graph.Vertex v, Deque<Graph.Edge> q) {
-        VertexUtil bv = getVertex(v);
-        bv.seen = true;
-        for (Graph.Edge t : bv.nxtAdj) {
+    //Find the topological order
+    public void finishedOrder(Graph.Vertex v, Deque<Graph.Edge> q) {
+        getVertex(v).seen = true;
+        for (Graph.Edge t : getVertex(v).nxtAdj) {
             if (!getVertex(t.otherEnd(v)).seen)
                 finishedOrder(t.otherEnd(v), q);
         }
@@ -124,8 +115,7 @@ public class ShortestPath extends GraphAlgorithm<ShortestPath.VertexUtil> {
             q.addFirst(e);
     }
 
-    //This is a Helper Function which prints all possible shortest paths from source to target
-    private void printRecursively(Graph.Vertex s, Graph.Vertex t, Graph.Vertex[] arr, int index) {
+    void printRecursively(Graph.Vertex s, Graph.Vertex t, Graph.Vertex[] arr, int index) {
         if (s.equals(t)) {
             for (int i = 0; i < index; i++) {
                 System.out.print(arr[i] + " ");
@@ -139,17 +129,17 @@ public class ShortestPath extends GraphAlgorithm<ShortestPath.VertexUtil> {
         }
     }
 
-    public long countSPs(Graph.Vertex t) {
+    public long countsps(Graph.Vertex t) {
         long ans = -1L;
         boolean res = bellmanFordTake3();
         if (!res)
             return ans;
-        ans = getSPCount(t);
+        ans = getSpcount(t);
         return ans;
     }
 
-    public long FindAllSPs(Graph.Vertex t) {
-        long ans = countSPs(t);
+    public long FindallShortestPaths(Graph.Vertex t) {
+        long ans = countsps(t);
         if (ans < 0)
             return ans;
         Graph.Vertex[] arr = new Graph.Vertex[g.size()];
@@ -158,12 +148,13 @@ public class ShortestPath extends GraphAlgorithm<ShortestPath.VertexUtil> {
         return ans;
     }
 
+
     public int FindConstraintShortestPaths(Graph.Vertex t, int k) {
         bellmanFordTake1(k);
         return getVertex(t).distance;
     }
 
-    private void bellmanFordTake1(int k) {
+    public void bellmanFordTake1(int k) {
         int dist[][] = new int[g.size() + 1][k + 1];
         reset();
         for (Graph.Vertex u : g) {
@@ -172,17 +163,17 @@ public class ShortestPath extends GraphAlgorithm<ShortestPath.VertexUtil> {
         getVertex(src).distance = 0;
         dist[src.getName()][0] = 0;
         for (int i = 1; i <= k; i++) {
-            boolean noChange = true;
+            boolean nochange = true;
             for (Graph.Vertex v : g) {
                 dist[v.getName()][i] = dist[v.getName()][i - 1];
                 for (Graph.Edge e : v.revAdj) {
                     if ((dist[e.fromVertex().getName()][i - 1] != INFINITY) && (dist[v.getName()][i] > (dist[e.fromVertex().getName()][i - 1] + e.getWeight()))) {
                         dist[v.getName()][i] = (dist[e.fromVertex().getName()][i - 1] + e.getWeight());
-                        noChange = false;
+                        nochange = false;
                     }
                 }
             }
-            if (noChange) {
+            if (nochange) {
                 for (Graph.Vertex v : g)
                     getVertex(v).distance = dist[v.getName()][i];
                 return;
