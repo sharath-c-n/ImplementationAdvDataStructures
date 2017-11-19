@@ -3,15 +3,23 @@ package cs6301.g26;
 import java.util.*;
 
 public class MDS {
+    /**Each entry in this table : (ItemId,(Description,(SupplierId,ItemPrice)))
+     * This table holds an entry for each item as key
+     * and its value holds the item description,SupplierPrice Map
+    **/
 
-    Map<Long,Item> itemTable;
-    Map<Long,Float> supplierTable;
-    Map<Long,HashSet<Pair>> supplierItemTable;
-    Map<Long,Set<Long>> descriptionItemTable;
+    private Map<Long,Item> itemTable;
+    /**Each entry in this table : (SupplierId,Reputation)
+     * Has SupplierId as key and a supplier's reputation as value
+     **/
+    private Map<Long,Float> supplierTable;
+    //Each entry in this table : (Description,{Items})
+    private Map<Long,Set<Long>> descriptionItemTable;
 
     public MDS() {
         itemTable = new HashMap<>();
         supplierTable = new HashMap<>();
+        descriptionItemTable = new HashMap<>() ;
     }
 
     public static class Pair {
@@ -34,7 +42,7 @@ public class MDS {
          */
         @Override
         public  boolean equals(Object other) {
-            Supplier otherItem = (Supplier) other;
+            Pair otherItem = (Pair) other;
             if(otherItem == null) {
                 return false;
             }
@@ -44,42 +52,18 @@ public class MDS {
 
     public static class Item {
         Set<Long> description;
-        Set<Long> supplierMap;
+        Map<Long,Integer> supplierPriceMap;
 
         public Item() {
-            this.description = null;
-            this.supplierMap = null;
+            this.description = new HashSet<>();
+            this.supplierPriceMap = new TreeMap<>();
         }
-    }
-
-    public static class Supplier {
-        long id;
-        float reputation;
-
-        public Supplier(Long id, Float reputation) {
-            this.id = id;
-            this.reputation = reputation;
-        }
-
-        /**
-         * hashCode of a vertex can be its name, since name is unique
-         */
-        public int hashCode() {
-            return Long.hashCode(id);
-        }
-
-
-        /** name of vertex is unique, so use that to implement equals
-         */
-        @Override
-        public boolean equals(Object other) {
-            Supplier otherSupplier = (Supplier) other;
-            if(otherSupplier == null) {
-                return false;
+        public Item(Long desc,Long supplierId,Integer price) {
+            if(desc!=null){
+                this.description.add(desc);
             }
-            return this.id == otherSupplier.id;
+            this.supplierPriceMap.put(supplierId,price);
         }
-
     }
 
     /* add a new item.  If an entry with the same id already exists,
@@ -116,14 +100,10 @@ public class MDS {
     */
     public int add(Long supplier, Pair[ ] idPrice) {
         int newEntries =0;
-        for(Pair curItem : idPrice){
-            if(itemTable.containsKey(curItem.id)){
-                if(!supplierItemTable.containsKey(supplier)){
-                    supplierItemTable.put(supplier,null);
-                    newEntries++;
-                }
-                supplierItemTable.get(supplier).add(curItem);
-                itemTable.get(curItem.id).supplierMap.add(supplier);
+        for(Pair pair : idPrice){
+            Item curItem = itemTable.get(pair.id);
+            if(curItem != null){
+                if(curItem.supplierPriceMap.put(supplier,pair.price)== null)  newEntries++;
             }
         }
         return newEntries;
@@ -133,10 +113,8 @@ public class MDS {
       there is no item with this id.
     */
     public Long[ ] description(Long id) {
-        if(itemTable.containsKey(id)){
-            return (Long[])itemTable.get(id).description.toArray();
-        }
-        return null;
+        Item item = itemTable.get(id);
+        return item == null ? null : (Long[])item.description.toArray();
     }
 
     /* given an array of Longs, return an array of items whose
@@ -147,12 +125,11 @@ public class MDS {
     public Long[ ] findItem(Long[ ] arr) {
         Map<Long,Integer> itemDescriptionCount = new HashMap<>();
         int count;
-        for(int i=0;i<arr.length;i++){
-            if(descriptionItemTable.containsKey(arr[i])){
-                for(Long item : descriptionItemTable.get(arr[i])){
+        for(Long description:arr){
+            if(descriptionItemTable.containsKey(description)){
+                for(Long item : descriptionItemTable.get(description)){
                      count = itemDescriptionCount.getOrDefault(item,0);
                      itemDescriptionCount.put(item,count++);
-                    // itemDescriptionCount.put(item, itemDescriptionCount.getOrDefault(item, 0) + 1);
                 }
             }
         }
@@ -204,22 +181,18 @@ public class MDS {
                     }
                 });
 
-
         for(Long item:items){
-            Set<Long> Suppliers = itemTable.get(item).supplierMap;
-            for(Long supplier :  Suppliers){
+            Map<Long, Integer> supplierPriceMap = itemTable.get(item).supplierPriceMap;
+            for(Long supplier :  supplierPriceMap.keySet()){
                 if(supplierTable.get(supplier)>= minReputation){
-                    for (Pair curItem : supplierItemTable.get(supplier)) {
-                        if (curItem.equals(item)) {
-                            if(curItem.price>=minPrice && curItem.price<=maxPrice){
-                                if(curItem.price < leastPrice) leastPrice = curItem.price;
+                            int curSupplierPrice =  supplierPriceMap.get(supplier);
+                            if(curSupplierPrice>=minPrice && curSupplierPrice<=maxPrice && curSupplierPrice<leastPrice){
+                                leastPrice = curSupplierPrice;
                             }
                         }
-                        itemPrice.put(curItem.id,leastPrice);
+                        itemPrice.put(item,leastPrice);
                     }
                 }
-            }
-        }
 
         // insert in the queue
         for(Map.Entry<Long, Integer> entry : itemPrice.entrySet()){
@@ -239,39 +212,7 @@ public class MDS {
       ordered by the price at which they sell the item (non-decreasing order).
     */
     public Long[ ] findSupplier(Long id) {
-        Set<Long> suppliers = itemTable.get(id).supplierMap;
-        PriorityQueue<Pair> pq = new PriorityQueue<Pair>(new Comparator<Pair>()
-        {
-            @Override
-            public int compare(Pair entry1, Pair entry2)
-            {
-                return entry1.price - entry2.price;
-            }
-        });
-        for(Long supplier:suppliers){
-            for(Pair curItem :supplierItemTable.get(supplier)){
-                if(curItem.id == id){
-                    pq.offer(curItem);
-                }
-            }
-        }
-
-        Long[] suppliersList = new Long[pq.size()];
-        for(int i=0;i<suppliersList.length;i++){
-            suppliersList[i] = pq.remove().id;
-        }
-        return suppliersList;
-    }
-
-    /* given an id and a minimum reputation, return an array of
-      suppliers who sell that item, whose reputation meets or exceeds
-      the given reputation.  The array should be ordered by the price
-      at which they sell the item (non-decreasing order).
-    */
-    public Long[ ] findSupplier(Long id, float minReputation) {
-        Set<Long> Suppliers = itemTable.get(id).supplierMap;
-        Integer leastPrice = Integer.MAX_VALUE;
-        Map<Long,Integer> itemPrice = new HashMap<>();
+        Map<Long, Integer> supplierPrice = itemTable.get(id).supplierPriceMap;
         PriorityQueue<Map.Entry<Long, Integer>> pq =
                 new PriorityQueue<Map.Entry<Long, Integer>>(new Comparator<Map.Entry<Long, Integer>>()
                 {
@@ -283,28 +224,53 @@ public class MDS {
                 });
 
 
-        for(Long supplier :  Suppliers){
-            if(supplierTable.get(supplier)>= minReputation){
-                for (Pair curItem : supplierItemTable.get(supplier)) {
-                    if (curItem.equals(id)) {
-                            if(curItem.price < leastPrice) leastPrice = curItem.price;
-                    }
-                    itemPrice.put(curItem.id,leastPrice);
-                }
-            }
-        }
-
-        for(Map.Entry<Long, Integer> entry : itemPrice.entrySet()){
+        // insert in the queue
+        for(Map.Entry<Long, Integer> entry : supplierPrice.entrySet()){
             pq.offer(entry);
         }
 
         //add and return it to a long array
-        Long[] list = new Long[itemPrice.size()];
-        for(int i = 0; i < list.length; i ++){
+        Long[] suppliersList = new Long[supplierPrice.size()];
+        for(int i = 0; i < suppliersList.length; i ++){
             Map.Entry<Long, Integer> entry = pq.poll();
-            list[i] = entry.getKey();
+            suppliersList[i] = entry.getKey();
         }
-        return list;
+        return suppliersList;
+    }
+
+    /* given an id and a minimum reputation, return an array of
+      suppliers who sell that item, whose reputation meets or exceeds
+      the given reputation.  The array should be ordered by the price
+      at which they sell the item (non-decreasing order).
+    */
+    public Long[ ] findSupplier(Long id, float minReputation) {
+        Map<Long, Integer> supplierPrice = itemTable.get(id).supplierPriceMap;
+        PriorityQueue<Map.Entry<Long, Integer>> pq =
+                new PriorityQueue<Map.Entry<Long, Integer>>(new Comparator<Map.Entry<Long, Integer>>()
+                {
+                    @Override
+                    public int compare(Map.Entry<Long, Integer> entry1, Map.Entry<Long, Integer> entry2)
+                    {
+                        return entry1.getValue() - entry2.getValue();
+                    }
+                });
+
+
+        // insert in the queue
+        for(Map.Entry<Long, Integer> entry : supplierPrice.entrySet()){
+            float supplierReputation = supplierTable.get(entry.getKey());
+            if(supplierReputation >= minReputation){
+                pq.offer(entry);
+            }
+        }
+
+        //add and return it to a long array
+        Long[] suppliersList = new Long[supplierPrice.size()];
+        for(int i = 0; i < suppliersList.length; i ++){
+            Map.Entry<Long, Integer> entry = pq.poll();
+            suppliersList[i] = entry.getKey();
+        }
+        return suppliersList;
     }
 
     /* find suppliers selling 5 or more products, who have the same
@@ -334,19 +300,15 @@ public class MDS {
     }
 
     private int findLeastPrice(Long item, float minReputation) {
-        Set<Long> Suppliers = itemTable.get(item).supplierMap;
+        Map<Long, Integer> supplierPriceMap = itemTable.get(item).supplierPriceMap;
         Integer leastPrice = Integer.MAX_VALUE;
         Map<Long,Integer> itemPrice = new HashMap<>();
 
-        for(Long supplier :  Suppliers){
-            if(supplierTable.get(supplier)>= minReputation){
-                for (Pair curItem : supplierItemTable.get(supplier)) {
-                    if (curItem.equals(item)) {
-                        if(curItem.price < leastPrice) leastPrice = curItem.price;
-                    }
+        for(Map.Entry<Long, Integer> cur : supplierPriceMap.entrySet()){
+            if(supplierTable.get(cur.getKey())>= minReputation){
+                        if(cur.getValue() < leastPrice) leastPrice = cur.getValue();
                 }
             }
-        }
         return leastPrice;
     }
 
