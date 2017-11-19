@@ -86,7 +86,26 @@ public class RewardCollection extends GraphAlgorithm<RewardCollection.Vertex> {
         path[index++] = src;
         this.optimumPath = optimumPath;
         enumerateAllCycles(src, getVertex(src).reward, 0);
+        updateCycle();
         return maxReward;
+    }
+
+    /**
+     * Finds the path from destination to source and completes the cycle, to get optimal path
+     */
+    private void updateCycle() {
+        if(maxReward > getVertex(src).reward){
+            resetSeen();
+            index = 0;
+            for(Graph.Vertex v : optimumPath){
+                path[index++] = v;
+                getVertex(v).seen = true;
+            }
+            pathToSource(path[--index]);
+        }
+        optimumPath.clear();
+        optimumPath.addAll(Arrays.asList(path).subList(0, index));
+        optimumPath.add(this.src);
     }
 
     /**
@@ -121,13 +140,6 @@ public class RewardCollection extends GraphAlgorithm<RewardCollection.Vertex> {
                  */
                 else if (reward > maxReward && isSourceReachable(toVertex)) {
                     updateMaxReward(reward);
-                    /* Reset all the vertex in the path that are after current Vertex, so that we can
-                     * enumerate other possible simple cycles
-                     */
-                    while (path[index - 1] != currentVertex) {
-                        getVertex(path[index - 1]).seen = false;
-                        index--;
-                    }
                 }
                 otherEnd.seen = false;
             }
@@ -149,11 +161,35 @@ public class RewardCollection extends GraphAlgorithm<RewardCollection.Vertex> {
                 break;
             }
         }
-        if (isReachable) {
-            isReachable = pathToSource(from);
+        return isReachable && isReachable(from);
+    }
+
+    private boolean isReachable(Graph.Vertex from) {
+        boolean isReachable = false;
+        getVertex(src).seen = false;
+        Queue<Graph.Vertex> q = new LinkedList<>();
+        Queue<Vertex> unset = new LinkedList<>();
+        q.add(from);
+        while (!q.isEmpty()) {
+            Graph.Vertex v = q.poll();
+            for (Graph.Edge e : v) {
+                if (e.otherEnd(v) == src) {
+                    isReachable = true;
+                    break;
+                }
+                if (!getVertex(e.otherEnd(v)).seen) {
+                    unset.add(getVertex(e.otherEnd(v)));
+                    q.add(e.otherEnd(v));
+                    getVertex(e.otherEnd(v)).seen = true;
+                }
+            }
+        }
+        for (Vertex v : unset) {
+            v.seen = false;
         }
         return isReachable;
     }
+
 
     /**
      * finds a path from current vertex to source if there is one and stores it in path array.
@@ -189,9 +225,7 @@ public class RewardCollection extends GraphAlgorithm<RewardCollection.Vertex> {
             for (int i = 0; i < index; i++) {
                 optimumPath.add(path[i]);
             }
-            optimumPath.add(this.src);
         }
-
     }
 
     /**
@@ -211,14 +245,14 @@ public class RewardCollection extends GraphAlgorithm<RewardCollection.Vertex> {
         Queue<Graph.Vertex> q = new LinkedList<>();
         q.add(src);
         while (!q.isEmpty()) {
-            Graph.Vertex u = q.poll();
+            Graph.Vertex u = q.remove();
             Vertex fromVertex = getVertex(u);
             fromVertex.seen = false;
-            fromVertex.count = getVertex(u).count + 1;
+            fromVertex.count = fromVertex.count + 1;
             if (fromVertex.count >= g.size()) return false;
             for (Graph.Edge e : u.adj) {
                 Vertex toVertex = getVertex(e.toVertex());
-                if ((fromVertex.distance != Integer.MAX_VALUE) && (toVertex.distance > (fromVertex.distance + e.getWeight()))) {
+                if (toVertex.distance > fromVertex.distance + e.getWeight()) {
                     toVertex.distance = fromVertex.distance + e.getWeight();
                     if (!toVertex.seen) {
                         q.add(e.toVertex());
