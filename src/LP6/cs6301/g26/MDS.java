@@ -30,24 +30,6 @@ public class MDS {
             this.price = price;
         }
 
-        /**
-         * hashCode of a vertex can be its name, since name is unique
-         */
-        public int hashCode() {
-            return Long.hashCode(id);
-        }
-
-
-        /** name of vertex is unique, so use that to implement equals
-         */
-        @Override
-        public  boolean equals(Object other) {
-            Pair otherItem = (Pair) other;
-            if(otherItem == null) {
-                return false;
-            }
-            return this.id == otherItem.id;
-        }
     }
 
     public static class Item {
@@ -56,7 +38,7 @@ public class MDS {
 
         public Item() {
             this.description = new HashSet<>();
-            this.supplierPriceMap = new TreeMap<>();
+            this.supplierPriceMap = new HashMap<>();
         }
         public Item(Long desc,Long supplierId,Integer price) {
             if(desc!=null){
@@ -134,29 +116,7 @@ public class MDS {
             }
         }
 
-        PriorityQueue<Map.Entry<Long, Integer>> pq =
-                new PriorityQueue<Map.Entry<Long, Integer>>(new Comparator<Map.Entry<Long, Integer>>()
-                {
-                    @Override
-                    public int compare(Map.Entry<Long, Integer> entry1, Map.Entry<Long, Integer> entry2)
-                    {
-                        return entry1.getValue() - entry2.getValue();
-                    }
-                });
-
-
-        // insert in the queue
-        for(Map.Entry<Long, Integer> entry : itemDescriptionCount.entrySet()){
-            pq.offer(entry);
-        }
-
-        //add and return it to a long array
-        Long[] list = new Long[itemDescriptionCount.size()];
-        for(int i = 0; i < list.length; i ++){
-            Map.Entry<Long, Integer> entry = pq.poll();
-            list[i] = entry.getKey();
-        }
-        return list;
+        return orderedList(itemDescriptionCount);
     }
 
     /* given a Long n, return an array of items whose description
@@ -171,15 +131,6 @@ public class MDS {
         Integer leastPrice = Integer.MAX_VALUE;
         Map<Long,Integer> itemPrice = new HashMap<>();
         Set<Long> items = descriptionItemTable.get(n);
-        PriorityQueue<Map.Entry<Long, Integer>> pq =
-                new PriorityQueue<Map.Entry<Long, Integer>>(new Comparator<Map.Entry<Long, Integer>>()
-                {
-                    @Override
-                    public int compare(Map.Entry<Long, Integer> entry1, Map.Entry<Long, Integer> entry2)
-                    {
-                        return entry1.getValue() - entry2.getValue();
-                    }
-                });
 
         for(Long item:items){
             Map<Long, Integer> supplierPriceMap = itemTable.get(item).supplierPriceMap;
@@ -194,18 +145,7 @@ public class MDS {
                     }
                 }
 
-        // insert in the queue
-        for(Map.Entry<Long, Integer> entry : itemPrice.entrySet()){
-            pq.offer(entry);
-        }
-
-        //add and return it to a long array
-        Long[] list = new Long[itemPrice.size()];
-        for(int i = 0; i < list.length; i ++){
-            Map.Entry<Long, Integer> entry = pq.poll();
-            list[i] = entry.getKey();
-        }
-        return list;
+       return orderedList(itemPrice);
     }
 
     /* given an id, return an array of suppliers who sell that item,
@@ -213,6 +153,11 @@ public class MDS {
     */
     public Long[ ] findSupplier(Long id) {
         Map<Long, Integer> supplierPrice = itemTable.get(id).supplierPriceMap;
+        return orderedList(supplierPrice);
+       
+    }
+
+    private Long[] orderedList(Map<Long, Integer> map) {
         PriorityQueue<Map.Entry<Long, Integer>> pq =
                 new PriorityQueue<Map.Entry<Long, Integer>>(new Comparator<Map.Entry<Long, Integer>>()
                 {
@@ -225,17 +170,17 @@ public class MDS {
 
 
         // insert in the queue
-        for(Map.Entry<Long, Integer> entry : supplierPrice.entrySet()){
+        for(Map.Entry<Long, Integer> entry : map.entrySet()){
             pq.offer(entry);
         }
 
         //add and return it to a long array
-        Long[] suppliersList = new Long[supplierPrice.size()];
-        for(int i = 0; i < suppliersList.length; i ++){
+        Long[] decreasingOrder = new Long[map.size()];
+        for(int i = 0; i < decreasingOrder.length; i ++){
             Map.Entry<Long, Integer> entry = pq.poll();
-            suppliersList[i] = entry.getKey();
+            decreasingOrder[i] = entry.getKey();
         }
-        return suppliersList;
+        return decreasingOrder;
     }
 
     /* given an id and a minimum reputation, return an array of
@@ -245,33 +190,20 @@ public class MDS {
     */
     public Long[ ] findSupplier(Long id, float minReputation) {
         Map<Long, Integer> supplierPrice = itemTable.get(id).supplierPriceMap;
-        PriorityQueue<Map.Entry<Long, Integer>> pq =
-                new PriorityQueue<Map.Entry<Long, Integer>>(new Comparator<Map.Entry<Long, Integer>>()
-                {
-                    @Override
-                    public int compare(Map.Entry<Long, Integer> entry1, Map.Entry<Long, Integer> entry2)
-                    {
-                        return entry1.getValue() - entry2.getValue();
-                    }
-                });
-
+        Map<Long, Integer> supplierMinReputation = new HashMap<>();
 
         // insert in the queue
         for(Map.Entry<Long, Integer> entry : supplierPrice.entrySet()){
             float supplierReputation = supplierTable.get(entry.getKey());
             if(supplierReputation >= minReputation){
-                pq.offer(entry);
+                supplierMinReputation.put(entry.getKey(),entry.getValue());
             }
         }
 
-        //add and return it to a long array
-        Long[] suppliersList = new Long[supplierPrice.size()];
-        for(int i = 0; i < suppliersList.length; i ++){
-            Map.Entry<Long, Integer> entry = pq.poll();
-            suppliersList[i] = entry.getKey();
-        }
-        return suppliersList;
+        return orderedList(supplierMinReputation);
     }
+
+
 
     /* find suppliers selling 5 or more products, who have the same
        identical profile as another supplier: same reputation, and,
@@ -315,9 +247,25 @@ public class MDS {
     /* remove all items, all of whose suppliers have a reputation that
        is equal or lower than the given maximum reputation.  Returns
        an array with the items removed.
-    */
-    public Long[ ] purge(float maxReputation) {
-        return null;
+ **   */
+    public Long[ ] purge(float maxReputation){
+        boolean canRemove = true;
+        ArrayList<Long> itemsRemoved = new ArrayList<>();
+        for(Map.Entry<Long, Item> curItem :itemTable.entrySet()){
+            Map<Long, Integer> supplierPriceMap = curItem.getValue().supplierPriceMap;
+            for(Long curSupplier:supplierPriceMap.keySet()){
+                if(supplierTable.get(curSupplier) > maxReputation) canRemove = false;
+            }
+            if(canRemove){
+                Set<Long> description = curItem.getValue().description;
+                for(Long curDesc : description){
+                    descriptionItemTable.remove(curDesc);
+                }
+                itemsRemoved.add(curItem.getKey());
+                itemTable.remove(curItem);
+            }
+        }
+        return (Long[]) itemsRemoved.toArray();
        // three tables update
     }
 
@@ -326,16 +274,32 @@ public class MDS {
        did not exist).
     */
     public Long remove(Long id) {
-        return 0L;
+        Long sum = 0L;
+        Set<Long> itemDescription = itemTable.get(id).description;
+        for(Long curDesc : itemDescription){
+            descriptionItemTable.get(curDesc).remove(id);
+            sum += curDesc;
+        }
+        return sum;
     }
+
 
     /* remove from the given id's description those elements that are
        in the given array.  It is possible that some elements of the
        array are not part of the item's description.  Return the
        number of elements that were actually removed from the description.
+
     */
     public int remove(Long id, Long[ ] arr) {
-        return 0;
+        int removedDesc = 0;
+        Set<Long> description = itemTable.get(id).description;
+        for(Long curDesc : arr){
+            if(description.remove(curDesc)){
+                descriptionItemTable.get(curDesc).remove(id);
+                removedDesc++;
+            }
+        }
+        return removedDesc ;
     }
 
     /* remove the elements of the array from the description of all
@@ -343,6 +307,10 @@ public class MDS {
        from their descriptions.
     */
     public int removeAll(Long[ ] arr) {
-        return 0;
+        int itemsAffected=0;
+        for(Long itemId:itemTable.keySet()){
+            if(remove(itemId) > 0 ) itemsAffected++;
+        }
+        return itemsAffected;
     }
 }
