@@ -2,6 +2,9 @@ package cs6301.g26;
 
 import java.util.*;
 
+/**
+ * @author Sharath Chalya Nagaraju, Ankitha Karunakar Shetty, Sandeep
+ */
 public class MDS {
     /**Each entry in this table : (ItemId,(Description,(SupplierId,ItemPrice)))
      * This table holds an entry for each item as key
