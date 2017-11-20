@@ -15,6 +15,8 @@ public class FlowGraph extends Graph {
     static class FlowVertex extends Vertex {
         int height;
         boolean seen;
+        FlowVertex parent;
+        int distance;
         List<FlowEdge> FAdj;
         List<FlowEdge> FRevAdj;
 
@@ -24,15 +26,12 @@ public class FlowGraph extends Graph {
             seen = false;
             FAdj = new ArrayList<>();
             FRevAdj = new ArrayList<>();
+            parent = null;
         }
 
         @Override
         public Iterator<Edge> iterator() {
             return new FlowIterator(FAdj);
-        }
-
-        public Iterator<FlowEdge> residualItr() {
-            return new FlowResidualItr(FAdj, FRevAdj);
         }
     }
 
@@ -108,7 +107,7 @@ public class FlowGraph extends Graph {
     }
 
 
-    private FlowVertex getVertex(Vertex u) {
+    public FlowVertex getVertex(Vertex u) {
         return Vertex.getVertex(flowVertices, u);
     }
 
@@ -155,51 +154,6 @@ public class FlowGraph extends Graph {
         }
     }
 
-    static class FlowResidualItr implements Iterator<FlowEdge> {
-        Iterator<FlowEdge> itr;
-        Iterator<FlowEdge> revAdjItr;
-        boolean switched = false;
-        FlowEdge cursor = null;
-        boolean ready = false;
-
-        FlowResidualItr(List<FlowEdge> adj, List<FlowEdge> revAdj) {
-            this.itr = adj.iterator();
-            this.revAdjItr = revAdj.iterator();
-        }
-
-        public boolean hasNext() {
-            if (ready)
-                return true;
-            if (!itr.hasNext()) {
-                if (switched) {
-                    return false;
-                }
-                switched = true;
-                itr = revAdjItr;
-                if (!itr.hasNext())
-                    return false;
-            }
-
-            cursor = itr.next();
-            if ((switched && cursor.backFlow == 0) || (!switched && cursor.availableFlow == 0)) {
-                return hasNext();
-            }
-            ready = true;
-            return true;
-        }
-
-        public FlowEdge next() {
-            if (!ready && !hasNext()) {
-                throw new NoSuchElementException();
-            }
-            ready = false;
-            return cursor;
-        }
-
-        public void remove() {
-        }
-    }
-
     public Iterator<Vertex> iterator() {
         return new ArrayIterator<>(flowVertices, 0, size() - 1);
     }
@@ -213,13 +167,17 @@ public class FlowGraph extends Graph {
         }
     }
 
-    public void printResidualGraph() {
-        for (Vertex v : this) {
-            for (Iterator<FlowEdge> it = ((FlowVertex) v).residualItr(); it.hasNext(); ) {
-                Edge edge = it.next();
-                System.out.println(edge);
-            }
-
+    public void resetSeen() {
+        for (FlowVertex vertex : flowVertices) {
+            vertex.seen = false;
         }
     }
+    public void resetAll() {
+        for (FlowVertex vertex : flowVertices) {
+            vertex.seen = false;
+            vertex.distance = 1;
+            vertex.parent = null;
+        }
+    }
+
 }
