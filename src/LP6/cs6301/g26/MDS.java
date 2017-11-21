@@ -3,7 +3,7 @@ package cs6301.g26;
 import java.util.*;
 
 /**
- * @author Sharath Chalya Nagaraju, Ankitha Karunakar Shetty, Sandeep
+ * @author Sharath Chalya Nagaraju, Ankitha Karunakar Shetty
  */
 public class MDS {
     /**Each entry in this table : (ItemId,(Description,(SupplierId,ItemPrice)))
@@ -269,11 +269,17 @@ public class MDS {
 
     private int findLeastPrice(Long item, float minReputation) {
         HashMap<Long, Integer> Suppliers = itemTable.get(item).supplierMap;
-        Integer leastPrice = Integer.MAX_VALUE;
+        Integer leastPrice = null;
         for (Map.Entry<Long, Integer> entry : Suppliers.entrySet()) {
-            if (supplierTable.get(entry.getKey()) >= minReputation && leastPrice > entry.getValue()) {
+            if (supplierTable.get(entry.getKey()) >= minReputation && (leastPrice == null || leastPrice > entry.getValue())) {
                 leastPrice = entry.getValue();
             }
+        }
+        if(leastPrice == null)
+        {
+            System.out.println("Invoice: Skipping id "+item+": not available from seller with at least "+
+                            minReputation+ " reputation");
+            leastPrice = 0;
         }
         return leastPrice;
     }
