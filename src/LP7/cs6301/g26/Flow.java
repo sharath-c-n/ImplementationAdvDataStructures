@@ -8,6 +8,9 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Set;
 
+/**
+ * @author Sharath Chalya Nagaraju, Ankitha karunakar Shetty, Sandeep
+ */
 public class Flow {
     private FlowGraph graph;
     private FlowGraph.FlowVertex source;
