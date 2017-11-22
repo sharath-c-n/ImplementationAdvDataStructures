@@ -17,8 +17,8 @@ public class FlowGraph extends Graph {
         boolean seen;
         FlowVertex parent;
         int distance;
-        List<FlowEdge> FAdj;
-        List<FlowEdge> FRevAdj;
+        private List<FlowEdge> FAdj;
+        private List<FlowEdge> FRevAdj;
 
         public FlowVertex(Vertex u) {
             super(u);
@@ -50,10 +50,10 @@ public class FlowGraph extends Graph {
     }
 
     static class FlowEdge extends Edge {
-        boolean isRevEdge;
-        int capacity;
-        int availableFlow;
-        FlowEdge otherEdge;
+        private boolean isRevEdge;
+        private int capacity;
+        private int availableFlow;
+        private FlowEdge otherEdge;
 
 
         public FlowEdge(FlowVertex x1, FlowVertex x2, int weight, int capacity, boolean isRevEdge) {
@@ -67,7 +67,7 @@ public class FlowGraph extends Graph {
         }
 
 
-        public int pushflow(int flow) {
+        public int pushFlow(int flow) {
             availableFlow -= flow;
             otherEdge.availableFlow += flow;
             return availableFlow;
