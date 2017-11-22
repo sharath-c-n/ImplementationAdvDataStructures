@@ -33,20 +33,32 @@ public class FlowGraph extends Graph {
         public Iterator<Edge> iterator() {
             return new FlowIterator(FAdj);
         }
+
+        public int getExcess() {
+            int outFlow = 0;
+            int inFlow = 0;
+            for (FlowEdge e : FAdj) {
+                outFlow += (e.capacity - e.availableFlow);
+            }
+            for (FlowEdge e : FRevAdj) {
+                if (!e.isRevEdge) {
+                    inFlow += (e.capacity - e.availableFlow);
+                }
+            }
+            return inFlow - outFlow;
+        }
     }
 
     static class FlowEdge extends Edge {
         boolean isRevEdge;
         int capacity;
         int availableFlow;
-        int backFlow;
         FlowEdge otherEdge;
 
 
         public FlowEdge(FlowVertex x1, FlowVertex x2, int weight, int capacity, boolean isRevEdge) {
             super(x1, x2, weight);
             availableFlow = this.capacity = capacity;
-            backFlow = 0;
             this.isRevEdge = isRevEdge;
         }
 
@@ -55,14 +67,10 @@ public class FlowGraph extends Graph {
         }
 
 
-        public boolean pushflow(int flow) {
-            if (availableFlow < flow) {
-                return false;
-            } else {
-                availableFlow -= flow;
-                otherEdge.availableFlow += flow;
-            }
-            return true;
+        public int pushflow(int flow) {
+            availableFlow -= flow;
+            otherEdge.availableFlow += flow;
+            return availableFlow;
         }
 
         public FlowEdge getOtherEdge() {
@@ -133,11 +141,11 @@ public class FlowGraph extends Graph {
                 return false;
             }
             xcur = it.next();
-            while (xcur.getAvailableFlow() == 0 && it.hasNext()) {
+            while (xcur.getAvailableFlow() <= 0 && it.hasNext()) {
                 xcur = it.next();
             }
             ready = true;
-            return xcur.getAvailableFlow() != 0;
+            return xcur.getAvailableFlow() > 0;
         }
 
         public Edge next() {
@@ -172,10 +180,11 @@ public class FlowGraph extends Graph {
             vertex.seen = false;
         }
     }
-    public void resetAll() {
+
+    public void resetAll(int distance) {
         for (FlowVertex vertex : flowVertices) {
             vertex.seen = false;
-            vertex.distance = 1;
+            vertex.distance = distance;
             vertex.parent = null;
         }
     }

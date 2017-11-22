@@ -35,7 +35,8 @@ public class LP8Driver {
             }
         }
         MinCostFlow handle = new MinCostFlow(g, g.getVertex(1), g.getVertex(4), capacity, cost);
-        long result = handle.cycleCancellingMinCostFlow(6);
+        long result = handle.cycleCancellingMinCostFlow(7);
+        //long result = handle.successiveSPMinCostFlow(7);
         System.out.println(result + "\n" + t.end());
     }
 }
