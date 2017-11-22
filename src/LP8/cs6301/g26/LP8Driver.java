@@ -3,12 +3,10 @@ package cs6301.g26;
 import cs6301.g00.Graph;
 
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Scanner;
 
 /**
  * LP8Driver:
- *
  * @author : Sharath
  * 19/11/2017
  */

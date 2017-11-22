@@ -80,8 +80,8 @@ public class MinCostFlow {
     private int findPathCapacity(List<FlowGraph.FlowEdge> edges) {
         int min = INFINITY;
         for (FlowGraph.FlowEdge e : edges) {
-            if (min > e.availableFlow) {
-                min = e.availableFlow;
+            if (min > e.getAvailableFlow()) {
+                min = e.getAvailableFlow();
             }
         }
         return min;
@@ -108,7 +108,7 @@ public class MinCostFlow {
         int cost = 0;
         for (FlowGraph.FlowEdge e : path) {
             if (e != null) {
-                e.pushflow(flow);
+                e.pushFlow(flow);
                 cost += e.getWeight() * flow;
             }
         }
