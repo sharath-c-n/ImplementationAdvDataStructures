@@ -6,13 +6,15 @@ import java.util.*;
  * @author Sharath Chalya Nagaraju, Ankitha Karunakar Shetty
  */
 public class MDS {
-    /**Each entry in this table : (ItemId,(Description,(SupplierId,ItemPrice)))
+    /**
+     * Each entry in this table : (ItemId,(Description,(SupplierId,ItemPrice)))
      * This table holds an entry for each item as key
      * and its value holds the item description,SupplierPrice Map
      **/
     private Map<Long, Item> itemTable;
 
-    /**Each entry in this table : (SupplierId,Reputation)
+    /**
+     * Each entry in this table : (SupplierId,Reputation)
      * Has SupplierId as key and a supplier's reputation as value
      **/
     private Map<Long, Float> supplierTable;
@@ -21,6 +23,7 @@ public class MDS {
      * Each entry in this table : (Description,{Items})
      */
     private Map<Long, Set<Long>> descriptionMap;
+
 
     public MDS() {
         itemTable = new HashMap<>();
@@ -131,6 +134,10 @@ public class MDS {
                 }
             }
         }
+        if(matchedItems.size() == 0){
+            return null;
+        }
+
         PriorityQueue<Map.Entry<Long, Integer>> pq = new PriorityQueue<>((x, y) -> y.getValue() - x.getValue());
 
         // insert in the queue
@@ -165,13 +172,15 @@ public class MDS {
                 int price = entry.getValue();
                 if (supplierTable.get(entry.getKey()) >= minReputation &&
                         price >= minPrice && price <= maxPrice) {
-                    if (itemPrice.getOrDefault(item, Integer.MAX_VALUE) > entry.getValue()) {
+                    if (itemPrice.getOrDefault(item, Integer.MAX_VALUE) > price) {
                         itemPrice.put(item, price);
                     }
                 }
             }
         }
-
+        if(itemPrice.size() == 0){
+            return null;
+        }
         // insert in the queue
         for (Map.Entry<Long, Integer> entry : itemPrice.entrySet()) {
             pq.offer(entry);
@@ -184,8 +193,13 @@ public class MDS {
       ordered by the price at which they sell the item (non-decreasing order).
     */
     public Long[] findSupplier(Long id) {
+        Item item = itemTable.get(id);
+        if (item == null) {
+            System.out.println("Item with Id : " + id + " not found");
+            return null;
+        }
         Queue<Map.Entry<Long, Integer>> pq = new PriorityQueue<>(Comparator.comparingInt(Map.Entry::getValue));
-        pq.addAll(itemTable.get(id).supplierMap.entrySet());
+        pq.addAll(item.supplierMap.entrySet());
         return qToArray(pq);
     }
 
@@ -195,8 +209,13 @@ public class MDS {
       at which they sell the item (non-decreasing order).
     */
     public Long[] findSupplier(Long id, float minReputation) {
+        Item item = itemTable.get(id);
+        if (item == null) {
+            System.out.println("Item with Id : " + id + " not found");
+            return null;
+        }
         Queue<Map.Entry<Long, Integer>> pq = new PriorityQueue<>(Comparator.comparingInt(Map.Entry::getValue));
-        for (Map.Entry<Long, Integer> entry : itemTable.get(id).supplierMap.entrySet()) {
+        for (Map.Entry<Long, Integer> entry : item.supplierMap.entrySet()) {
             if (supplierTable.get(entry.getKey()) >= minReputation) {
                 pq.add(entry);
             }
@@ -268,17 +287,18 @@ public class MDS {
     }
 
     private int findLeastPrice(Long item, float minReputation) {
-        HashMap<Long, Integer> Suppliers = itemTable.get(item).supplierMap;
+        Item itemObj = itemTable.get(item);
         Integer leastPrice = null;
-        for (Map.Entry<Long, Integer> entry : Suppliers.entrySet()) {
-            if (supplierTable.get(entry.getKey()) >= minReputation && (leastPrice == null || leastPrice > entry.getValue())) {
-                leastPrice = entry.getValue();
+        if (itemObj != null) {
+            for (Map.Entry<Long, Integer> entry : itemObj.supplierMap.entrySet()) {
+                if (supplierTable.get(entry.getKey()) >= minReputation && (leastPrice == null || (int)leastPrice > entry.getValue())) {
+                    leastPrice = entry.getValue();
+                }
             }
         }
-        if(leastPrice == null)
-        {
-            System.out.println("Invoice: Skipping id "+item+": not available from seller with at least "+
-                            minReputation+ " reputation");
+        if (leastPrice == null) {
+            System.out.println("Invoice: Skipping id " + item + ": not available from seller with at least " +
+                    minReputation + " reputation");
             leastPrice = 0;
         }
         return leastPrice;
