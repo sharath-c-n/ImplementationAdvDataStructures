@@ -52,7 +52,7 @@ public class MDS {
 
     public static class Item {
         Set<Long> description;
-        HashMap<Long, Integer> supplierMap;
+        Map<Long, Integer> supplierMap;
 
         public Item() {
             this.description = new HashSet<>();
@@ -134,7 +134,7 @@ public class MDS {
                 }
             }
         }
-        if(matchedItems.size() == 0){
+        if (matchedItems.size() == 0) {
             return null;
         }
 
@@ -178,7 +178,7 @@ public class MDS {
                 }
             }
         }
-        if(itemPrice.size() == 0){
+        if (itemPrice.size() == 0) {
             return null;
         }
         // insert in the queue
@@ -291,7 +291,7 @@ public class MDS {
         Integer leastPrice = null;
         if (itemObj != null) {
             for (Map.Entry<Long, Integer> entry : itemObj.supplierMap.entrySet()) {
-                if (supplierTable.get(entry.getKey()) >= minReputation && (leastPrice == null || (int)leastPrice > entry.getValue())) {
+                if (supplierTable.get(entry.getKey()) >= minReputation && (leastPrice == null || (int) leastPrice > entry.getValue())) {
                     leastPrice = entry.getValue();
                 }
             }
@@ -320,9 +320,11 @@ public class MDS {
                 }
             }
             if (shouldRemove) {
-                remove(item.getKey());
                 removedItems.add(item.getKey());
             }
+        }
+        for(Long i : removedItems){
+            itemTable.remove(i);
         }
         return objToLong(removedItems);
     }
