@@ -39,6 +39,8 @@ public class FlowGraph extends Graph {
          */
         private List<FlowEdge> FRevAdj;
 
+        public int excess;
+
         public FlowVertex(Vertex u) {
             super(u);
             height = 0;
@@ -62,11 +64,10 @@ public class FlowGraph extends Graph {
          * @return excess flow into vertex
          */
         public int getExcess() {
-            int outFlow = 0;
-            for (FlowEdge e : FAdj) {
-                outFlow += (e.capacity - e.availableFlow);
-            }
-            return -outFlow;
+           return -excess;
+        }
+        public void addExcess(int i){
+            excess+=i;
         }
 
         /**
@@ -117,10 +118,15 @@ public class FlowGraph extends Graph {
          * @param flow : how much more flow should happen on this edge
          * @return : available capacity of the edge
          */
-        public int pushFlow(int flow) {
+        public boolean pushFlow(int flow) {
+            if(capacity < availableFlow - flow){
+                return false;
+            }
             availableFlow -= flow;
             otherEdge.availableFlow += flow;
-            return availableFlow;
+            ((FlowVertex)fromVertex()).addExcess(flow);
+            ((FlowVertex)toVertex()).addExcess(-flow);
+            return true;
         }
 
         public FlowEdge getOtherEdge() {
@@ -189,11 +195,11 @@ public class FlowGraph extends Graph {
                 return false;
             }
             xcur = it.next();
-            while (xcur.getAvailableFlow() <= 0 && it.hasNext()) {
+            while (xcur.getAvailableFlow() == 0 && it.hasNext()) {
                 xcur = it.next();
             }
             ready = true;
-            return xcur.getAvailableFlow() > 0;
+            return xcur.getAvailableFlow() != 0;
         }
 
         public Edge next() {
