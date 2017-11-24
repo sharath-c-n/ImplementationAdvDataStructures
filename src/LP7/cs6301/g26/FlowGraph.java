@@ -30,6 +30,7 @@ public class FlowGraph extends Graph {
          *  This variable is used by standard graph algorithms
          */
         int distance;
+
         /**
          * List of forward edges from this vertex
          */
@@ -77,6 +78,7 @@ public class FlowGraph extends Graph {
         public int getOutFlow(){
             int outFlow = 0;
             for (FlowEdge e : FAdj) {
+               // System.out.println("THe edge is "+ e+ " "+e.availableFlow+" / "+e.capacity);
                 outFlow += (e.capacity - e.availableFlow);
             }
             return outFlow;
