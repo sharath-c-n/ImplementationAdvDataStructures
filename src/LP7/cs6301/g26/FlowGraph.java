@@ -35,19 +35,18 @@ public class FlowGraph extends Graph {
          * List of forward edges from this vertex
          */
         private List<FlowEdge> FAdj;
-        /**
-         * List of back edges from this vertex
-         */
-        private List<FlowEdge> FRevAdj;
 
-        public int excess;
+
+        /**
+         * Contains the excess flow value for this vertex
+         */
+        private int excess;
 
         public FlowVertex(Vertex u) {
             super(u);
             height = 0;
             seen = false;
             FAdj = new ArrayList<>();
-            FRevAdj = new ArrayList<>();
             parent = null;
         }
 
@@ -65,8 +64,13 @@ public class FlowGraph extends Graph {
          * @return excess flow into vertex
          */
         public int getExcess() {
-           return -excess;
+           return excess;
         }
+
+        /**
+         * Updates the excess flow for this vertex
+         * @param i : amount of flow that is flowing in or flowing out
+         */
         public void addExcess(int i){
             excess+=i;
         }
@@ -87,10 +91,6 @@ public class FlowGraph extends Graph {
 
     static class FlowEdge extends Edge {
         /**
-         * Identifies if this was an artificial edge added for residual graph
-         */
-        private boolean isRevEdge;
-        /**
          * Indicates the capacity of the edge
          */
         private int capacity;
@@ -104,10 +104,9 @@ public class FlowGraph extends Graph {
         private FlowEdge otherEdge;
 
 
-        public FlowEdge(FlowVertex x1, FlowVertex x2, int weight, int capacity, boolean isRevEdge) {
+        public FlowEdge(FlowVertex x1, FlowVertex x2, int weight, int capacity) {
             super(x1, x2, weight);
             availableFlow = this.capacity = capacity;
-            this.isRevEdge = isRevEdge;
         }
 
         public int getAvailableFlow() {
@@ -126,8 +125,8 @@ public class FlowGraph extends Graph {
             }
             availableFlow -= flow;
             otherEdge.availableFlow += flow;
-            ((FlowVertex)fromVertex()).addExcess(flow);
-            ((FlowVertex)toVertex()).addExcess(-flow);
+            ((FlowVertex)fromVertex()).addExcess(-flow);
+            ((FlowVertex)toVertex()).addExcess(flow);
             return true;
         }
 
@@ -159,16 +158,13 @@ public class FlowGraph extends Graph {
             Vertex v = entry.getKey().toVertex();
             FlowVertex x1 = getVertex(u);
             FlowVertex x2 = getVertex(v);
-            FlowEdge edge = new FlowEdge(x1, x2, entry.getKey().getWeight(), capacity.get(entry.getKey()), false);
-            FlowEdge resEdge = new FlowEdge(x2, x1, entry.getKey().getWeight(), 0, true);
+            FlowEdge edge = new FlowEdge(x1, x2, entry.getKey().getWeight(), capacity.get(entry.getKey()));
+            FlowEdge resEdge = new FlowEdge(x2, x1, entry.getKey().getWeight(), 0);
             edge.setOtherEdge(resEdge);
             resEdge.setOtherEdge(edge);
 
             x1.FAdj.add(edge);
             x2.FAdj.add(resEdge);
-
-            x1.FRevAdj.add(resEdge);
-            x2.FRevAdj.add(edge);
         }
     }
 
