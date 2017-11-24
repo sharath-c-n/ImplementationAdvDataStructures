@@ -85,6 +85,14 @@ public class FlowGraph extends Graph {
             }
             return outFlow;
         }
+
+        public int getFlow(FlowVertex v) {
+            for(FlowEdge e : FAdj){
+                if(e.toVertex() == v)
+                    return e.getFlow();
+            }
+            return 0;
+        }
     }
 
     static class FlowEdge extends Edge {
@@ -131,6 +139,10 @@ public class FlowGraph extends Graph {
 
         public void setOtherEdge(FlowEdge otherEdge) {
             this.otherEdge = otherEdge;
+        }
+
+        public int getFlow(){
+            return capacity - availableFlow;
         }
 
         @Override
