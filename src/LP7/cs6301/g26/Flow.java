@@ -40,7 +40,7 @@ public class Flow {
 
 
     // flow going through edge e
-    //not using this function
+    //not using this function, use originalGraphItr instead of normal iterator.
     public int flow(Edge e) {
         FlowGraph.FlowVertex u = graph.getVertex(e.fromVertex());
         return u.getFlow(graph.getVertex(e.toVertex()));
