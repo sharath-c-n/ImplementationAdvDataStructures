@@ -42,7 +42,8 @@ public class Flow {
     // flow going through edge e
     //not using this function
     public int flow(Edge e) {
-        return e.getWeight();
+        FlowGraph.FlowVertex u = graph.getVertex(e.fromVertex());
+        return u.getFlow(graph.getVertex(e.toVertex()));
     }
 
     // capacity of edge e

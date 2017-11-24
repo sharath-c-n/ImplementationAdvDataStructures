@@ -88,6 +88,14 @@ public class FlowGraph extends Graph {
             }
             return outFlow;
         }
+
+        public int getFlow(FlowVertex v) {
+            for(FlowEdge e : FAdj){
+                if(e.toVertex() == v)
+                    return e.getFlow();
+            }
+            return 0;
+        }
     }
 
     static class FlowEdge extends Edge {
@@ -121,9 +129,6 @@ public class FlowGraph extends Graph {
          * @return : available capacity of the edge
          */
         public boolean pushFlow(int flow) {
-            if(capacity < availableFlow - flow){
-                return false;
-            }
             availableFlow -= flow;
             otherEdge.availableFlow += flow;
             ((FlowVertex)fromVertex()).addExcess(-flow);
@@ -137,6 +142,10 @@ public class FlowGraph extends Graph {
 
         public void setOtherEdge(FlowEdge otherEdge) {
             this.otherEdge = otherEdge;
+        }
+
+        public int getFlow(){
+            return capacity - availableFlow;
         }
 
         @Override
@@ -160,7 +169,7 @@ public class FlowGraph extends Graph {
             FlowVertex x1 = getVertex(u);
             FlowVertex x2 = getVertex(v);
             FlowEdge edge = new FlowEdge(x1, x2, entry.getKey().getWeight(), capacity.get(entry.getKey()));
-            FlowEdge resEdge = new FlowEdge(x2, x1, entry.getKey().getWeight(), 0);
+            FlowEdge resEdge = new FlowEdge(x2, x1, entry.getKey().getWeight(),0);
             edge.setOtherEdge(resEdge);
             resEdge.setOtherEdge(edge);
 
