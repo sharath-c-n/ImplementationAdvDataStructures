@@ -7,7 +7,7 @@ import java.util.LinkedList;
 
 /**
  * RelabelMaxFlow:
- * @author : Sharath
+ * @author : Sharath Chalya Nagaraju, Ankitha Karunakar shetty, Sandeep
  * 22/11/2017
  */
 public class RelabelMaxFlow {
@@ -26,11 +26,10 @@ public class RelabelMaxFlow {
         FlowEdge minEdge = null;
         int maxHeight = Integer.MAX_VALUE;
         for (Graph.Edge e : u) {
-            FlowEdge edge = (FlowEdge) e;
-            FlowVertex v = graph.getVertex(edge.toVertex());
+            FlowVertex v = graph.getVertex(e.toVertex());
             if (v.height < maxHeight && v.height < u.height) {
                 maxHeight = v.height;
-                minEdge = edge;
+                minEdge = (FlowEdge) e;
             }
         }
         return minEdge;
@@ -40,9 +39,8 @@ public class RelabelMaxFlow {
     private void increaseHeight(FlowVertex u) {
         int maxHeight = Integer.MAX_VALUE;
         for (Graph.Edge e : u) {
-            FlowEdge edge = (FlowEdge) e;
-            FlowVertex v = graph.getVertex(edge.toVertex());
-            if (v.height < maxHeight ) {
+            FlowVertex v = graph.getVertex(e.toVertex());
+            if (v.height < maxHeight) {
                 maxHeight = v.height;
             }
         }
@@ -50,41 +48,56 @@ public class RelabelMaxFlow {
     }
 
     public int getMaxFlow() {
-        source.height = graph.size();
-        LinkedList<FlowVertex> q = new LinkedList<>();
-        q.add(source);
-        source.seen = true;
-        //While no vertices needs to be processed
+        LinkedList<FlowVertex> q = floodFromSource();
+        //While vertices needs to be processed
         while (!q.isEmpty()) {
             FlowGraph.FlowVertex u = q.poll();
             u.seen = false;
             int excess = u.getExcess();
             //If the element has excess flow and can push to one or more units to neighbour
             FlowEdge edge = getMinEdge(u);
-            if (edge != null) {
-                //Push flow out of vertex until all the excess flow is gone or until you can no longer push.
-                while (edge != null && (excess > 0 || u == source)) {
-                    FlowVertex v = graph.getVertex(edge.toVertex());
-                    //get the flow that needs to be sent to neighbour, note that the flow should be
-                    //less than or equal to excess flow for non source vertices
-                    int flowValue = u == source ? edge.getAvailableFlow() : Math.min(edge.getAvailableFlow(), excess);
-                    excess -= flowValue;
-                    edge.pushFlow(flowValue);
-                    //Don't add target vertex to queue
-                    if (!v.seen && v != target) {
-                        v.seen = true;
-                        q.add(v);
-                    }
-                    edge = getMinEdge( u);
+            //Push flow out of vertex until all the excess flow is gone or until you can no longer push.
+            while (edge != null && excess > 0) {
+                FlowVertex v = graph.getVertex(edge.toVertex());
+                //get the flow that needs to be sent to neighbour, note that the flow should be
+                //less than or equal to excess flow for non source vertices
+                int flowValue = Math.min(edge.getAvailableFlow(), excess);
+                excess -= flowValue;
+                edge.pushFlow(flowValue);
+                //Don't add target vertex to queue
+                if (!v.seen && v != target) {
+                    v.seen = true;
+                    q.add(v);
                 }
-                //if vertex still has excess flow move to front
-                if (excess > 0)
-                    q.addFirst(u);
-            } else if (u != source && excess > 0) {
+                edge = getMinEdge(u);
+            }
+            //if vertex still has excess flow move to front
+            if (excess > 0) {
                 increaseHeight(u);
                 q.addFirst(u);
             }
         }
         return source.getOutFlow();
+    }
+
+    private LinkedList<FlowVertex> floodFromSource(){
+        //set source height to |V|
+        source.height = graph.size();
+        LinkedList<FlowVertex> q = new LinkedList<>();
+        FlowEdge edge = getMinEdge(source);
+        //While we can still push flow
+        while (edge != null) {
+            FlowVertex v = graph.getVertex(edge.toVertex());
+            int flowValue = edge.getAvailableFlow();
+            edge.pushFlow(flowValue);
+            if (!v.seen && v != target) {
+                v.seen = true;
+                q.add(v);
+            }
+            edge = getMinEdge(source);
+        }
+        //Source never gets back into the queue
+        source.seen = true;
+        return q;
     }
 }
