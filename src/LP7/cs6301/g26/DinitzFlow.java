@@ -1,3 +1,7 @@
+/**
+ * @authors Ankitha, Sharath, Sandeep on 11/23/2017
+ */
+
 package cs6301.g26;
 
 import cs6301.g00.Graph;
@@ -6,10 +10,6 @@ import cs6301.g26.FlowGraph.FlowEdge;
 import cs6301.g26.FlowGraph.FlowVertex;
 
 import java.util.*;
-
-/**
- * @authors Ankitha, Sharath, Sandeep on 11/23/2017
- */
 
 public class DinitzFlow {
     private FlowGraph flowGraph;
