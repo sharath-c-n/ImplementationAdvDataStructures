@@ -93,7 +93,7 @@ public class DinitzFlow {
      *
      */
     public void minCutfromS(Set<Vertex> Sv) {
-        flowGraph.resetAll(-1);
+        flowGraph.resetSeen();
         BFS();
         for (Vertex v : flowGraph) {
             FlowVertex fv = (FlowVertex) v;
@@ -107,7 +107,7 @@ public class DinitzFlow {
      *
      */
     public void minCutfromT(Set<Vertex> Tv) {
-        flowGraph.resetAll(-1);
+        flowGraph.resetSeen();
         BFS();
         for (Vertex v : flowGraph) {
             FlowVertex fv = (FlowVertex) v;

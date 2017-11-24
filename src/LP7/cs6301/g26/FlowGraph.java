@@ -91,7 +91,7 @@ public class FlowGraph extends Graph {
 
         public int getFlow(FlowVertex v) {
             for(FlowEdge e : FAdj){
-                if(e.toVertex() == v)
+                if(e.toVertex().getName() == v.getName())
                     return e.getFlow();
             }
             return 0;
@@ -115,7 +115,8 @@ public class FlowGraph extends Graph {
 
         public FlowEdge(FlowVertex x1, FlowVertex x2, int weight, int capacity) {
             super(x1, x2, weight);
-            availableFlow = this.capacity = capacity;
+            availableFlow = capacity;
+            this.capacity =capacity;
         }
 
         public int getAvailableFlow() {
@@ -145,12 +146,14 @@ public class FlowGraph extends Graph {
         }
 
         public int getFlow(){
+            if(availableFlow <0 || ((availableFlow)>capacity))
+                System.out.println("found bad edge  "+availableFlow+" "+capacity+" "+this);
             return capacity - availableFlow;
         }
 
         @Override
         public String toString() {
-            return super.toString() + "::" + capacity + "::" + getWeight();
+            return super.toString() + "::" + availableFlow + "::" + capacity;
         }
     }
 
