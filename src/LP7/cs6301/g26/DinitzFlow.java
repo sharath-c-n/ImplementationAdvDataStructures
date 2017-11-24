@@ -61,9 +61,9 @@ public class DinitzFlow {
         for (Graph.Edge e : u) {
             FlowEdge edge = (FlowEdge) e;
             FlowVertex v = (FlowVertex) (e.otherEnd(u));
-            if (v.distance == (u.distance + 1) && (((FlowEdge) e).getAvailableFlow()>0)) { //If the vertex u connects to vertex  in the next layer continue .
+            if (v.distance == (u.distance + 1) && (edge.getAvailableFlow()>0)) { //If the vertex u connects to vertex  in the next layer continue .
                 int minflowtoPush = pushFlowAlongPath(v, Math.min(minFlow, edge.getAvailableFlow()));
-                //IF there is no available flow to push from u to target this function returns -1.
+                //If there is no available flow to push from u to target this function returns -1.
                 //Otherwise reduce the edge flow from u to v with the Minimum flow that can be pushed along the path from source to target.
                 if (minflowtoPush > 0) {
                     edge.pushFlow(minflowtoPush);
@@ -78,7 +78,7 @@ public class DinitzFlow {
      * This function does the Bfs in Stages and until there is no available flow to push from source to target in Residual Graph.
      *
      */
-    public void ComputeDinitzMaxFlow() {
+    public int ComputeDinitzMaxFlow() {
         flowGraph.resetAll(-1); //Reset all the parameters
         while (BFS()) { // If there is atleast one path from source to target in the Residual Graph continue.
             //Push Flow from src to Target in the layered Graph until there is no Flow to push from source to Target.
@@ -86,6 +86,7 @@ public class DinitzFlow {
             }
             flowGraph.resetAll(-1);
         }
+        return src.getOutFlow();
     }
 
     /*

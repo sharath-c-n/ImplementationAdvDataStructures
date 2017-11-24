@@ -3,20 +3,18 @@ package cs6301.g26;
 import cs6301.g00.Graph;
 import cs6301.g00.Graph.Edge;
 import cs6301.g00.Graph.Vertex;
-import cs6301.g00.Timer;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
-import java.util.Set;
-
 
 
 public class LP7 {
-    static int VERBOSE = 1;
+    static int VERBOSE = 0;
     public static void main(String[] args) throws FileNotFoundException {
         if(args.length > 0) { VERBOSE = Integer.parseInt(args[0]); }
-        File filepath= new File("C:\\Users\\Sandeep\\IdeaProjects\\ImplementationAdvData\\src\\LP7\\Testcases\\lp7-in8.txt");
-        java.util.Scanner in= new Scanner(filepath);
+        File filepath = new File( "C:\\Users\\Sandeep\\IdeaProjects\\ImplementationAdvData\\src\\LP7\\Testcases\\lp7-in1.txt");
+          Scanner in = new Scanner(filepath);
         Graph g = Graph.readDirectedGraph(in);
         cs6301.g00.Timer timer = new cs6301.g00.Timer();
         int s = in.nextInt();
@@ -50,25 +48,27 @@ public class LP7 {
 	*/
 
         System.out.println(value);
-            if (VERBOSE > 0) {
-                boolean sys = false;
-                for (Vertex u : g) {
-                    System.out.print(u + " : ");
-                    for (Edge e : u) {
-                        System.out.print(e + ":" + f.flow(e) + "/" + f.capacity(e) + " | ");
-                        if (((f.flow(e) < 0) || (f.flow(e) > f.capacity(e)))) {
-                            System.out.println("The flows are "+f.flow(e)+" "+f.capacity(e));
-                            sys = true;
-                        }
+
+        if(VERBOSE > 0) {
+            boolean sys=false;
+            for(Vertex u: g) {
+                System.out.print(u + " : ");
+                for(Edge e: u) {
+                    System.out.print(e + ":" + f.flow(e) + "/" + f.capacity(e) + " | ");
+                    if(((f.flow(e)) >(f.capacity(e))) || (f.flow(e)<0)) {
+                        System.out.println(" The flow is "+f.flow(e)+"  "+f.capacity(e)+" "+" **********************************");
+                        sys = true;
                     }
-                    System.out.println();
                 }
-                   if (sys)
-                    System.out.println("Flows are Incorrect");
-                System.out.println("Min cut: S = " + f.minCutS());
-                System.out.println("Min cut: T = " + f.minCutT());
+                System.out.println();
             }
-            System.out.println(timer.end());
+            if(sys)
+                System.out.println("Flows are improper");
+            System.out.println("Min cut: S = " + f.minCutS());
+            System.out.println("Min cut: T = " + f.minCutT());
         }
+
+        System.out.println(timer.end());
+    }
 }
 
