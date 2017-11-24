@@ -103,7 +103,8 @@ public class FlowGraph extends Graph {
 
         public int getFlow(FlowVertex v) {
             for (FlowEdge e : FAdj) {
-                if (e.toVertex() == v)
+                //ignore the residual edge,since residual edges have a capacity of 0
+                if (e.toVertex() == v && e.capacity > 0)
                     return e.getFlow();
             }
             return 0;
