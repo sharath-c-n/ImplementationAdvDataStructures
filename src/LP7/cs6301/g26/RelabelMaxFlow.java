@@ -24,10 +24,10 @@ public class RelabelMaxFlow {
 
     private FlowEdge getMinEdge(FlowVertex u) {
         FlowEdge minEdge = null;
-        int maxHeight = Integer.MAX_VALUE;
+        int maxHeight = u.height;
         for (Graph.Edge e : u) {
             FlowVertex v = graph.getVertex(e.toVertex());
-            if (v.height < maxHeight && v.height < u.height) {
+            if (v.height < maxHeight) {
                 maxHeight = v.height;
                 minEdge = (FlowEdge) e;
             }
