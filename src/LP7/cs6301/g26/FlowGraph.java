@@ -36,7 +36,10 @@ public class FlowGraph extends Graph {
         private List<FlowEdge> FAdj;
 
 
-        public int excess;
+        /**
+         * Contains the excess flow value for this vertex
+         */
+        private int excess;
 
         public FlowVertex(Vertex u) {
             super(u);
@@ -60,8 +63,13 @@ public class FlowGraph extends Graph {
          * @return excess flow into vertex
          */
         public int getExcess() {
-           return -excess;
+           return excess;
         }
+
+        /**
+         * Updates the excess flow for this vertex
+         * @param i : amount of flow that is flowing in or flowing out
+         */
         public void addExcess(int i){
             excess+=i;
         }
@@ -115,8 +123,8 @@ public class FlowGraph extends Graph {
             }
             availableFlow -= flow;
             otherEdge.availableFlow += flow;
-            ((FlowVertex)fromVertex()).addExcess(flow);
-            ((FlowVertex)toVertex()).addExcess(-flow);
+            ((FlowVertex)fromVertex()).addExcess(-flow);
+            ((FlowVertex)toVertex()).addExcess(flow);
             return true;
         }
 
