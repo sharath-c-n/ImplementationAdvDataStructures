@@ -21,21 +21,10 @@ public class RelabelMaxFlow {
         this.target = target;
     }
 
-
-    private FlowEdge getMinEdge(FlowVertex u) {
-        FlowEdge minEdge = null;
-        int maxHeight = u.height;
-        for (Graph.Edge e : u) {
-            FlowVertex v = graph.getVertex(e.toVertex());
-            if (v.height < maxHeight) {
-                maxHeight = v.height;
-                minEdge = (FlowEdge) e;
-            }
-        }
-        return minEdge;
-    }
-
-
+    /**
+     * Increases the height of the current vertex which is the min{neighours.height}
+     * @param u : vertex whose height needs to be increased.
+     */
     private void increaseHeight(FlowVertex u) {
         int maxHeight = Integer.MAX_VALUE;
         for (Graph.Edge e : u) {
@@ -52,27 +41,30 @@ public class RelabelMaxFlow {
         //While vertices needs to be processed
         while (!q.isEmpty()) {
             FlowGraph.FlowVertex u = q.poll();
-            u.seen = false;
             int excess = u.getExcess();
-            //If the element has excess flow and can push to one or more units to neighbour
-            FlowEdge edge = getMinEdge(u);
-            //Push flow out of vertex until all the excess flow is gone or until you can no longer push.
-            while (edge != null && excess > 0) {
-                FlowVertex v = graph.getVertex(edge.toVertex());
-                //get the flow that needs to be sent to neighbour, note that the flow should be
-                //less than or equal to excess flow for non source vertices
-                int flowValue = Math.min(edge.getAvailableFlow(), excess);
-                excess -= flowValue;
-                edge.pushFlow(flowValue);
-                //Don't add target vertex to queue
-                if (!v.seen && v != target) {
-                    v.seen = true;
-                    q.add(v);
-                }
-                edge = getMinEdge(u);
-            }
-            //if vertex still has excess flow move to front
+            //If the element has excess flow
             if (excess > 0) {
+                for (Graph.Edge e : u) {
+                    FlowEdge edge = (FlowEdge) e;
+                    FlowVertex v = (FlowVertex) edge.toVertex();
+                    if (u.height > v.height) {
+                        //note that the flow should be less than or equal to excess flow
+                        int flowValue = Math.min(edge.getAvailableFlow(), excess);
+                        excess -= flowValue;
+                        edge.pushFlow(flowValue);
+                        //Don't add target vertex or source to queue
+                        if (!v.seen) {
+                            //Add vertices to queue only if you push flow into them
+                            q.add(v);
+                        }
+                    }
+                    if (excess == 0)
+                        break;
+                }
+            }
+            //If the element has excess flow and cannot push flow to neighbours
+            if (excess > 0) {
+                //if vertex still has excess flow move to front
                 increaseHeight(u);
                 q.addFirst(u);
             }
@@ -80,24 +72,24 @@ public class RelabelMaxFlow {
         return source.getOutFlow();
     }
 
-    private LinkedList<FlowVertex> floodFromSource(){
+    private LinkedList<FlowVertex> floodFromSource() {
         //set source height to |V|
         source.height = graph.size();
         LinkedList<FlowVertex> q = new LinkedList<>();
-        FlowEdge edge = getMinEdge(source);
-        //While we can still push flow
-        while (edge != null) {
-            FlowVertex v = graph.getVertex(edge.toVertex());
-            int flowValue = edge.getAvailableFlow();
-            edge.pushFlow(flowValue);
-            if (!v.seen && v != target) {
-                v.seen = true;
-                q.add(v);
-            }
-            edge = getMinEdge(source);
-        }
+        FlowEdge edge;
         //Source never gets back into the queue
         source.seen = true;
+        target.seen = true;
+        //While we can still push flow
+        for (Graph.Edge e : source) {
+            edge = (FlowEdge) e;
+            int flowValue = edge.getAvailableFlow();
+            FlowVertex vertex = (FlowVertex) e.toVertex();
+            edge.pushFlow(flowValue);
+            //check if the vertex is not target
+            if (!vertex.seen)
+                q.add(vertex);
+        }
         return q;
     }
 }
