@@ -4,15 +4,10 @@ import cs6301.g00.Graph;
 import cs6301.g00.Graph.Edge;
 import cs6301.g00.Graph.Vertex;
 
-import java.io.File;
-import java.util.Scanner;
-import java.util.Set;
-
-
 
 public class LP7 {
     static int VERBOSE = 0;
-    public static void main(String[] args) throws FileNotFoundException {
+    public static void main(String[] args) {
         if(args.length > 0) { VERBOSE = Integer.parseInt(args[0]); }
         java.util.Scanner in = new java.util.Scanner(System.in);
         Graph g = Graph.readDirectedGraph(in);
@@ -49,28 +44,19 @@ public class LP7 {
 
         System.out.println(value);
 
-            System.out.println(Tv);
-
-            if (VERBOSE > 0) {
-                for (Vertex u : g) {
-                    System.out.print(u + " : ");
-                    for (Edge e : u) {
-                        System.out.print(e + ":" + f.flow(e) + "/" + f.capacity(e) + " | ");
-                    }
-                    System.out.println();
+        if(VERBOSE > 0) {
+            for(Vertex u: g) {
+                System.out.print(u + " : ");
+                for(Edge e: u) {
+                    System.out.print(e + ":" + f.flow(e) + "/" + f.capacity(e) + " | ");
                 }
+                System.out.println();
             }
             System.out.println("Min cut: S = " + f.minCutS());
             System.out.println("Min cut: T = " + f.minCutT());
         }
 
-
-            System.out.println(timer.end());
-        }
-        catch( Exception ex){
-            System.out.println("");
-        }
+        System.out.println(timer.end());
     }
-
 }
 
