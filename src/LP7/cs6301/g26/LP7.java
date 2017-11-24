@@ -5,7 +5,9 @@ import cs6301.g00.Graph.Edge;
 import cs6301.g00.Graph.Vertex;
 
 import java.io.File;
-import java.io.FileNotFoundException;
+import java.util.Scanner;
+import java.util.Set;
+
 
 
 public class LP7 {
@@ -47,19 +49,28 @@ public class LP7 {
 
         System.out.println(value);
 
-        if(VERBOSE > 0) {
-            for(Vertex u: g) {
-                System.out.print(u + " : ");
-                for(Edge e: u) {
-                    System.out.print(e + ":" + f.flow(e) + "/" + f.capacity(e) + " | ");
+            System.out.println(Tv);
+
+            if (VERBOSE > 0) {
+                for (Vertex u : g) {
+                    System.out.print(u + " : ");
+                    for (Edge e : u) {
+                        System.out.print(e + ":" + f.flow(e) + "/" + f.capacity(e) + " | ");
+                    }
+                    System.out.println();
                 }
-                System.out.println();
             }
             System.out.println("Min cut: S = " + f.minCutS());
             System.out.println("Min cut: T = " + f.minCutT());
         }
 
-        System.out.println(timer.end());
+
+            System.out.println(timer.end());
+        }
+        catch( Exception ex){
+            System.out.println("");
+        }
     }
+
 }
 

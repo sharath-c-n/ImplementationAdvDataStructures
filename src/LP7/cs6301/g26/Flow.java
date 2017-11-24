@@ -1,14 +1,16 @@
+/**
+ * @author Sharath Chalya Nagaraju, Ankitha karunakar Shetty, Sandeep
+ */
+
 package cs6301.g26;
 
 import cs6301.g00.Graph;
 import cs6301.g00.Graph.*;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Set;
 
-/**
- * @author Sharath Chalya Nagaraju, Ankitha karunakar Shetty, Sandeep
- */
 public class Flow {
     private FlowGraph graph;
     private FlowGraph.FlowVertex source;
@@ -24,7 +26,10 @@ public class Flow {
 
     // Return max flow found by Dinitz's algorithm
     public int dinitzMaxFlow() {
-        return 0;
+        DinitzFlow dinitzFlow = new DinitzFlow(graph,source,target);
+          dinitzFlow.ComputeDinitzMaxFlow();
+          // compute ht
+        return source.getOutFlow();
     }
 
     // Return max flow found by relabelToFront algorithm
@@ -51,13 +56,21 @@ public class Flow {
        get the "S"-side of the min-cut found by the algorithm
     */
     public Set<Vertex> minCutS() {
-        return null;
+        Set<Vertex> Sv= new HashSet<>();
+        DinitzFlow dinicsFlow = new DinitzFlow(graph,source,target);
+        dinicsFlow.ComputeDinitzMaxFlow();
+         dinicsFlow.minCutfromS(Sv);
+        return Sv;
     }
 
     /* After maxflow has been computed, this method can be called to
        get the "T"-side of the min-cut found by the algorithm
     */
     public Set<Vertex> minCutT() {
-        return null;
+        Set<Vertex> Tv= new HashSet<>();
+        DinitzFlow dinitzFlow = new DinitzFlow(graph,source,target);
+        dinitzFlow.ComputeDinitzMaxFlow();
+        dinitzFlow.minCutfromT(Tv);
+        return Tv;
     }
 }
