@@ -59,7 +59,7 @@ public class Flow {
         Set<Vertex> Sv= new HashSet<>();
         DinitzFlow dinicsFlow = new DinitzFlow(graph,source,target);
         dinicsFlow.ComputeDinitzMaxFlow();
-         dinicsFlow.minCutfromS(Sv);
+        dinicsFlow.minCutfromS(Sv);
         return Sv;
     }
 
