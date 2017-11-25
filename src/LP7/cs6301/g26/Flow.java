@@ -44,6 +44,7 @@ public class Flow {
         return u.getFlow(graph.getVertex(e.toVertex()));
     }
 
+
     // capacity of edge e
     //not using this function
     public int capacity(Edge e) {
