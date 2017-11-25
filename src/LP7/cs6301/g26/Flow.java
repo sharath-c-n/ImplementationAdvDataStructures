@@ -27,9 +27,7 @@ public class Flow {
     // Return max flow found by Dinitz's algorithm
     public int dinitzMaxFlow() {
         DinitzFlow dinitzFlow = new DinitzFlow(graph,source,target);
-          dinitzFlow.ComputeDinitzMaxFlow();
-          // compute ht
-        return source.getOutFlow();
+        return dinitzFlow.ComputeDinitzMaxFlow();
     }
 
     // Return max flow found by relabelToFront algorithm
@@ -46,6 +44,7 @@ public class Flow {
         return u.getFlow(graph.getVertex(e.toVertex()));
     }
 
+
     // capacity of edge e
     //not using this function
     public int capacity(Edge e) {
@@ -58,7 +57,6 @@ public class Flow {
     public Set<Vertex> minCutS() {
         Set<Vertex> Sv= new HashSet<>();
         DinitzFlow dinicsFlow = new DinitzFlow(graph,source,target);
-        dinicsFlow.ComputeDinitzMaxFlow();
         dinicsFlow.minCutfromS(Sv);
         return Sv;
     }
@@ -69,7 +67,6 @@ public class Flow {
     public Set<Vertex> minCutT() {
         Set<Vertex> Tv= new HashSet<>();
         DinitzFlow dinitzFlow = new DinitzFlow(graph,source,target);
-        dinitzFlow.ComputeDinitzMaxFlow();
         dinitzFlow.minCutfromT(Tv);
         return Tv;
     }
