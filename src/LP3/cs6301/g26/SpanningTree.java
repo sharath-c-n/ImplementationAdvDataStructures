@@ -1,7 +1,7 @@
 package cs6301.g26;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
@@ -74,6 +74,7 @@ public class SpanningTree {
         int index = 0;
         //create or assign component
         for (List<XGraph.XVertex> component : components) {
+            //if the size of the component is 1 then there is no need to create a new component group.
             componentVertices[index++] = component.size() == 1 ? component.get(0) :
                     graph.getNewComponent();
         }
@@ -81,7 +82,7 @@ public class SpanningTree {
         //Add edges
         for (XGraph.XVertex component : componentVertices) {
             //Disable vertex and edges of the children and get minimum edge
-            HashMap<Integer, XGraph.XEdge> minEdges = new HashMap<>();
+            Hashtable<Integer, XGraph.XEdge> minEdges = new Hashtable<>();
             //Process all child vertices only if this is a new component
             if (components.get(index).size() > 1) {
                 for (XGraph.XVertex vertex : components.get(index++)) {
@@ -180,7 +181,7 @@ public class SpanningTree {
      * @param vertex   : child of the component
      * @param minEdges : list of edges
      */
-    private void getMinEdges(XGraph.XVertex vertex, HashMap<Integer, XGraph.XEdge> minEdges) {
+    private void getMinEdges(XGraph.XVertex vertex, Map<Integer, XGraph.XEdge> minEdges) {
         for (Graph.Edge edge : vertex.getNonZeroItr()) {
             int cno = scc.getComponentNo(vertex), otherCno;
             otherCno = scc.getComponentNo(edge.otherEnd(vertex));
