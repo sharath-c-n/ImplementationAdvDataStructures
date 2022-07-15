@@ -1,5 +1,4 @@
-Group : G26
-Authors : Sharath,Ankitha,Sandeep
+Authors : Sharath
 
 The submission contains solutions to all the problem for SP2
 
